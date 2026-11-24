@@ -1,0 +1,116 @@
+Bạn sẽ có nhân vật 3D đầy đủ đầu, thân, hai tay, hai chân và có thể chuyển động tự nhiên.
+
+cỏ , cây cối , này nọ nhiều lắm ...
+
+
+Đó là Procedural Animation (kết hợp Rigging / Skeletal Animation).
+
+
+---
+
+Tổng quan cách làm
+ * Tạo khớp xoay phân cấp (Pivot): Đặt tâm xoay (THREE.Group) đúng vị trí khớp (cổ, vai, hông) và dời mesh bộ phận tương ứng để bộ phận đó xoay quanh khớp thay vì xoay quanh tâm khối.
+ * Dùng biến thời gian (time) và cờ tạm dừng (isPaused): Tăng time khi không tạm dừng để các chuyển động tiến triển theo thời gian thực hoặc theo khung hình.
+ * Dùng hàm lượng giác (Math.sin, Math.cos, Math.abs) và pha (phase): Tạo dao động qua lại (bước chân, đánh tay, ngó đầu) và nhấp nhô nhẹ; dùng phase để các nhân vật không cử động y hệt nhau cùng lúc. (Lưu ý: đây là một cách tiếp cận phổ biến để tạo chuyển động lặp lại nhẹ; còn nhiều cách khác như keyframe hoặc thư viện hoạt hình tùy nhu cầu.)
+ * Cập nhật trong vòng lặp animate(): Gán góc xoay và vị trí mới cho từng khớp mỗi khung hình trước khi vẽ lại cảnh.
+Code mẫu chung chung
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1.5, 4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  function createCharacterRig(mat) {
+    const root = new THREE.Group();
+
+    // Khớp hông -> chân
+    const legLPivot = new THREE.Group();
+    legLPivot.position.set(-0.08, 0.25, 0);
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.25, 0.1), mat);
+    legL.position.y = -0.125;
+    legLPivot.add(legL);
+    root.add(legLPivot);
+
+    const legRPivot = new THREE.Group();
+    legRPivot.position.set(0.08, 0.25, 0);
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.25, 0.1), mat);
+    legR.position.y = -0.125;
+    legRPivot.add(legR);
+    root.add(legRPivot);
+
+    // Thân
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.32, 0.16), mat);
+    torso.position.y = 0.41;
+    root.add(torso);
+
+    // Khớp cổ -> đầu
+    const headPivot = new THREE.Group();
+    headPivot.position.set(0, 0.57, 0);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), mat);
+    head.position.y = 0.09;
+    headPivot.add(head);
+    root.add(headPivot);
+
+    // Khớp vai -> hai tay
+    const armLPivot = new THREE.Group();
+    armLPivot.position.set(-0.18, 0.54, 0);
+    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.25, 0.08), mat);
+    armL.position.y = -0.125;
+    armLPivot.add(armL);
+    root.add(armLPivot);
+
+    const armRPivot = new THREE.Group();
+    armRPivot.position.set(0.18, 0.54, 0);
+    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.25, 0.08), mat);
+    armR.position.y = -0.125;
+    armRPivot.add(armR);
+    root.add(armRPivot);
+
+    return { root, torso, headPivot, armLPivot, armRPivot, legLPivot, legRPivot };
+  }
+
+  const mat = new THREE.MeshNormalMaterial();
+  const actors = [
+    { rig: createCharacterRig(mat), role: 'walker', speed: 1.2, phase: 0, range: 1.2, baseX: -0.6 },
+    { rig: createCharacterRig(mat), role: 'guard',  speed: 1.0, phase: 1.7, range: 0,   baseX: 0.6 }
+  ];
+  actors.forEach((a) => {
+    a.rig.root.position.x = a.baseX;
+    scene.add(a.rig.root);
+  });
+
+  let time = 0;
+  let isPaused = false;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!isPaused) time += 0.016;
+
+    actors.forEach(({ rig, role, speed, phase, range, baseX }) => {
+      const t = time * speed + phase;
+
+      if (role === 'walker') {
+        rig.root.position.x = baseX + Math.cos(t) * range;
+        const swing = Math.sin(t * 6) * 0.45;
+        rig.legLPivot.rotation.x = swing;
+        rig.legRPivot.rotation.x = -swing;
+        rig.armLPivot.rotation.x = -swing * 0.8;
+        rig.armRPivot.rotation.x = swing * 0.8;
+        rig.torso.position.y = 0.41 + Math.abs(Math.sin(t * 6)) * 0.02;
+        rig.headPivot.rotation.y = Math.sin(t * 3) * 0.12;
+      } else {
+        rig.headPivot.rotation.y = Math.sin(t * 0.8) * 0.2;
+        rig.armLPivot.rotation.x = Math.sin(t) * 0.12;
+        rig.armRPivot.rotation.x = -Math.sin(t) * 0.12;
+      }
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+

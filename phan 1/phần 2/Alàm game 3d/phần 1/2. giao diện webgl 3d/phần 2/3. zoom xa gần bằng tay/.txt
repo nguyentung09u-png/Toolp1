@@ -1,0 +1,111 @@
+Tổng quan cách làm
+ * Khóa cử chỉ trình duyệt (touch-action: none): Giúp kéo và chụm 2 ngón trên màn hình cảm ứng không kích hoạt cuộn hoặc phóng to trang mặc định của trình duyệt.
+ * Lắng nghe thao tác vào: Dùng pointerdown, pointermove, pointerup, pointercancel để bắt kéo chuột hoặc kéo 1 ngón; dùng touchstart, touchmove để tính khoảng cách 2 ngón (pinch); dùng wheel để bắt lăn chuột.
+ * Giới hạn khoảng cách (setCamDistance): Kẹp giá trị khoảng cách camera trong khoảng an toàn (như 3 đến 100) để không quá sát hoặc quá xa vật thể.
+ * Cập nhật trong vòng lặp render (animate): Áp dụng khoảng cách mới cho camera ở mỗi khung hình rồi vẽ lại cảnh. (Lưu ý: cách ánh xạ delta kéo sang khoảng cách là một lựa chọn thiết kế phổ biến, có thể tùy chỉnh hệ số nhanh/chậm theo ý bạn.)
+Code mẫu chung chung
+<style>
+  .zoom-pad, canvas {
+    touch-action: none;
+  }
+</style>
+
+<button id="zoomPad" class="zoom-pad" type="button">Zoom</button>
+<canvas id="scene"></canvas>
+
+<script>
+  const canvas = document.getElementById('scene');
+  const zoomPad = document.getElementById('zoomPad');
+
+  let camDistance = 20;
+  const MIN_DIST = 3;
+  const MAX_DIST = 100;
+
+  function setCamDistance(value) {
+    camDistance = Math.max(MIN_DIST, Math.min(MAX_DIST, value));
+  }
+
+  // 1. Kéo nút zoom bằng pointer
+  let draggingPad = false;
+  let lastY = 0;
+
+  zoomPad.addEventListener('pointerdown', (e) => {
+    draggingPad = true;
+    lastY = e.clientY;
+    zoomPad.setPointerCapture(e.pointerId);
+  });
+
+  zoomPad.addEventListener('pointermove', (e) => {
+    if (!draggingPad) return;
+    const dy = e.clientY - lastY;
+    lastY = e.clientY;
+    setCamDistance(camDistance + dy * 0.1);
+  });
+
+  function releasePad(e) {
+    if (!draggingPad) return;
+    draggingPad = false;
+    if (e && zoomPad.hasPointerCapture(e.pointerId)) {
+      zoomPad.releasePointerCapture(e.pointerId);
+    }
+  }
+  zoomPad.addEventListener('pointerup', releasePad);
+  zoomPad.addEventListener('pointercancel', releasePad);
+
+  // 2. Kéo trên canvas
+  let draggingCanvas = false;
+  let lastCanvasY = 0;
+
+  canvas.addEventListener('pointerdown', (e) => {
+    draggingCanvas = true;
+    lastCanvasY = e.clientY;
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!draggingCanvas) return;
+    const dy = e.clientY - lastCanvasY;
+    lastCanvasY = e.clientY;
+    setCamDistance(camDistance + dy * 0.08);
+  });
+
+  canvas.addEventListener('pointerup', () => { draggingCanvas = false; });
+  canvas.addEventListener('pointercancel', () => { draggingCanvas = false; });
+
+  // 3. Chụm / mở 2 ngón (pinch)
+  let startPinchDist = 0;
+  let startCamDist = camDistance;
+
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      startPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      startCamDist = camDistance;
+    }
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && startPinchDist > 0) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setCamDistance(startCamDist * (startPinchDist / currentDist));
+    }
+  }, { passive: true });
+
+  // 4. Lăn chuột
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    setCamDistance(camDistance + e.deltaY * 0.02);
+  }, { passive: false });
+
+  // 5. Vòng lặp cập nhật camera theo camDistance
+  function animate() {
+    requestAnimationFrame(animate);
+    // Cập nhật vị trí camera dùng `camDistance` và render cảnh tại đây
+  }
+  animate();
+</script>
+

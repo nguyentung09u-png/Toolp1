@@ -1,0 +1,8 @@
+Tổng quan thành phần của mặt phẳng (PlaneGeometry) trong Three.js:
+
+1. Kích thước (Width & Height): Quy định chiều rộng và chiều dài của mặt phẳng (ví dụ: 2000 x 2000).
+2. Phân đoạn (Segments): Số lượng lưới chia nhỏ mặt phẳng theo chiều ngang và dọc (ví dụ: 1x1 là một mặt phẳng liền, 10x10 là chia thành lưới).
+3. Vật liệu (Material): Quy định bề mặt (màu sắc, texture cỏ, độ nhám...).
+4. Phép biến đổi (Transform): Xoay mặt phẳng nằm ngang (rotation.x = -Math.PI / 2) và đặt vị trí (ví dụ hạ xuống dưới y = -1.5).
+
+🎯 Tóm 1 câu: Mặt phẳng được làm từ Kích thước (Width/Height), Độ phân giải lưới (Segments), Vật liệu (Material) và Phép biến đổi (Transform).

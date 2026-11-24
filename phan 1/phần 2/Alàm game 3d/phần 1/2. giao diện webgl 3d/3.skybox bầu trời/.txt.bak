@@ -1,0 +1,80 @@
+Tổng quan cách làm Skybox:
+
+1. Tạo khối hình: Dùng một khối lập phương (BoxGeometry) hoặc khối cầu (SphereGeometry) có kích thước rất lớn.
+2. Tạo vật liệu: Dùng 6 ảnh (CubeTexture) hoặc viết Shader (như demo trước).
+3. Thiết lập Render: Bật side: THREE.BackSide (để nhìn từ trong ra) và tắt depthWrite (để nó không che khuất vật thể khác).
+4. Cập nhật mỗi frame: Liên tục gán vị trí của Skybox bằng vị trí của Camera để nó luôn bao quanh người xem.
+
+Dưới đây là code mẫu chung (dùng khối cầu + Shader gradient + mây cơ bản):
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cơ bản
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 2. Tạo Skybox (Khối cầu khổng lồ)
+  const skyGeo = new THREE.SphereGeometry(500, 32, 32);
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide, // Nhìn từ bên trong
+    depthWrite: false,    // Không ghi đè độ sâu
+    uniforms: {
+      uTopColor: { value: new THREE.Color(0x0a2a5c) },
+      uBottomColor: { value: new THREE.Color(0x8db3d9) }
+    },
+    vertexShader: `
+      varying vec3 vPos;
+      void main() {
+        vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uTopColor;
+      uniform vec3 uBottomColor;
+      varying vec3 vPos;
+      void main() {
+        // Gradient từ chân trời lên đỉnh
+        float h = clamp(normalize(vPos).y, 0.0, 1.0);
+        gl_FragColor = vec4(mix(uBottomColor, uTopColor, h), 1.0);
+      }
+    `
+  });
+  const skyDome = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(skyDome);
+
+  // 3. Cập nhật vị trí (Để Skybox luôn theo Camera)
+  camera.position.set(0, 0, 10);
+
+  // 4. Vòng lặp render
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    // Gán vị trí Skybox bằng vị trí Camera
+    skyDome.position.copy(camera.position);
+    
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // 5. Xử lý resize
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+</script>
+</body>
+</html>
+```

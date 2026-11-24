@@ -1,0 +1,6 @@
+tìm trên ch play : word 
+hoặc 
+tìm trên web : word mod apk 
+
+
+đúng package này là được : com.microsoft.office.word

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FPS Counter — Chỉ nền + FPS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: #04060c;
+  }
+
+  /* ===== NỀN ===== */
+  #bg {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 72% 18%, #ff894d 0%, transparent 42%),
+      radial-gradient(circle at 18% 82%, #38bdf8 0%, transparent 48%),
+      radial-gradient(circle at 50% 55%, #7c3aed 0%, transparent 52%),
+      linear-gradient(180deg, #163970 0%, #04060c 100%);
+  }
+  #bg::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.5) 1px, transparent 1.4px);
+    background-size: 34px 34px; opacity: .2;
+  }
+
+  /* ===== CARD FPS ===== */
+  #fps-panel {
+    position: fixed;
+    top: 12px; left: 12px;
+    z-index: 20;
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; min-width: 162px;
+    border-radius: 14px;
+    background: rgba(10, 14, 24, 0.58);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.42);
+    color: #f8fafc;
+  }
+  .fps-main { display: flex; flex-direction: column; line-height: 1.05; }
+  .fps-value-row { display: flex; align-items: baseline; gap: 4px; }
+  #fps-num {
+    font-size: 22px; font-weight: 800; color: #4ade80;
+    font-variant-numeric: tabular-nums;
+  }
+  .fps-unit {
+    font-size: 10px; font-weight: 700; color: #94a3b8;
+    letter-spacing: .06em;
+  }
+  #fps-sub {
+    font-size: 10px; color: #94a3b8;
+    font-variant-numeric: tabular-nums; margin-top: 2px;
+  }
+  #fps-graph {
+    width: 60px; height: 28px; border-radius: 6px;
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+</style>
+</head>
+<body>
+  <div id="bg"></div>
+
+  <div id="fps-panel">
+    <div class="fps-main">
+      <div class="fps-value-row">
+        <span id="fps-num">60</span>
+        <span class="fps-unit">FPS</span>
+      </div>
+      <div id="fps-sub">16.6 ms · 0k tris</div>
+    </div>
+    <canvas id="fps-graph" width="120" height="56"></canvas>
+  </div>
+
+<script>
+  // ===== ĐO FPS THẬT bằng requestAnimationFrame =====
+  const fpsNum = document.getElementById('fps-num');
+  const fpsSub = document.getElementById('fps-sub');
+  const canvas = document.getElementById('fps-graph');
+  const ctx = canvas.getContext('2d');
+
+  let frames = 0;
+  let lastTime = performance.now();
+  let history = new Array(30).fill(60); // 30 mẫu gần nhất
+
+  function drawGraph() {
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // đường FPS
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    history.forEach((v, i) => {
+      const x = (i / (history.length - 1)) * w;
+      const y = h - Math.min(v / 70, 1) * h; // 0..70 FPS → đáy..đỉnh
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+
+    // vùng tô mờ dưới đường
+    ctx.fillStyle = 'rgba(56,189,248,.12)';
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.fill();
+  }
+
+  function loop(now) {
+    frames++;
+
+    // mỗi 500ms cập nhật số FPS
+    const delta = now - lastTime;
+    if (delta >= 500) {
+      const fps = Math.round((frames * 1000) / delta);
+      const ms = (delta / frames).toFixed(1);
+
+      fpsNum.textContent = fps;
+      fpsSub.textContent = ms + ' ms · 0k tris';
+
+      // đổi màu theo FPS
+      fpsNum.style.color = fps >= 50 ? '#4ade80' : fps >= 30 ? '#facc15' : '#ef4444';
+
+      // đẩy vào lịch sử
+      history.push(fps);
+      history.shift();
+      drawGraph();
+
+      frames = 0;
+      lastTime = now;
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nhà 3D - Đã Fix Lệch Đất & Trời</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+    canvas { display: block; }
+    .controls {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 15px; z-index: 10;
+    }
+    button {
+      padding: 12px 24px; font-size: 16px; font-weight: bold;
+      color: #fff; background: rgba(30, 41, 59, 0.8);
+      border: 2px solid #38bdf8; border-radius: 30px;
+      cursor: pointer; backdrop-filter: blur(5px); transition: all 0.2s;
+    }
+    button:active { transform: scale(0.95); background: rgba(56, 189, 248, 0.5); }
+  </style>
+</head>
+<body>
+
+<div class="controls">
+  <button id="btn-zoom-in">🔍 Phóng To (+)</button>
+  <button id="btn-zoom-out">🔍 Thu Nhỏ (-)</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // ==========================================
+  // 1. HÀM TẠO TEXTURE BẰNG CANVAS
+  // ==========================================
+  
+  // Texture mây trong suốt (Dán lên một khối cầu riêng)
+  function createCloudTexture() {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 1024;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 1024, 1024); // Xóa nền để lấy nền trong suốt
+    
+    // Vẽ các cụm mây mờ
+    for(let i=0; i<150; i++) {
+      const x = Math.random() * 1024;
+      const y = 100 + Math.random() * 800; 
+      const w = 50 + Math.random() * 150;
+      const h = 15 + Math.random() * 30;
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.05 + Math.random() * 0.2})`;
+      ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }
+
+  // Các texture của nhà
+  function createGrassTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#3a5f3a'; ctx.fillRect(0, 0, 256, 256);
+    for(let i=0; i<2000; i++) { ctx.fillStyle = Math.random() > 0.5 ? '#2e4f2e' : '#4a754a'; ctx.fillRect(Math.random()*256, Math.random()*256, 2, 4); }
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(100, 100); return tex; // Tăng repeat lên 100 để cỏ nhỏ lại
+  }
+  function createWallTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#e8dfc8'; ctx.fillRect(0, 0, 256, 256); ctx.fillStyle = '#5c3c26';
+    ctx.fillRect(0, 0, 256, 15); ctx.fillRect(0, 241, 256, 15); ctx.fillRect(0, 0, 15, 256); ctx.fillRect(241, 0, 15, 256); ctx.fillRect(0, 120, 256, 10);
+    return new THREE.CanvasTexture(c);
+  }
+  function createRoofTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#2a3345'; ctx.fillRect(0, 0, 256, 256); ctx.strokeStyle = '#1a2230'; ctx.lineWidth = 4;
+    for(let y=0; y<256; y+=32) { for(let x=0; x<256; x+=32) { ctx.strokeRect(x, y, 32, 32); } }
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(4, 1); return tex;
+  }
+  function createWoodTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#5c3c26'; ctx.fillRect(0, 0, 128, 128); ctx.strokeStyle = '#3a2214'; ctx.lineWidth = 2;
+    for(let i=0; i<128; i+=8) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 128); ctx.stroke(); }
+    return new THREE.CanvasTexture(c);
+  }
+  function createWindowTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0,0,128,128); g.addColorStop(0, '#aaddff'); g.addColorStop(1, '#4488cc');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128); ctx.strokeStyle = '#222'; ctx.lineWidth = 6; ctx.strokeRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  function createBirdTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#222'; ctx.fillRect(0, 0, 64, 64); ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+    for(let i=0; i<10; i++) { ctx.beginPath(); ctx.moveTo(Math.random()*64, Math.random()*64); ctx.lineTo(Math.random()*64, Math.random()*64); ctx.stroke(); }
+    return new THREE.CanvasTexture(c);
+  }
+
+  // ==========================================
+  // 2. KHỞI TẠO CẢNH & RENDERER
+  // ==========================================
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 2000); // Tăng far lên 2000
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  document.body.appendChild(renderer.domElement);
+
+  // --- BẦU TRỜI (SHADER GRADIENT ĐỂ KHÔNG BỊ LỆCH) ---
+  const skyGeo = new THREE.SphereGeometry(800, 32, 32); // Bán kính lớn
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false,
+    uniforms: {
+      uTopColor: { value: new THREE.Color(0x1b2a47) },
+      uBottomColor: { value: new THREE.Color(0xd98e68) }
+    },
+    vertexShader: `varying vec3 vPos; void main() { vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `
+      uniform vec3 uTopColor; uniform vec3 uBottomColor; varying vec3 vPos;
+      void main() {
+        float h = clamp(normalize(vPos).y, 0.0, 1.0);
+        gl_FragColor = vec4(mix(uBottomColor, uTopColor, pow(h, 0.7)), 1.0);
+      }
+    `
+  });
+  const sky = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(sky);
+
+  // --- LỚP MÂY (Đắp texture lên khối cầu trong suốt) ---
+  const cloudGeo = new THREE.SphereGeometry(750, 32, 32); 
+  const cloudMat = new THREE.MeshBasicMaterial({ 
+    map: createCloudTexture(), 
+    side: THREE.BackSide, 
+    transparent: true, 
+    opacity: 0.8, 
+    depthWrite: false 
+  });
+  const clouds = new THREE.Mesh(cloudGeo, cloudMat);
+  scene.add(clouds);
+
+  // Ánh sáng
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const sun = new THREE.DirectionalLight(0xffd29d, 1.0);
+  sun.position.set(10, 20, 10);
+  scene.add(sun);
+
+  // ==========================================
+  // 3. MẶT ĐẤT & NGÔI NHÀ
+  // ==========================================
+  
+  // Tăng kích thước mặt đất lên 2000x2000 để phủ kín tầm nhìn
+  const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+  const groundMat = new THREE.MeshStandardMaterial({ map: createGrassTexture(), roughness: 1 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -1.5; 
+  scene.add(ground);
+
+  const houseGroup = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 2), new THREE.MeshStandardMaterial({ map: createWallTexture(), roughness: 0.8 }));
+  body.position.y = 0.75; houseGroup.add(body);
+
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.8, 1.2, 4), new THREE.MeshStandardMaterial({ map: createRoofTexture(), roughness: 0.6 }));
+  roof.position.y = 2.1; roof.rotation.y = Math.PI / 4; houseGroup.add(roof);
+
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.7, 0.05), new THREE.MeshStandardMaterial({ map: createWoodTexture() }));
+  door.position.set(0, 0.35, 1.02); houseGroup.add(door);
+
+  const windowMat = new THREE.MeshStandardMaterial({ map: createWindowTexture(), emissive: 0x4488cc, emissiveMap: createWindowTexture(), emissiveIntensity: 0.8 });
+  const win1 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), windowMat); win1.position.set(-0.6, 0.8, 1.02); houseGroup.add(win1);
+  const win2 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), windowMat); win2.position.set(0.6, 0.8, 1.02); houseGroup.add(win2);
+
+  houseGroup.position.y = -1.5;
+  scene.add(houseGroup);
+
+  // ==========================================
+  // 4. CHIM BAY QUA LẠI
+  // ==========================================
+  const birds = [];
+  const birdMat = new THREE.MeshBasicMaterial({ map: createBirdTexture(), side: THREE.DoubleSide });
+
+  function createBird() {
+    const birdGroup = new THREE.Group();
+    const wingL = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.15), birdMat);
+    wingL.position.x = -0.2; birdGroup.add(wingL);
+    const wingR = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.15), birdMat);
+    wingR.position.x = 0.2; birdGroup.add(wingR);
+    return birdGroup;
+  }
+
+  for(let i = 0; i < 12; i++) {
+    const bird = createBird();
+    bird.userData = {
+      speed: 0.05 + Math.random() * 0.08, dir: Math.random() > 0.5 ? 1 : -1,
+      startX: -40, zPos: -20 + Math.random() * 40, height: 4 + Math.random() * 8,
+      flapSpeed: 5 + Math.random() * 3
+    };
+    if (bird.userData.dir === -1) bird.userData.startX = 40;
+    bird.position.set(bird.userData.startX, bird.userData.height, bird.userData.zPos);
+    scene.add(bird);
+    birds.push(bird);
+  }
+
+  // ==========================================
+  // 5. CAMERA & ZOOM
+  // ==========================================
+  let camDistance = 10;
+  camera.position.set(0, 3, camDistance);
+  camera.lookAt(0, 0, 0);
+
+  document.getElementById('btn-zoom-in').onclick = () => { camDistance = Math.max(3, camDistance - 2); };
+  document.getElementById('btn-zoom-out').onclick = () => { camDistance = Math.min(25, camDistance + 2); };
+
+  // ==========================================
+  // 6. VÒNG LẶP RENDER
+  // ==========================================
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.01;
+
+    // Camera
+    camera.position.x = Math.sin(time * 0.5) * camDistance;
+    camera.position.z = Math.cos(time * 0.5) * camDistance;
+    camera.position.y = camDistance * 0.3; 
+    camera.lookAt(0, -0.5, 0);
+    
+    // Cập nhật vị trí trời và mây theo camera
+    sky.position.copy(camera.position);
+    clouds.position.copy(camera.position);
+    clouds.rotation.y += 0.0005; // Mây trôi chầm chậm
+
+    // Cập nhật chim
+    birds.forEach(bird => {
+      const d = bird.userData;
+      bird.position.x += d.speed * d.dir;
+      
+      // Reset khi bay khỏi màn hình
+      if (d.dir === 1 && bird.position.x > 40) bird.position.x = -40;
+      if (d.dir === -1 && bird.position.x < -40) bird.position.x = 40;
+
+      bird.position.y = d.height + Math.sin(time * 2 + bird.position.x) * 0.3;
+      bird.rotation.y = d.dir === 1 ? 0 : Math.PI;
+
+      const flap = Math.sin(time * d.flapSpeed) * 0.6;
+      bird.children[0].rotation.z = flap;
+      bird.children[1].rotation.z = -flap;
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // 7. RESIZE
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+</script>
+</body>
+</html>

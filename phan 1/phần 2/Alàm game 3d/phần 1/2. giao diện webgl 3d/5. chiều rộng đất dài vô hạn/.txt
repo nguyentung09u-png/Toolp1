@@ -1,0 +1,59 @@
+Tổng quan cách làm:
+
+1. Kích thước & Lưới: Khởi tạo PlaneGeometry(chiều_rộng, chiều_dài, phân_đoạn_x, phân_đoạn_y). Để phẳng lì thì phân đoạn là 1, 1.
+2. Vật liệu: Khởi tạo MeshStandardMaterial (hoặc MeshBasicMaterial) và gán màu sắc hoặc texture.
+3. Kết hợp: Tạo Mesh(geometry, material).
+4. Biến đổi: Xoay mặt phẳng nằm ngang bằng cách xoay trục X một góc -Math.PI / 2 và đặt vị trí position.y.
+5. Đưa vào cảnh: Thêm vào scene.
+
+Dưới đây là code mẫu chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cảnh
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 5000);
+  camera.position.set(0, 5, 10);
+  camera.lookAt(0, 0, 0);
+  
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 2. Geometry: Kích thước 2000x2000, lưới 1x1 (phẳng)
+  const geometry = new THREE.PlaneGeometry(2000, 2000, 1, 1);
+
+  // 3. Material: Vật liệu màu xanh lá
+  const material = new THREE.MeshStandardMaterial({ color: 0x3a5f3a });
+
+  // 4. Kết hợp thành Mesh
+  const ground = new THREE.Mesh(geometry, material);
+
+  // 5. Transform: Xoay nằm ngang và hạ xuống dưới
+  ground.rotation.x = -Math.PI / 2; 
+  ground.position.y = -1.5;
+
+  // 6. Đưa vào cảnh
+  scene.add(ground);
+
+  // Thêm ánh sáng để nhìn thấy vật thể
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+  // 7. Render
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>
+```

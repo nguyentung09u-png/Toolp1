@@ -1,0 +1,27 @@
+1. mặc định ban đầu xa/gần tùy
+
+
+  let camDistance = 20;
+
+số càng lớn zoom càng xa , càng nhỏ zoom càng gần
+
+
+
+2. nút zoom xa ( là zoom out)
+
+  document.getElementById('btn-zoom-out').onclick = () => { camDistance = Math.min(100, camDistance + 2); };
+
+
+
+
+cách chỉnh :
+Math.min(100, camDistance + 2); };
+
+
+đổi số 100
+Math.min(100
+
+
+ví dụ : số càng lớn zoom càng xa
+càng nhỏ zoom càng gần
+

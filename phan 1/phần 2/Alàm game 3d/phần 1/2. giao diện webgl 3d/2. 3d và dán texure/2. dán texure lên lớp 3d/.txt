@@ -1,0 +1,70 @@
+
+thì bảo gpt :
+ Dùng hình vẽ 2D từ Canvas (CanvasTexture) để dán (đắp) lên toàn bộ các bề mặt của mô hình 3D thay vì để vật liệu trơn một màu.
+---
+  Đó là việc dùng CanvasTexture (vẽ 2D bằng code HTML5) gán vào material.map để phủ họa tiết lên mọi bề mặt của khối 3D,
+  
+  
+---
+Tổng quan cách làm:
+
+1. Tạo thẻ <canvas> bằng document.createElement('canvas').
+2. Lấy ngữ cảnh vẽ 2D bằng getContext('2d').
+3. Dùng các lệnh 2D (fillRect, strokeStyle, v.v.) để vẽ họa tiết.
+4. Đóng gói canvas bằng new THREE.CanvasTexture(canvas).
+5. Gán texture vào material.map và tạo Mesh 3D.
+
+Dưới đây là code chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cảnh
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 2. Tạo Canvas 2D và vẽ
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  
+  // Vẽ nền và họa tiết (ví dụ: ô vuông)
+  ctx.fillStyle = '#3355aa';
+  ctx.fillRect(0, 0, 128, 128);
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(0, 0, 128, 128);
+
+  // 3. Đóng gói thành CanvasTexture
+  const texture = new THREE.CanvasTexture(canvas);
+
+  // 4. Gán vào vật liệu và tạo Mesh 3D
+  const material = new THREE.MeshBasicMaterial({ map: texture });
+  const geometry = new THREE.BoxGeometry(2, 2, 2);
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  // 5. Render
+  function animate() {
+    requestAnimationFrame(animate);
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.01;
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>
+```

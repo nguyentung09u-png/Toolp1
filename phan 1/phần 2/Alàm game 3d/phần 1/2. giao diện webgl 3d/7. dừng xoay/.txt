@@ -1,0 +1,74 @@
+Tổng quan cách làm:
+
+1. Tạo giao diện: Thêm một nút bấm (Button) trong HTML.
+2. Khai báo trạng thái: Tạo một biến boolean (isPaused = false).
+3. Bắt sự kiện: Khi click nút, đảo ngược giá trị isPaused = !isPaused và cập nhật chữ trên nút.
+4. Vòng lặp Render: Chỉ cộng thêm giá trị vào biến thời gian (time hoặc góc xoay) khi isPaused là false. Nếu true, thời gian đứng yên, làm vật thể/camera dừng lại.
+
+Dưới đây là code mẫu chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #btn-pause {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 10px 20px; font-size: 16px; cursor: pointer; z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<button id="btn-pause">⏸ Dừng Xoay</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cảnh
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 5);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Vật thể test
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+  );
+  scene.add(mesh);
+
+  // 2. Biến trạng thái & Góc xoay
+  let isPaused = false;
+  let angle = 0;
+
+  // 3. Bắt sự kiện click
+  const btn = document.getElementById('btn-pause');
+  btn.onclick = () => {
+    isPaused = !isPaused;
+    btn.innerText = isPaused ? "▶ Tiếp Tục" : "⏸ Dừng Xoay";
+  };
+
+  // 4. Vòng lặp Render
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Chỉ tăng góc xoay nếu không bị dừng
+    if (!isPaused) {
+      angle += 0.01;
+    }
+
+    // Áp dụng góc xoay vào vật thể
+    mesh.rotation.y = angle;
+    mesh.rotation.x = angle * 0.5;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>
+```

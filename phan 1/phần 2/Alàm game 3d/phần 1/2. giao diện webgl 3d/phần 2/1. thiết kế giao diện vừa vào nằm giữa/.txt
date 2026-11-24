@@ -1,0 +1,57 @@
+Tổng quan cách làm:
+
+1. Đặt tọa độ: Gán vị trí vật thể (hoặc nhóm vật thể) về gốc tọa độ (0, 0, 0) hoặc một điểm cố định bất kỳ.
+2. Thiết lập Camera: Cố định vị trí camera ở một khoảng cách an toàn.
+3. Hướng nhìn: Sử dụng hàm camera.lookAt(x, y, z) trỏ thẳng vào tọa độ của vật thể.
+4. Cập nhật Resize: Đảm bảo camera.aspect luôn cập nhật đúng tỷ lệ màn hình để vật thể không bị méo hoặc lệch tâm khi thay đổi kích thước cửa sổ.
+
+Dưới đây là code mẫu chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cảnh & Camera
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 2. Tạo vật thể và đặt ở tâm (0, 0, 0)
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 2, 2),
+    new THREE.MeshStandardMaterial({ color: 0x38bdf8 })
+  );
+  mesh.position.set(0, 0, 0); // Đặt ở gốc tọa độ
+  scene.add(mesh);
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+  // 3. Thiết lập Camera nhìn vào tâm
+  camera.position.set(0, 2, 8); // Camera đứng lùi về phía trước, cao hơn một chút
+  camera.lookAt(0, 0, 0);       // Hướng nhìn về tâm (Center Target)
+
+  // 4. Render
+  function animate() {
+    requestAnimationFrame(animate);
+    mesh.rotation.y += 0.01; // Vật thể tự xoay
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // 5. Resize để giữ tỷ lệ chuẩn, không lệch tâm
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+</script>
+</body>
+</html>
+```

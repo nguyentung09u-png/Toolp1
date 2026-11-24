@@ -1,0 +1,75 @@
+Tổng quan cách làm:
+
+1. Tạo giao diện (HTML/CSS): Tạo một khung chứa 2 nút bấm, dùng CSS position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) để ghim cố định ở giữa mép dưới màn hình.
+2. Gán sự kiện (JavaScript): Lắng nghe sự kiện onclick của 2 nút.
+3. Cập nhật Camera (Three.js): Khi bấm, thay đổi một biến khoảng cách (ví dụ camDistance), sau đó cập nhật lại tọa độ camera.position và gọi camera.lookAt() để giữ camera luôn hướng vào vật thể.
+
+Dưới đây là code mẫu chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; overflow: hidden; }
+    /* CSS thiết kế giao diện nút dưới mép, ngang giữa */
+    #ui-controls {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; z-index: 10;
+    }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- Khung chứa 2 nút -->
+<div id="ui-controls">
+  <button id="btn-in">Phóng To (+)</button>
+  <button id="btn-out">Thu Nhỏ (-)</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cơ bản
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Tạo một khối 3D để test
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+  );
+  scene.add(mesh);
+
+  // 2. Biến khoảng cách camera
+  let camDistance = 5;
+  camera.position.set(0, 0, camDistance);
+  camera.lookAt(0, 0, 0);
+
+  // 3. Gắn sự kiện cho nút bấm
+  document.getElementById('btn-in').onclick = () => {
+    camDistance = Math.max(2, camDistance - 1); // Giới hạn gần nhất
+  };
+  document.getElementById('btn-out').onclick = () => {
+    camDistance = Math.min(15, camDistance + 1); // Giới hạn xa nhất
+  };
+
+  // 4. Vòng lặp render
+  function animate() {
+    requestAnimationFrame(animate);
+    // Cập nhật camera mượt mà
+    camera.position.z += (camDistance - camera.position.z) * 0.1; 
+    camera.lookAt(0, 0, 0); 
+    
+    mesh.rotation.y += 0.01;
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>
+```

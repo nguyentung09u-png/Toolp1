@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nhà 3D - Gộp Hamburger</title>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; background: #08090b; font-family: 'Inter', system-ui, sans-serif; color: #e6ebf2; touch-action: none; }
+    canvas { display: block; touch-action: none; }
+
+    /* =====================================================
+       (1) HAMBURGER GÓC TRÁI — Luôn hiển thị khi đóng sidebar
+       ===================================================== */
+    .hamburger {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(15, 18, 23, 0.85);
+      border: 1px solid #242b36;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.22s, border-color 0.22s, box-shadow 0.22s, opacity 0.25s, transform 0.25s;
+      user-select: none;
+      z-index: 110;
+      backdrop-filter: blur(6px);
+      padding: 0;
+    }
+    .hamburger:hover {
+      background: rgba(20, 24, 31, 0.95);
+      border-color: #2e3742;
+      box-shadow: 0 0 22px -4px rgba(0, 230, 176, 0.5);
+    }
+    .hamburger:active { transform: scale(0.94); }
+
+    .hamburger.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.8);
+    }
+    .hamburger .bars {
+      width: 24px;
+      height: 17px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hamburger .bars span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: #00e6b0;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(0, 230, 176, 0.6);
+    }
+
+    /* =====================================================
+       CLOSE BUTTON — Trong sidebar
+       ===================================================== */
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #0f1217;
+      border: 1px solid #242b36;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      user-select: none;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .close-btn:hover {
+      background: #1a1215;
+      border-color: #4a2428;
+      box-shadow: 0 0 18px -4px rgba(255, 90, 90, 0.45);
+    }
+    .close-btn:active { transform: scale(0.92); }
+    .close-btn .x { position: relative; width: 18px; height: 18px; }
+    .close-btn .x span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #ff5a5a;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255, 90, 90, 0.6);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .close-btn .x span:nth-child(1) { transform: translate(-50%, -50%) rotate(45deg); }
+    .close-btn .x span:nth-child(2) { transform: translate(-50%, -50%) rotate(-45deg); }
+    .close-btn:hover .x span { background: #ff8080; box-shadow: 0 0 12px rgba(255, 90, 90, 0.9); }
+
+    /* =====================================================
+       (2) SIDEBAR MENU
+       ===================================================== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 270px;
+      background: #0d0f13;
+      border-right: 1px solid #1d2128;
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem 1rem 1.5rem;
+      gap: 1.5rem;
+      background-image:
+        radial-gradient(circle at 30% 10%, rgba(0,230,176,0.10) 0%, transparent 55%),
+        linear-gradient(180deg, #101318 0%, #0a0c10 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.012) 40px);
+      box-shadow: 8px 0 40px -18px rgba(0, 0, 0, 0.95);
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0 0.25rem;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.4px;
+      color: #f0f5fc;
+      user-select: none;
+    }
+    .logo-icon {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: #0a1c1f;
+      border: 1.5px solid #00e6b0;
+      color: #00e6b0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(0, 230, 176, 0.45);
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.65rem;
+      color: #8b96a5;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+      user-select: none;
+    }
+    .nav-item:hover {
+      background: #14181f;
+      color: #e2e9f2;
+      border-color: #232a35;
+    }
+    .nav-item.active {
+      background: #0f1c1e;
+      color: #00e6b0;
+      border-color: #0f3d38;
+      box-shadow: inset 0 0 0 1px rgba(0, 230, 176, 0.25), 0 0 14px -6px rgba(0, 230, 176, 0.4);
+    }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: -1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: #00e6b0;
+      border-radius: 0 3px 3px 0;
+      box-shadow: 0 0 10px #00e6b0;
+    }
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+    .nav-item.active .nav-icon { opacity: 1; filter: drop-shadow(0 0 6px #00e6b0); }
+    .nav-label {
+      margin-left: auto;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: 2rem;
+      background: #1a1f27;
+      color: #6f7c8c;
+      border: 1px solid #242b36;
+      letter-spacing: 0.3px;
+    }
+    .nav-item.active .nav-label {
+      background: #0e2a25;
+      color: #00e6b0;
+      border-color: #0f4a42;
+    }
+
+    /* =====================================================
+       ACTION MENU — 3 NAV ITEM CON
+       ===================================================== */
+    .action-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0.3rem;
+      padding-left: 0.85rem;
+      border-left: 1px dashed #242e3c;
+      margin-left: 0.9rem;
+    }
+    .action-menu.open {
+      display: flex;
+    }
+    .nav-item.sub-item {
+      padding: 0.55rem 0.75rem;
+      font-size: 0.84rem;
+    }
+    .nav-item.sub-item.active::before {
+      display: none;
+    }
+
+    .sidebar-footer {
+      padding-top: 1.1rem;
+      border-top: 1px solid #1a1e25;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: #4b5563;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00e6b0;
+      box-shadow: 0 0 8px #00e6b0;
+      margin-right: 0.4rem;
+    }
+
+    /* =====================================================
+       OVERLAY
+       ===================================================== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 6, 8, 0.55);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 90;
+    }
+    .overlay.open { opacity: 1; visibility: visible; }
+
+    /* =====================================================
+       FAB CLUSTER (BÊN PHẢI) — Ẩn mặc định, hiện khi bật HUD
+       ===================================================== */
+    .fab-cluster {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 80;
+      width: 55px;
+      height: 55px;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .fab-cluster.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .fab-btn {
+      position: absolute;
+      width: 55px;
+      height: 55px;
+      font-size: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      background: rgba(30, 41, 59, 0.85);
+      border: 2px solid #38bdf8;
+      border-radius: 50%;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.25s ease;
+      padding: 0;
+      user-select: none;
+    }
+    .fab-btn:active { transform: scale(0.9); }
+
+    #btn-zoom-in  { top: -70px; left: 0; }
+    #btn-zoom-out { top: 0; left: 0; }
+    #btn-pause    { top: 70px; left: 0; }
+
+    #btn-zoom-in, #btn-zoom-out, #btn-pause {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: scale(0.5);
+      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    }
+    .fab-cluster.show #btn-zoom-in,
+    .fab-cluster.show #btn-zoom-out,
+    .fab-cluster.show #btn-pause {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+    #btn-pause.active {
+      background: rgba(239, 68, 68, 0.8);
+      border-color: #ef4444;
+    }
+
+    /* =====================================================
+       NÚT ZOOM BẰNG TAY (KÉO / CHẠM ĐỂ ZOOM XA GẦN)
+       ===================================================== */
+    .hand-zoom-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.88);
+      border: 2px solid #00e6b0;
+      color: #00e6b0;
+      font-size: 22px;
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      z-index: 85;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 18px -4px rgba(0, 230, 176, 0.45);
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hand-zoom-btn:active,
+    .hand-zoom-btn.dragging {
+      cursor: grabbing;
+      transform: scale(1.08);
+      background: rgba(14, 42, 37, 0.95);
+      box-shadow: 0 0 24px rgba(0, 230, 176, 0.75);
+    }
+  </style>
+</head>
+<body>
+
+<!-- (1) HAMBURGER GÓC TRÁI -->
+<button class="hamburger" id="hamburger" aria-label="Mở sidebar" aria-expanded="false" aria-controls="sidebar">
+  <span class="bars">
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+</button>
+
+<!-- (2) SIDEBAR MENU -->
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">◈</div>
+      <span>NEXUS</span>
+    </div>
+    <button class="close-btn" id="closeBtn" aria-label="Đóng sidebar">
+      <span class="x">
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </div>
+
+  <ul class="sidebar-nav">
+    <li class="nav-item" id="navSnow">
+      <span class="nav-icon">❄️</span>
+      <span>Tuyết rơi</span>
+      <span class="nav-label" id="snowStatus">OFF</span>
+    </li>
+
+    <li class="nav-item" id="navNature">
+      <span class="nav-icon">🌿</span>
+      <span>Nature scene</span>
+      <span class="nav-label" id="natureStatus">3</span>
+    </li>
+
+    <div class="action-menu" id="natureActionMenu">
+      <div class="nav-item sub-item active" data-scene="snow">
+        <span class="nav-icon">❄️</span>
+        <span>Tuyết rơi</span>
+        <span class="nav-label">1</span>
+      </div>
+      <div class="nav-item sub-item" data-scene="sunrise">
+        <span class="nav-icon">🌅</span>
+        <span>Bình minh</span>
+        <span class="nav-label">2</span>
+      </div>
+      <div class="nav-item sub-item" data-scene="night">
+        <span class="nav-icon">🌌</span>
+        <span>Đêm sao</span>
+        <span class="nav-label">3</span>
+      </div>
+    </div>
+
+    <li class="nav-item" id="navMenu1">
+      <span class="nav-icon">🎛️</span>
+      <span>Menu 1</span>
+      <span class="nav-label" id="menu1Status">OFF</span>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <span><span class="status-dot"></span>online</span>
+    <span>v2.4.0</span>
+  </div>
+</aside>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- FAB CLUSTER (BÊN PHẢI) - Ẩn mặc định -->
+<div class="fab-cluster" id="fabCluster">
+  <button class="fab-btn" id="btn-zoom-in"  title="Phóng To">➕</button>
+  <button class="fab-btn" id="btn-zoom-out" title="Thu Nhỏ">➖</button>
+  <button class="fab-btn" id="btn-pause"    title="Dừng Xoay">⏸️</button>
+</div>
+
+<!-- NÚT ZOOM BẰNG TAY (KÉO LÊN GẦN / KÉO XUỐNG XA) -->
+<button type="button" class="hand-zoom-btn" id="btnHandZoom" title="Kéo lên để zoom gần, kéo xuống để zoom xa">🔍</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // ==========================================
+  // 1. HÀM TẠO TEXTURE 2D (CANVAS TEXTURE)
+  // ==========================================
+  function createSkyTexture(mode = 'snow') {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 1024;
+    const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 0, 1024);
+
+    if (mode === 'sunrise') {
+      g.addColorStop(0, '#1e3c72');
+      g.addColorStop(0.55, '#e96443');
+      g.addColorStop(1, '#ffd194');
+    } else if (mode === 'night') {
+      g.addColorStop(0, '#040711');
+      g.addColorStop(0.6, '#0d1b3e');
+      g.addColorStop(1, '#182b5c');
+    } else {
+      g.addColorStop(0, '#2c3e50');
+      g.addColorStop(0.5, '#5c7080');
+      g.addColorStop(1, '#a0b3c4');
+    }
+
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 1024);
+
+    if (mode === 'night') {
+      for (let i = 0; i < 900; i++) {
+        const x = Math.random() * 1024, y = Math.random() * 750, r = 0.8 + Math.random() * 2;
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.35 + Math.random() * 0.65})`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+    } else {
+      for (let i = 0; i < 60; i++) {
+        const x = Math.random() * 1024, y = Math.random() * 800;
+        const w = 100 + Math.random() * 200, h = 20 + Math.random() * 60;
+        ctx.fillStyle = mode === 'sunrise'
+          ? `rgba(255, 210, 170, ${0.12 + Math.random() * 0.2})`
+          : `rgba(120, 130, 150, ${0.1 + Math.random() * 0.2})`;
+        ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2); ctx.fill();
+      }
+      for (let i = 0; i < 1500; i++) {
+        const x = Math.random() * 1024, y = Math.random() * 1024, r = 1 + Math.random() * 3;
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + Math.random() * 0.6})`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }
+
+  function createGrassTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#3a5f3a'; ctx.fillRect(0, 0, 256, 256);
+    for(let i=0; i<2000; i++) { ctx.fillStyle = Math.random() > 0.5 ? '#2e4f2e' : '#4a754a'; ctx.fillRect(Math.random()*256, Math.random()*256, 2, 4); }
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(100, 100); return tex;
+  }
+  function createWallTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#e8dfc8'; ctx.fillRect(0, 0, 256, 256); ctx.fillStyle = '#5c3c26';
+    ctx.fillRect(0, 0, 256, 15); ctx.fillRect(0, 241, 256, 15); ctx.fillRect(0, 0, 15, 256); ctx.fillRect(241, 0, 15, 256); ctx.fillRect(0, 120, 256, 10);
+    return new THREE.CanvasTexture(c);
+  }
+  function createRoofTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#2a3345'; ctx.fillRect(0, 0, 256, 256); ctx.strokeStyle = '#1a2230'; ctx.lineWidth = 4;
+    for(let y=0; y<256; y+=32) { for(let x=0; x<256; x+=32) { ctx.strokeRect(x, y, 32, 32); } }
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(4, 1); return tex;
+  }
+  function createWoodTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#5c3c26'; ctx.fillRect(0, 0, 128, 128); ctx.strokeStyle = '#3a2214'; ctx.lineWidth = 2;
+    for(let i=0; i<128; i+=8) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 128); ctx.stroke(); }
+    return new THREE.CanvasTexture(c);
+  }
+  function createWindowTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0,0,128,128); g.addColorStop(0, '#aaddff'); g.addColorStop(1, '#4488cc');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128); ctx.strokeStyle = '#222'; ctx.lineWidth = 6; ctx.strokeRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  function createBirdTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const ctx = c.getContext('2d');
+    ctx.fillStyle = '#222'; ctx.fillRect(0, 0, 64, 64); ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+    for(let i=0; i<10; i++) { ctx.beginPath(); ctx.moveTo(Math.random()*64, Math.random()*64); ctx.lineTo(Math.random()*64, Math.random()*64); ctx.stroke(); }
+    return new THREE.CanvasTexture(c);
+  }
+
+  // Texture 2D cho binh lính (giáp vảy + viền kim loại)
+  function createSoldierArmorTexture(baseHex = '#1d4ed8', trimHex = '#93c5fd') {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = baseHex;
+    ctx.fillRect(0, 0, 128, 128);
+
+    ctx.strokeStyle = trimHex;
+    ctx.lineWidth = 3;
+    for (let y = 16; y < 128; y += 20) {
+      for (let x = 0; x < 128; x += 24) {
+        ctx.beginPath();
+        ctx.arc(x + ((y / 20) % 2) * 12, y, 10, 0, Math.PI);
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(3, 3, 122, 122);
+    return new THREE.CanvasTexture(c);
+  }
+
+  // Texture 2D cho hoàng bào nhà vua (gấm đỏ + hoa văn vàng)
+  function createKingRobeTexture() {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#b91c1c';
+    ctx.fillRect(0, 0, 128, 128);
+
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2.5;
+    for (let y = 16; y < 128; y += 24) {
+      for (let x = 16; x < 128; x += 24) {
+        ctx.beginPath();
+        ctx.moveTo(x, y - 8);
+        ctx.lineTo(x + 8, y);
+        ctx.lineTo(x, y + 8);
+        ctx.lineTo(x - 8, y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(4, 4, 120, 120);
+    return new THREE.CanvasTexture(c);
+  }
+
+  // Texture 2D cho ghế ngai vàng
+  function createThroneGoldTexture() {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 128, 128);
+    g.addColorStop(0, '#fde047');
+    g.addColorStop(0.5, '#eab308');
+    g.addColorStop(1, '#a16207');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(8, 8, 112, 112);
+    ctx.beginPath();
+    ctx.moveTo(8, 8); ctx.lineTo(120, 120);
+    ctx.moveTo(120, 8); ctx.lineTo(8, 120);
+    ctx.stroke();
+    return new THREE.CanvasTexture(c);
+  }
+
+  // Texture 2D cho da / khuôn mặt nhân vật
+  function createSkinTexture() {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#f1c27d';
+    ctx.fillRect(0, 0, 128, 128);
+    ctx.fillStyle = '#e0ac69';
+    for (let i = 0; i < 180; i++) {
+      ctx.fillRect(Math.random() * 128, Math.random() * 128, 2, 2);
+    }
+    return new THREE.CanvasTexture(c);
+  }
+
+  // ==========================================
+  // 2. KHỞI TẠO CẢNH
+  // ==========================================
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 2000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  document.body.appendChild(renderer.domElement);
+
+  const skyGeo = new THREE.SphereGeometry(800, 32, 32);
+  const skyMat = new THREE.MeshBasicMaterial({ map: createSkyTexture('snow'), side: THREE.BackSide, depthWrite: false });
+  const sky = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(sky);
+
+  const ambient = new THREE.AmbientLight(0xd0e0ff, 0.8);
+  scene.add(ambient);
+  const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+  sun.position.set(10, 20, 10);
+  scene.add(sun);
+
+  // ==========================================
+  // 3. MẶT ĐẤT & NHÀ 2 TẦNG
+  // ==========================================
+  const GROUND_Y = -1.5;
+  const FLOOR1_H = 1.5;
+  const FLOOR2_H = 1.5;
+
+  const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+  const groundMat = new THREE.MeshStandardMaterial({ map: createGrassTexture(), roughness: 1 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2; ground.position.y = GROUND_Y;
+  scene.add(ground);
+
+  const wallMat = new THREE.MeshStandardMaterial({ map: createWallTexture(), roughness: 0.8 });
+  const roofMat = new THREE.MeshStandardMaterial({ map: createRoofTexture(), roughness: 0.6 });
+  const woodMat = new THREE.MeshStandardMaterial({ map: createWoodTexture() });
+  const windowMat = new THREE.MeshStandardMaterial({ map: createWindowTexture(), emissive: 0x4488cc, emissiveMap: createWindowTexture(), emissiveIntensity: 0.8 });
+
+  const houseGroup = new THREE.Group();
+
+  const floor1 = new THREE.Mesh(new THREE.BoxGeometry(2.8, FLOOR1_H, 2.4), wallMat);
+  floor1.position.y = FLOOR1_H / 2;
+  houseGroup.add(floor1);
+
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.75, 0.06), woodMat);
+  door.position.set(0, 0.375, 1.22);
+  houseGroup.add(door);
+
+  const f1WinL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.06), windowMat);
+  f1WinL.position.set(-0.85, 0.85, 1.22);
+  houseGroup.add(f1WinL);
+
+  const f1WinR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.06), windowMat);
+  f1WinR.position.set(0.85, 0.85, 1.22);
+  houseGroup.add(f1WinR);
+
+  const floor2Slab = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.14, 2.8), woodMat);
+  floor2Slab.position.y = FLOOR1_H;
+  houseGroup.add(floor2Slab);
+
+  const floor2 = new THREE.Mesh(new THREE.BoxGeometry(2.6, FLOOR2_H, 2.2), wallMat);
+  floor2.position.y = FLOOR1_H + 0.07 + FLOOR2_H / 2;
+  houseGroup.add(floor2);
+
+  const f2Door = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.7, 0.06), woodMat);
+  f2Door.position.set(0, FLOOR1_H + 0.42, 1.12);
+  houseGroup.add(f2Door);
+
+  const f2WinL = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.32, 0.06), windowMat);
+  f2WinL.position.set(-0.75, FLOOR1_H + 0.85, 1.12);
+  houseGroup.add(f2WinL);
+
+  const f2WinR = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.32, 0.06), windowMat);
+  f2WinR.position.set(0.75, FLOOR1_H + 0.85, 1.12);
+  houseGroup.add(f2WinR);
+
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(2.3, 1.3, 4), roofMat);
+  roof.position.y = FLOOR1_H + 0.07 + FLOOR2_H + 0.65;
+  roof.rotation.y = Math.PI / 4;
+  houseGroup.add(roof);
+
+  houseGroup.position.y = GROUND_Y;
+  scene.add(houseGroup);
+
+  // ==========================================
+  // 4. NHÀ VUA NGỒI GHẾ (💺), 5 BINH LÍNH TẦNG 2 & LÍNH CANH (CÓ CANVAS TEXTURE)
+  // ==========================================
+  const sharedSkinTex = createSkinTexture();
+  const sharedGoldTex = createThroneGoldTexture();
+  const sharedKingRobeTex = createKingRobeTexture();
+
+  function createSoldier(baseHex = '#1d4ed8', trimHex = '#93c5fd') {
+    const g = new THREE.Group();
+    const armorMat = new THREE.MeshStandardMaterial({
+      map: createSoldierArmorTexture(baseHex, trimHex),
+      roughness: 0.45
+    });
+    const skinMat = new THREE.MeshStandardMaterial({
+      map: sharedSkinTex,
+      roughness: 0.7
+    });
+    const metalMat = new THREE.MeshStandardMaterial({
+      map: sharedGoldTex,
+      metalness: 0.55,
+      roughness: 0.35
+    });
+
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.24, 0.09), armorMat);
+    legL.position.set(-0.06, 0.12, 0);
+    g.add(legL);
+
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.24, 0.09), armorMat);
+    legR.position.set(0.06, 0.12, 0);
+    g.add(legR);
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.3, 0.14), armorMat);
+    torso.position.set(0, 0.39, 0);
+    g.add(torso);
+
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.16), skinMat);
+    head.position.set(0, 0.62, 0);
+    g.add(head);
+
+    const helmet = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.14, 6), metalMat);
+    helmet.position.set(0, 0.75, 0);
+    g.add(helmet);
+
+    const spear = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.85, 6), woodMat);
+    spear.position.set(0.18, 0.42, 0.08);
+    g.add(spear);
+
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.1, 4), metalMat);
+    tip.position.set(0.18, 0.88, 0.08);
+    g.add(tip);
+
+    return g;
+  }
+
+  function createKingOnThrone() {
+    const group = new THREE.Group();
+    const goldMat = new THREE.MeshStandardMaterial({
+      map: sharedGoldTex,
+      metalness: 0.5,
+      roughness: 0.3
+    });
+    const robeMat = new THREE.MeshStandardMaterial({
+      map: sharedKingRobeTex,
+      roughness: 0.6
+    });
+    const skinMat = new THREE.MeshStandardMaterial({
+      map: sharedSkinTex,
+      roughness: 0.7
+    });
+
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.08, 0.42), goldMat);
+    seat.position.set(0, 0.24, 0);
+    group.add(seat);
+
+    const legPositions = [
+      [-0.19, 0.12, -0.17], [0.19, 0.12, -0.17],
+      [-0.19, 0.12, 0.17],  [0.19, 0.12, 0.17]
+    ];
+    legPositions.forEach(([x, y, z]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.24, 0.06), goldMat);
+      leg.position.set(x, y, z);
+      group.add(leg);
+    });
+
+    const backrest = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.44, 0.07), goldMat);
+    backrest.position.set(0, 0.48, -0.18);
+    group.add(backrest);
+
+    const cushion = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.32, 0.04), robeMat);
+    cushion.position.set(0, 0.48, -0.14);
+    group.add(cushion);
+
+    const kingBody = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.28, 0.15), robeMat);
+    kingBody.position.set(0, 0.42, -0.02);
+    group.add(kingBody);
+
+    const thighL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.22), robeMat);
+    thighL.position.set(-0.07, 0.31, 0.08);
+    group.add(thighL);
+
+    const thighR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.22), robeMat);
+    thighR.position.set(0.07, 0.31, 0.08);
+    group.add(thighR);
+
+    const kingHead = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.16), skinMat);
+    kingHead.position.set(0, 0.66, -0.02);
+    group.add(kingHead);
+
+    const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.11, 6), goldMat);
+    crown.position.set(0, 0.79, -0.02);
+    group.add(crown);
+
+    return group;
+  }
+
+  const floor2SurfaceY = GROUND_Y + FLOOR1_H + 0.07;
+  const kingThrone = createKingOnThrone();
+  kingThrone.position.set(0, floor2SurfaceY, 0.45);
+  scene.add(kingThrone);
+
+  const secondFloorGuards = [];
+  const floor2GuardCoords = [
+    [-1.15, floor2SurfaceY, 1.25, 0.35],
+    [-0.55, floor2SurfaceY, 1.28, 0.15],
+    [0.55,  floor2SurfaceY, 1.28, -0.15],
+    [1.15,  floor2SurfaceY, 1.25, -0.35],
+    [0,     floor2SurfaceY, -0.95, Math.PI]
+  ];
+  floor2GuardCoords.forEach(([x, y, z, ry]) => {
+    const s = createSoldier('#1d4ed8', '#93c5fd');
+    s.position.set(x, y, z);
+    s.rotation.y = ry;
+    scene.add(s);
+    secondFloorGuards.push(s);
+  });
+
+  const groundGuards = [];
+  const groundGuardCoords = [
+    [-0.75, GROUND_Y, 1.65, 0.1],
+    [0.75,  GROUND_Y, 1.65, -0.1],
+    [-1.85, GROUND_Y, 0.2, Math.PI / 2],
+    [1.85,  GROUND_Y, 0.2, -Math.PI / 2]
+  ];
+  groundGuardCoords.forEach(([x, y, z, ry]) => {
+    const g = createSoldier('#0f766e', '#5eead4');
+    g.position.set(x, y, z);
+    g.rotation.y = ry;
+    scene.add(g);
+    groundGuards.push(g);
+  });
+
+  // ==========================================
+  // 5. CÁC NHÂN VẬT CẮT CỎ & CHIM
+  // ==========================================
+  const mowers = [];
+  function createGrassMower(shirtHex = '#16a34a', trimHex = '#bbf7d0') {
+    const group = new THREE.Group();
+    const shirtMat = new THREE.MeshStandardMaterial({
+      map: createSoldierArmorTexture(shirtHex, trimHex),
+      roughness: 0.7
+    });
+    const pantsMat = new THREE.MeshStandardMaterial({
+      map: createSoldierArmorTexture('#334155', '#64748b'),
+      roughness: 0.8
+    });
+    const skinMat = new THREE.MeshStandardMaterial({
+      map: sharedSkinTex,
+      roughness: 0.7
+    });
+    const mowerMat = new THREE.MeshStandardMaterial({
+      map: sharedGoldTex,
+      roughness: 0.5
+    });
+    const bladeMat = new THREE.MeshStandardMaterial({
+      map: createBirdTexture(),
+      metalness: 0.7,
+      roughness: 0.3
+    });
+
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.08), pantsMat);
+    legL.position.set(-0.06, 0.12, 0);
+    group.add(legL);
+
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.08), pantsMat);
+    legR.position.set(0.06, 0.12, 0);
+    group.add(legR);
+
+    const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.28, 0.14), shirtMat);
+    bodyMesh.position.set(0, 0.38, 0);
+    group.add(bodyMesh);
+
+    const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.15), skinMat);
+    headMesh.position.set(0, 0.6, 0);
+    group.add(headMesh);
+
+    const armPivot = new THREE.Group();
+    armPivot.position.set(0.14, 0.44, 0.08);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.55, 6), mowerMat);
+    pole.rotation.x = Math.PI / 3;
+    pole.position.set(0, -0.1, 0.22);
+    armPivot.add(pole);
+
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.03, 0.08), bladeMat);
+    blade.position.set(0, -0.24, 0.46);
+    armPivot.add(blade);
+    group.add(armPivot);
+
+    return { group, legL, legR, armPivot };
+  }
+
+  const mowerConfigs = [
+    { x: -4.2, z: 2.5,  color: '#16a34a', trim: '#bbf7d0', rangeX: 2.2, speed: 0.75, phase: 0 },
+    { x: 4.5,  z: 3.2,  color: '#15803d', trim: '#86efac', rangeX: 2.4, speed: 0.65, phase: 1.8 },
+    { x: 0.2,  z: 4.6,  color: '#0d9488', trim: '#99f6e4', rangeX: 2.6, speed: 0.85, phase: 3.5 }
+  ];
+
+  mowerConfigs.forEach(cfg => {
+    const m = createGrassMower(cfg.color, cfg.trim);
+    m.group.position.set(cfg.x, GROUND_Y, cfg.z);
+    scene.add(m.group);
+    mowers.push({ ...m, ...cfg });
+  });
+
+  const birds = [];
+  const birdMat = new THREE.MeshBasicMaterial({ map: createBirdTexture(), side: THREE.DoubleSide });
+  function createBird() {
+    const birdGroup = new THREE.Group();
+    const wingL = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.15), birdMat); wingL.position.x = -0.2; birdGroup.add(wingL);
+    const wingR = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.15), birdMat); wingR.position.x = 0.2; birdGroup.add(wingR);
+    return birdGroup;
+  }
+  for(let i = 0; i < 12; i++) {
+    const bird = createBird();
+    bird.userData = { speed: 0.05 + Math.random() * 0.08, dir: Math.random() > 0.5 ? 1 : -1, startX: -40, zPos: -20 + Math.random() * 40, height: 4 + Math.random() * 8, flapSpeed: 5 + Math.random() * 3 };
+    if (bird.userData.dir === -1) bird.userData.startX = 40;
+    bird.position.set(bird.userData.startX, bird.userData.height, bird.userData.zPos);
+    scene.add(bird); birds.push(bird);
+  }
+
+  // ==========================================
+  // 6. CAMERA / ZOOM NÚT + ZOOM BẰNG TAY + PAUSE
+  // ==========================================
+  let camDistance = 20;
+  let isPaused = false;
+  camera.position.set(0, 3, camDistance);
+  camera.lookAt(0, 0.2, 0);
+
+  function setCamDistance(val) {
+    camDistance = Math.max(3, Math.min(100, val));
+  }
+
+  document.getElementById('btn-zoom-in').onclick  = () => { setCamDistance(camDistance - 2); };
+  document.getElementById('btn-zoom-out').onclick = () => { setCamDistance(camDistance + 2); };
+
+  const btnPause = document.getElementById('btn-pause');
+  btnPause.onclick = () => {
+    isPaused = !isPaused;
+    btnPause.innerText = isPaused ? "▶️" : "⏸️";
+    btnPause.classList.toggle('active', isPaused);
+  };
+
+  // Zoom bằng tay: kéo trên nút #btnHandZoom (kéo lên -> gần, kéo xuống -> xa)
+  // hoặc kéo / pinch / wheel trên vùng cảnh 3D
+  const btnHandZoom = document.getElementById('btnHandZoom');
+  let handZoomActive = false;
+  let handLastY = 0;
+
+  btnHandZoom.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    handZoomActive = true;
+    handLastY = e.clientY;
+    btnHandZoom.classList.add('dragging');
+    btnHandZoom.setPointerCapture(e.pointerId);
+  });
+
+  btnHandZoom.addEventListener('pointermove', (e) => {
+    if (!handZoomActive) return;
+    e.stopPropagation();
+    const dy = e.clientY - handLastY;
+    handLastY = e.clientY;
+    setCamDistance(camDistance + dy * 0.12);
+  });
+
+  function stopHandZoom(e) {
+    if (!handZoomActive) return;
+    handZoomActive = false;
+    btnHandZoom.classList.remove('dragging');
+    if (e && btnHandZoom.hasPointerCapture(e.pointerId)) {
+      btnHandZoom.releasePointerCapture(e.pointerId);
+    }
+  }
+  btnHandZoom.addEventListener('pointerup', stopHandZoom);
+  btnHandZoom.addEventListener('pointercancel', stopHandZoom);
+
+  // Kéo / pinch / lăn chuột trực tiếp trên màn hình 3D để zoom xa gần nhanh
+  let sceneDragActive = false;
+  let sceneLastY = 0;
+  let pinchStartDist = 0;
+  let pinchStartCam = camDistance;
+
+  function isUiTarget(el) {
+    return Boolean(el.closest('.hamburger, .sidebar, .overlay, .fab-cluster, .hand-zoom-btn'));
+  }
+
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    if (isUiTarget(e.target)) return;
+    sceneDragActive = true;
+    sceneLastY = e.clientY;
+  });
+
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    if (!sceneDragActive) return;
+    const dy = e.clientY - sceneLastY;
+    sceneLastY = e.clientY;
+    setCamDistance(camDistance + dy * 0.08);
+  });
+
+  renderer.domElement.addEventListener('pointerup', () => { sceneDragActive = false; });
+  renderer.domElement.addEventListener('pointercancel', () => { sceneDragActive = false; });
+
+  renderer.domElement.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      sceneDragActive = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist = Math.hypot(dx, dy);
+      pinchStartCam = camDistance;
+    }
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && pinchStartDist > 0) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const scale = pinchStartDist / dist;
+      setCamDistance(pinchStartCam * scale);
+    }
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    setCamDistance(camDistance + e.deltaY * 0.025);
+  }, { passive: false });
+
+  // ==========================================
+  // 7. XỬ LÝ ĐỒNG BỘ HAMBURGER & SIDEBAR
+  // ==========================================
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const closeBtn = document.getElementById('closeBtn');
+  const overlay = document.getElementById('overlay');
+  const fabCluster = document.getElementById('fabCluster');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebar.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('open');
+    hamburger.classList.add('hidden');
+    hamburger.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebar.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('open');
+    hamburger.classList.remove('hidden');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+
+  function setHudVisible(show) {
+    fabCluster.classList.toggle('show', show);
+  }
+
+  hamburger.addEventListener('click', openSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+  });
+
+  // ==========================================
+  // 8. NÚT TUYẾT RƠI, NATURE SCENE & MENU 1
+  // ==========================================
+  let snowPoints = null;
+  const navSnow = document.getElementById('navSnow');
+  const snowStatus = document.getElementById('snowStatus');
+
+  function enableSnow() {
+    if (snowPoints) return;
+    const count = 1500;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i*3]     = (Math.random() - 0.5) * 200;
+      positions[i*3 + 1] = Math.random() * 80;
+      positions[i*3 + 2] = (Math.random() - 0.5) * 200;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true, opacity: 0.85 });
+    snowPoints = new THREE.Points(geo, mat);
+    scene.add(snowPoints);
+    snowStatus.textContent = 'ON';
+    navSnow.classList.add('active');
+  }
+
+  function disableSnow() {
+    if (!snowPoints) return;
+    scene.remove(snowPoints);
+    snowPoints.geometry.dispose();
+    snowPoints.material.dispose();
+    snowPoints = null;
+    snowStatus.textContent = 'OFF';
+    navSnow.classList.remove('active');
+  }
+
+  navSnow.addEventListener('click', () => {
+    if (snowPoints) disableSnow();
+    else enableSnow();
+  });
+
+  const navNature = document.getElementById('navNature');
+  const natureActionMenu = document.getElementById('natureActionMenu');
+  const subSceneItems = document.querySelectorAll('.sub-item');
+
+  function applyNatureScene(mode) {
+    if (skyMat.map) skyMat.map.dispose();
+    skyMat.map = createSkyTexture(mode);
+    skyMat.needsUpdate = true;
+
+    if (mode === 'sunrise') {
+      ambient.color.setHex(0xffd6ba);
+      ambient.intensity = 0.9;
+      sun.color.setHex(0xffb478);
+      sun.intensity = 0.85;
+      groundMat.color.setHex(0x52824b);
+      windowMat.emissive.setHex(0xff9e44);
+      windowMat.emissiveIntensity = 0.45;
+      disableSnow();
+    } else if (mode === 'night') {
+      ambient.color.setHex(0x4c68a8);
+      ambient.intensity = 0.55;
+      sun.color.setHex(0x88aaff);
+      sun.intensity = 0.35;
+      groundMat.color.setHex(0x1e3628);
+      windowMat.emissive.setHex(0xffb703);
+      windowMat.emissiveIntensity = 1.1;
+      disableSnow();
+    } else {
+      ambient.color.setHex(0xd0e0ff);
+      ambient.intensity = 0.8;
+      sun.color.setHex(0xffffff);
+      sun.intensity = 0.6;
+      groundMat.color.setHex(0xffffff);
+      windowMat.emissive.setHex(0x4488cc);
+      windowMat.emissiveIntensity = 0.8;
+    }
+
+    subSceneItems.forEach(item => {
+      item.classList.toggle('active', item.dataset.scene === mode);
+    });
+  }
+
+  navNature.addEventListener('click', () => {
+    const isOpen = natureActionMenu.classList.toggle('open');
+    navNature.classList.toggle('active', isOpen);
+  });
+
+  subSceneItems.forEach(item => {
+    item.addEventListener('click', () => {
+      applyNatureScene(item.dataset.scene);
+    });
+  });
+
+  let isMenu1On = false;
+  const navMenu1 = document.getElementById('navMenu1');
+  const menu1Status = document.getElementById('menu1Status');
+
+  navMenu1.addEventListener('click', () => {
+    isMenu1On = !isMenu1On;
+    if (isMenu1On) {
+      menu1Status.textContent = 'ONL';
+      navMenu1.classList.add('active');
+      closeSidebar();
+      setHudVisible(true);
+    } else {
+      menu1Status.textContent = 'OFF';
+      navMenu1.classList.remove('active');
+      setHudVisible(false);
+    }
+  });
+
+  // ==========================================
+  // 9. RENDER LOOP
+  // ==========================================
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!isPaused) time += 0.01;
+
+    camera.position.x = Math.sin(time * 0.5) * camDistance;
+    camera.position.z = Math.cos(time * 0.5) * camDistance;
+    camera.position.y = camDistance * 0.3;
+    camera.lookAt(0, 0.2, 0);
+
+    sky.position.copy(camera.position);
+    sky.rotation.y += 0.0005;
+
+    if (snowPoints && !isPaused) {
+      const pos = snowPoints.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        let y = pos.getY(i) - 0.08;
+        if (y < -1.5) y = 80;
+        pos.setY(i, y);
+      }
+      pos.needsUpdate = true;
+    }
+
+    mowers.forEach(m => {
+      const t = time * m.speed + m.phase;
+      const dx = Math.cos(t) * m.rangeX;
+      const vx = -Math.sin(t);
+      m.group.position.x = m.x + dx;
+      m.group.rotation.y = vx >= 0 ? Math.PI / 2 : -Math.PI / 2;
+
+      const stride = Math.sin(t * 7) * 0.45;
+      m.legL.rotation.x = stride;
+      m.legR.rotation.x = -stride;
+      m.armPivot.rotation.y = Math.sin(t * 9) * 0.35;
+    });
+
+    birds.forEach(bird => {
+      const d = bird.userData;
+      bird.position.x += d.speed * d.dir;
+      if (d.dir === 1 && bird.position.x > 40) bird.position.x = -40;
+      if (d.dir === -1 && bird.position.x < -40) bird.position.x = 40;
+      bird.position.y = d.height + Math.sin(time * 2 + bird.position.x) * 0.3;
+      bird.rotation.y = d.dir === 1 ? 0 : Math.PI;
+      const flap = Math.sin(time * d.flapSpeed) * 0.6;
+      bird.children[0].rotation.z = flap;
+      bird.children[1].rotation.z = -flap;
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+</script>
+</body>
+</html>

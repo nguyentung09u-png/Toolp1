@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>So sánh Ánh sáng + Hậu kỳ (BẬT / TẮT)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; background: #04060c; }
+
+  #canvas-container { position: fixed; inset: 0; z-index: 1; }
+  #canvas-container canvas { display: block; }
+
+  #status {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 20; padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; color: #e2e8f0; text-align: center;
+    background: rgba(10,14,24,.68);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.14); transition: all .3s;
+    max-width: calc(100vw - 24px);
+  }
+  body.on  #status { border-color: rgba(74,222,128,.7); color: #86efac; }
+  body.off #status { border-color: rgba(239,68,68,.7); color: #fca5a5; }
+
+  #compare-bar {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 20; display: flex; gap: 6px; padding: 6px; border-radius: 999px;
+    background: rgba(10,14,24,.65);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 10px 36px rgba(0,0,0,.42);
+    max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center;
+  }
+  #compare-bar button {
+    border: 1px solid rgba(255,255,255,.14); border-radius: 999px;
+    background: rgba(255,255,255,.06); color: #cbd5e1;
+    font-family: inherit; font-size: 12px; font-weight: 700;
+    padding: 9px 16px; cursor: pointer; transition: all .18s;
+    white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+  }
+  #compare-bar button:hover { background: rgba(255,255,255,.14); color: #fff; }
+  #compare-bar button.on {
+    background: linear-gradient(135deg, rgba(56,189,248,.9), rgba(139,92,246,.9));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 2px 14px rgba(56,189,248,.5);
+  }
+
+  #hint {
+    position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+    z-index: 20; font-size: 11px; color: rgba(255,255,255,.6);
+    pointer-events: none; white-space: nowrap; text-shadow: 0 1px 4px rgba(0,0,0,.8);
+    max-width: calc(100vw - 32px); text-align: center;
+  }
+  @media (max-width: 500px) {
+    #compare-bar button { padding: 8px 11px; font-size: 11px; }
+    #hint { font-size: 10px; white-space: normal; }
+  }
+</style>
+</head>
+<body class="on">
+  <div id="canvas-container"></div>
+
+  <div id="status">✨ Đang BẬT ánh sáng + hậu kỳ — cảnh "cinematic"</div>
+  <div id="hint">Bấm nút để so sánh · BẬT = nắng vàng + sương + bloom + tone mapping · TẮT = phẳng, xỉn</div>
+
+  <div id="compare-bar">
+    <button id="btn-on" class="on">✨ CÓ ánh sáng + hậu kỳ</button>
+    <button id="btn-off">🚫 KHÔNG ánh sáng + hậu kỳ</button>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ============ RENDERER ============
+  const container = document.getElementById('canvas-container');
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;   // ← hậu kỳ tone mapping
+  renderer.toneMappingExposure = 1.15;
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 400);
+  camera.position.set(14, 10, 18);
+  camera.lookAt(0, 2, 0);
+
+  // ============ ÁNH SÁNG (bật/tắt được) ============
+  // Nắng vàng ấm
+  const sun = new THREE.DirectionalLight(0xffc27a, 2.6);
+  sun.position.set(16, 22, 12);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 80;
+  sun.shadow.camera.left = -30; sun.shadow.camera.right = 30;
+  sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30;
+  sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+  scene.add(sun); scene.add(sun.target);
+
+  // Ánh trời (xanh trên / nâu dưới)
+  const hemi = new THREE.HemisphereLight(0x8bb8ff, 0x3a2a1a, 0.85);
+  scene.add(hemi);
+
+  // Ánh phụ mát từ trái
+  const fill = new THREE.DirectionalLight(0x6ea8ff, 0.45);
+  fill.position.set(-12, 8, -10);
+  scene.add(fill);
+
+  // Đèn lồng ấm
+  const lantern = new THREE.PointLight(0xffa63d, 2.2, 22, 1.6);
+  lantern.position.set(-3, 3.2, 1.8);
+  scene.add(lantern);
+
+  // Ánh sáng "tắt" để so sánh: 1 ambient phẳng
+  const flatAmbient = new THREE.AmbientLight(0xffffff, 0.85);
+  flatAmbient.visible = false;   // mặc định tắt
+  scene.add(flatAmbient);
+
+  // ============ SƯƠNG MÙ ============
+  const fogOn = new THREE.FogExp2(0xd98e68, 0.016);
+  scene.fog = fogOn;
+
+  // ============ NỀN ============
+  scene.background = new THREE.Color(0x9c6a4a);
+
+  // ============ MẶT ĐẤT ============
+  const groundGeo = new THREE.PlaneGeometry(120, 120, 80, 80);
+  groundGeo.rotateX(-Math.PI / 2);
+  const gp = groundGeo.attributes.position;
+  for (let i = 0; i < gp.count; i++) {
+    const x = gp.getX(i), z = gp.getZ(i);
+    const h = Math.sin(x * 0.18) * Math.cos(z * 0.15) * 0.9
+            + Math.sin(x * 0.4 + z * 0.3) * 0.3;
+    gp.setY(i, h);
+  }
+  groundGeo.computeVertexNormals();
+
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x4c7a3a, roughness: 0.95, metalness: 0.0
+  });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // ============ TEXTURE LÁ CÂY (procedural, có alpha) ============
+  function makeLeafTexture(baseHue, sat) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 256, 256);
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+    // chùm lá
+    for (let i = 0; i < 140; i++) {
+      const ang = rnd() * Math.PI * 2, r = Math.pow(rnd(), 0.6) * 105;
+      const x = 128 + Math.cos(ang) * r, y = 128 + Math.sin(ang) * r * 0.9;
+      const len = 12 + rnd() * 16, wid = 5 + rnd() * 5;
+      const sun = (1 - y / 256) * 0.6 + (r / 105) * 0.4;
+      const l = Math.floor(baseHue + sun * 70 + (rnd() - 0.5) * 40);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(ang + (rnd() - 0.5) * 1.2);
+      const grad = ctx.createLinearGradient(-len * 0.5, 0, len * 0.5, 0);
+      grad.addColorStop(0, `hsl(${sat},55%,${Math.max(18, l - 25)}%)`);
+      grad.addColorStop(1, `hsl(${sat},65%,${Math.min(78, l + 12)}%)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(-len * 0.5, 0);
+      ctx.quadraticCurveTo(0, -wid, len * 0.5, 0);
+      ctx.quadraticCurveTo(0, wid, -len * 0.5, 0);
+      ctx.fill(); ctx.restore();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  function makeBarkTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const ctx = c.getContext('2d');
+    for (let x = 0; x < 128; x++) {
+      const v = 55 + Math.sin(x * 0.7) * 22 + Math.sin(x * 2.1) * 10;
+      ctx.fillStyle = `rgb(${v + 35},${v + 18},${v})`;
+      ctx.fillRect(x, 0, 1, 128);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(1, 3);
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+
+  const leafGreen = makeLeafTexture(140, 120);
+  const leafPink  = makeLeafTexture(330, 90);
+  const barkTex   = makeBarkTexture();
+
+  // ============ CÂY ============
+  const barkMat = new THREE.MeshStandardMaterial({ color: 0x6b4b34, map: barkTex, roughness: 0.9 });
+  const foliageGreen = new THREE.MeshStandardMaterial({
+    map: leafGreen, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.85,
+    color: 0xffffff
+  });
+  const foliagePink = new THREE.MeshStandardMaterial({
+    map: leafPink, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.85,
+    color: 0xffd7e0
+  });
+
+  function addTree(x, z, scale, pink) {
+    const g = new THREE.Group();
+    const th = 3.2 * scale;
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22 * scale, 0.32 * scale, th, 8), barkMat);
+    trunk.position.y = th / 2;
+    trunk.castShadow = true; trunk.receiveShadow = true;
+    g.add(trunk);
+    // 2 billboard lá chéo nhau
+    const folMat = pink ? foliagePink : foliageGreen;
+    for (let k = 0; k < 2; k++) {
+      const plane = new THREE.PlaneGeometry(3.4 * scale, 3.4 * scale);
+      const p = new THREE.Mesh(plane, folMat);
+      p.position.y = th + 0.8 * scale;
+      p.rotation.y = k * Math.PI / 2;
+      p.castShadow = true;
+      g.add(p);
+    }
+    g.position.set(x, 0, z);
+    scene.add(g);
+  }
+  addTree(-6, -2, 1.1, false);
+  addTree(4, -5, 1.0, false);
+  addTree(7, 4, 1.2, true);
+  addTree(-9, 5, 0.9, true);
+  addTree(1, -9, 1.0, false);
+
+  // ============ NHÀ NHỎ ============
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf1eadc, roughness: 0.9 });
+  const woodMat = new THREE.MeshStandardMaterial({ color: 0x6b4b34, roughness: 0.85, map: barkTex });
+  const roofMat = new THREE.MeshStandardMaterial({ color: 0x2a3345, roughness: 0.55, metalness: 0.2 });
+  const redMat  = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.45 });
+  const shojiMat = new THREE.MeshStandardMaterial({ color: 0xfff0cc, emissive: 0xffaa44, emissiveIntensity: 0.9, roughness: 0.5 });
+
+  const house = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 4), wallMat);
+  body.position.y = 1.5; body.castShadow = true; body.receiveShadow = true; house.add(body);
+  // cột gỗ 4 góc
+  for (const sx of [-2.4, 2.4]) for (const sz of [-1.9, 1.9]) {
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 0.2), woodMat);
+    col.position.set(sx, 1.5, sz); col.castShadow = true; house.add(col);
+  }
+  // mái
+  const r1 = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.3, 2.6), roofMat);
+  r1.position.set(0, 3.4, 1.2); r1.rotation.x = 0.42; r1.castShadow = true; house.add(r1);
+  const r2 = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.3, 2.6), roofMat);
+  r2.position.set(0, 3.4, -1.2); r2.rotation.x = -0.42; r2.castShadow = true; house.add(r2);
+  const ridge = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.35, 0.45), roofMat);
+  ridge.position.y = 3.9; ridge.castShadow = true; house.add(ridge);
+  // cửa shoji
+  const door = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.08), shojiMat);
+  door.position.set(0, 1.1, 2.02); house.add(door);
+  house.position.set(-3, 0, 0);
+  house.rotation.y = 0.3;
+  scene.add(house);
+
+  // ============ TORII ============
+  const torii = new THREE.Group();
+  for (const sx of [-2.6, 2.6]) {
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 5.2, 10), redMat);
+    col.position.set(sx, 2.6, 0); col.castShadow = true; torii.add(col);
+  }
+  const topBeam = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.45, 0.6), redMat);
+  topBeam.position.y = 5.2; topBeam.castShadow = true; torii.add(topBeam);
+  const midBeam = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.3, 0.4), redMat);
+  midBeam.position.y = 4.0; midBeam.castShadow = true; torii.add(midBeam);
+  torii.position.set(1, 0, 7);
+  scene.add(torii);
+
+  // ============ ĐÁ / KHỐI ============
+  const stoneMat = new THREE.MeshStandardMaterial({ color: 0x8a8f99, roughness: 0.75 });
+  for (let i = 0; i < 6; i++) {
+    const s = new THREE.Mesh(new THREE.DodecahedronGeometry(0.5 + Math.random() * 0.6, 0), stoneMat);
+    s.position.set((Math.random() - 0.5) * 16, 0.3, (Math.random() - 0.5) * 16);
+    s.rotation.set(Math.random(), Math.random(), Math.random());
+    s.castShadow = true; s.receiveShadow = true;
+    scene.add(s);
+  }
+
+  // ============ HẬU KỲ: BLOOM (bằng render target đơn giản) ============
+  // Dùng EffectComposer có sẵn? r128 không kèm — mình tự làm bloom nhẹ bằng 2 RT
+  const rtScene = new THREE.WebGLRenderTarget(
+    Math.floor(window.innerWidth * 1.5),
+    Math.floor(window.innerHeight * 1.5),
+    { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat }
+  );
+  const rtBloomA = new THREE.WebGLRenderTarget(
+    Math.floor(window.innerWidth / 3), Math.floor(window.innerHeight / 3),
+    { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter }
+  );
+  const rtBloomB = rtBloomA.clone();
+
+  const postScene = new THREE.Scene();
+  const postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const quadGeo = new THREE.PlaneGeometry(2, 2);
+
+  // Bright pass
+  const brightMat = new THREE.ShaderMaterial({
+    uniforms: { tDiffuse: { value: rtScene.texture }, uThreshold: { value: 0.72 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform float uThreshold; varying vec2 vUv;
+      void main(){
+        vec3 c = texture2D(tDiffuse, vUv).rgb;
+        float l = dot(c, vec3(.2126,.7152,.0722));
+        gl_FragColor = vec4(c * smoothstep(uThreshold-0.12, uThreshold+0.3, l), 1.0);
+      }`,
+    depthTest: false, depthWrite: false
+  });
+  // Blur
+  const blurMat = new THREE.ShaderMaterial({
+    uniforms: { tDiffuse: { value: null }, uDir: { value: new THREE.Vector2(1,0) },
+                uRes: { value: new THREE.Vector2(rtBloomA.width, rtBloomA.height) } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform vec2 uDir; uniform vec2 uRes; varying vec2 vUv;
+      void main(){
+        vec2 o1 = vec2(1.4) * uDir / uRes, o2 = vec2(3.3) * uDir / uRes;
+        gl_FragColor = texture2D(tDiffuse, vUv) * 0.227
+          + (texture2D(tDiffuse, vUv+o1) + texture2D(tDiffuse, vUv-o1)) * 0.316
+          + (texture2D(tDiffuse, vUv+o2) + texture2D(tDiffuse, vUv-o2)) * 0.070;
+      }`,
+    depthTest: false, depthWrite: false
+  });
+  // Composite: tone + bloom + vignette + god rays giả (chỉ bloom+vignette để gọn)
+  const compositeMat = new THREE.ShaderMaterial({
+    uniforms: {
+      tDiffuse: { value: rtScene.texture },
+      tBloom: { value: rtBloomA.texture },
+      uBloomStrength: { value: 0.7 },
+      uVignette: { value: 1.0 },
+      uTone: { value: 1.0 },       // 1 = bật ACES, 0 = tắt
+      uExposure: { value: 1.15 }
+    },
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform sampler2D tBloom;
+      uniform float uBloomStrength; uniform float uVignette; uniform float uTone; uniform float uExposure;
+      varying vec2 vUv;
+      vec3 aces(vec3 x){ return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), 0.0, 1.0); }
+      void main(){
+        vec3 col = texture2D(tDiffuse, vUv).rgb;
+        col += texture2D(tBloom, vUv).rgb * uBloomStrength;
+        if (uTone > 0.5) { col = aces(col * uExposure); }
+        if (uVignette > 0.5) {
+          vec2 fc = vUv - 0.5;
+          col *= mix(0.82, 1.0, smoothstep(1.0, 0.28, dot(fc,fc)*1.4));
+        }
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+    depthTest: false, depthWrite: false
+  });
+
+  const postMesh = new THREE.Mesh(quadGeo, compositeMat);
+  postScene.add(postMesh);
+
+  const brightQuad = new THREE.Mesh(quadGeo, brightMat);
+  const blurQuad = new THREE.Mesh(quadGeo, blurMat);
+
+  function renderPost() {
+    // 1. render scene → rtScene
+    renderer.setRenderTarget(rtScene);
+    renderer.clear();
+    renderer.render(scene, camera);
+
+    // 2. bright pass
+    postScene.remove(postMesh);
+    postScene.add(brightQuad);
+    renderer.setRenderTarget(rtBloomA);
+    renderer.clear();
+    renderer.render(postScene, postCam);
+
+    // 3. blur ngang
+    brightMat.uniforms.tDiffuse.value = null;
+    blurMat.uniforms.tDiffuse.value = rtBloomA.texture;
+    blurMat.uniforms.uDir.value.set(1, 0);
+    postScene.remove(brightQuad);
+    postScene.add(blurQuad);
+    renderer.setRenderTarget(rtBloomB);
+    renderer.clear();
+    renderer.render(postScene, postCam);
+
+    // 4. blur dọc
+    blurMat.uniforms.tDiffuse.value = rtBloomB.texture;
+    blurMat.uniforms.uDir.value.set(0, 1);
+    renderer.setRenderTarget(rtBloomA);
+    renderer.clear();
+    renderer.render(postScene, postCam);
+
+    // 5. composite → màn hình
+    postScene.remove(blurQuad);
+    postScene.add(postMesh);
+    renderer.setRenderTarget(null);
+    renderer.clear();
+    renderer.render(postScene, postCam);
+  }
+
+  // ============ STATE: BẬT / TẮT ============
+  const postEnabled = { value: true };
+  const btnOn  = document.getElementById('btn-on');
+  const btnOff = document.getElementById('btn-off');
+  const status = document.getElementById('status');
+
+  function setLightsAndPost(on) {
+    postEnabled.value = on;
+
+    // Ánh sáng
+    sun.visible = on;
+    hemi.visible = on;
+    fill.visible = on;
+    lantern.visible = on;
+    flatAmbient.visible = !on;          // tắt: chỉ 1 ambient phẳng
+
+    // Sương mù
+    scene.fog = on ? fogOn : null;
+
+    // Tone mapping renderer (khi tắt: dùng NoToneMapping + nền xám để thấy xỉn)
+    renderer.toneMapping = on ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
+    renderer.toneMappingExposure = on ? 1.15 : 1.0;
+    scene.background = new THREE.Color(on ? 0x9c6a4a : 0x2a2a2a);
+
+    // Cập nhật material
+    scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
+
+    // Hậu kỳ uniforms
+    compositeMat.uniforms.uTone.value = on ? 1 : 0;
+    compositeMat.uniforms.uBloomStrength.value = on ? 0.7 : 0.0;
+    compositeMat.uniforms.uVignette.value = on ? 1 : 0;
+
+    // UI
+    document.body.classList.toggle('on', on);
+    document.body.classList.toggle('off', !on);
+    btnOn.classList.toggle('on', on);
+    btnOff.classList.toggle('on', !on);
+
+    status.textContent = on
+      ? '✨ Đang BẬT ánh sáng + hậu kỳ — nắng vàng, sương, bloom, tone mapping'
+      : '🚫 Đang TẮT ánh sáng + hậu kỳ — phẳng, xỉn, không bloom/vignette';
+
+    document.getElementById('hint').textContent = on
+      ? 'Nhìn: nắng ấm, sương mù xa, đèn lồng glow, màu đậm cinematic'
+      : 'Nhìn: ánh sáng đều, không sương, màu nhạt, không glow — kiểu "game cũ"';
+  }
+  btnOn.onclick  = () => setLightsAndPost(true);
+  btnOff.onclick = () => setLightsAndPost(false);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'l' || e.key === 'L') setLightsAndPost(!postEnabled.value);
+  });
+
+  // ============ RESIZE ============
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    const w = Math.floor(window.innerWidth * 1.5), h = Math.floor(window.innerHeight * 1.5);
+    rtScene.setSize(w, h);
+    rtBloomA.setSize(Math.floor(w / 3), Math.floor(h / 3));
+    rtBloomB.setSize(Math.floor(w / 3), Math.floor(h / 3));
+    blurMat.uniforms.uRes.value.set(rtBloomA.width, rtBloomA.height);
+  });
+
+  // ============ ANIMATE ============
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.004;
+    camera.position.x = Math.sin(t) * 18;
+    camera.position.z = Math.cos(t) * 18;
+    camera.position.y = 10 + Math.sin(t * 1.7) * 1.2;
+    camera.lookAt(0, 2, 0);
+
+    if (postEnabled.value) renderPost();
+    else { renderer.setRenderTarget(null); renderer.render(scene, camera); }
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

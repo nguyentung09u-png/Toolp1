@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body{margin:0;overflow:hidden}</style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ===== CƠ BẢN =====
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb); // Bầu trời xanh
+
+    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+    camera.position.set(6, 4, 8);
+    camera.lookAt(0, 1, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    // ĐÃ TẮT BÓNG ĐỔ: renderer.shadowMap.enabled = true; (đã xóa)
+    document.body.appendChild(renderer.domElement);
+
+    // ===== ÁNH SÁNG =====
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const sun = new THREE.DirectionalLight(0xffffee, 1.2);
+    sun.position.set(5, 10, 5);
+    // ĐÃ TẮT BÓNG ĐỔ: sun.castShadow = true; (đã xóa)
+    scene.add(sun);
+
+    // ===== MẶT ĐẤT (hình hộp dẹt) =====
+    const ground = new THREE.Mesh(
+      new THREE.BoxGeometry(20, 0.2, 20),
+      new THREE.MeshStandardMaterial({ color: 0x4a8a3a })
+    );
+    ground.position.y = -0.1;
+    // ĐÃ TẮT NHẬN BÓNG: ground.receiveShadow = true; (đã xóa)
+    scene.add(ground);
+
+    // ===== NGÔI NHÀ =====
+    // 1. Tường: khối hộp
+    const walls = new THREE.Mesh(
+      new THREE.BoxGeometry(2, 2, 2),
+      new THREE.MeshStandardMaterial({ color: 0xf0e0c0 })
+    );
+    walls.position.y = 1;
+    // ĐÃ TẮT BÓNG ĐỔ: walls.castShadow = true; walls.receiveShadow = true; (đã xóa)
+    scene.add(walls);
+
+    // 2. Mái nhà: hình nón 4 cạnh
+    const roof = new THREE.Mesh(
+      new THREE.ConeGeometry(1.8, 1.2, 4),
+      new THREE.MeshStandardMaterial({ color: 0xc0392b })
+    );
+    roof.position.y = 2.6;
+    roof.rotation.y = Math.PI / 4;
+    // ĐÃ TẮT BÓNG ĐỔ: roof.castShadow = true; (đã xóa)
+    scene.add(roof);
+
+    // 3. Cửa: khối hộp nhỏ
+    const door = new THREE.Mesh(
+      new THREE.BoxGeometry(0.5, 0.9, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x5a3a20 })
+    );
+    door.position.set(0, 0.45, 1.02);
+    scene.add(door);
+
+    // ===== CÂY =====
+    // Thân: khối trụ
+    const trunk = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.15, 0.2, 1.5, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6b4b34 })
+    );
+    trunk.position.set(-3, 0.75, 0);
+    // ĐÃ TẮT BÓNG ĐỔ: trunk.castShadow = true; (đã xóa)
+    scene.add(trunk);
+
+    // Tán: khối cầu
+    const leaves = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0x3a8a30 })
+    );
+    leaves.position.set(-3, 2.2, 0);
+    // ĐÃ TẮT BÓNG ĐỔ: leaves.castShadow = true; (đã xóa)
+    scene.add(leaves);
+
+    // ===== MẶT TRỜI (khối cầu phát sáng) =====
+    const sunBall = new THREE.Mesh(
+      new THREE.SphereGeometry(0.6, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffdd44 })
+    );
+    sunBall.position.set(5, 6, -5);
+    scene.add(sunBall);
+
+    // ===== VÒNG LẶP =====
+    function animate() {
+      requestAnimationFrame(animate);
+      camera.position.x = Math.sin(Date.now() * 0.0003) * 9;
+      camera.position.z = Math.cos(Date.now() * 0.0003) * 9;
+      camera.lookAt(0, 1, 0);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>

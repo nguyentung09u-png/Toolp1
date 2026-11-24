@@ -1,0 +1,66 @@
+Tổng quan cách làm:
+
+1. Khai báo biến: Khởi tạo tâm điểm (Target), khoảng cách (Radius), góc ngang (Theta), góc dọc (Phi).
+2. Tính toán tọa độ (Toán học): Dùng lượng giác (Math.sin, Math.cos) kết hợp với Radius và các góc để tính ra tọa độ X, Y, Z cho camera trong mỗi khung hình.
+3. Cập nhật vị trí: Gán tọa độ vừa tính cho camera.position.
+4. Hướng nhìn: Gọi camera.lookAt(target) để camera luôn chĩa về tâm điểm.
+5. Tương tác (Tùy chọn): Lắng nghe sự kiện chuột (kéo thả) hoặc cảm ứng để thay đổi góc Theta và Phi.
+
+Dưới đây là code mẫu chung:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Khởi tạo cơ bản
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Tạo vật thể ở tâm
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 2, 2),
+    new THREE.MeshStandardMaterial({ color: 0x38bdf8 })
+  );
+  scene.add(mesh);
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+  // 2. Các thông số của Camera Orbit
+  const target = new THREE.Vector3(0, 0, 0); // Tâm điểm
+  let radius = 8;       // Khoảng cách
+  let theta = 0;        // Góc ngang (Y)
+  let phi = Math.PI / 4; // Góc dọc (X)
+
+  // 3. Vòng lặp render
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Tự động tăng góc để camera xoay vòng
+    theta += 0.01; 
+
+    // Tính toán tọa độ X, Y, Z bằng lượng giác
+    const x = target.x + radius * Math.sin(phi) * Math.sin(theta);
+    const y = target.y + radius * Math.cos(phi);
+    const z = target.z + radius * Math.sin(phi) * Math.cos(theta);
+
+    // Cập nhật vị trí camera
+    camera.position.set(x, y, z);
+    
+    // Luôn nhìn về tâm điểm
+    camera.lookAt(target);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>
+```
