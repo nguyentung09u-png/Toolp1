@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Bảng điểm danh dọc · Box drawing (Chưa / Có)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef3fc 0%, #e2ebf9 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: clamp(10px, 3vw, 30px);
+        }
+
+        .app {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: clamp(20px, 5vw, 36px);
+            box-shadow: 0 20px 40px -12px rgba(0, 22, 50, 0.18);
+            padding: clamp(16px, 4vw, 32px);
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: clamp(14px, 3vw, 24px);
+        }
+
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .title-group h1 {
+            font-size: clamp(1.25rem, 5vw, 1.9rem);
+            font-weight: 700;
+            color: #102a4c;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .badge {
+            background: #102a4c;
+            color: white;
+            font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+
+        .date-sub {
+            color: #33517a;
+            font-weight: 500;
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            background: #ebf2fe;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #d2e2fb;
+            margin-top: 4px;
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .col-headers {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: clamp(6px, 2vw, 12px);
+            align-items: center;
+            padding: 0 clamp(10px, 2.5vw, 16px) 8px clamp(10px, 2.5vw, 16px);
+            margin-top: clamp(10px, 2vw, 16px);
+        }
+
+        .col-headers .col-label {
+            font-weight: 700;
+            color: #1b3b61;
+            font-size: clamp(0.75rem, 2.8vw, 0.95rem);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: center;
+            min-width: clamp(58px, 16vw, 80px);
+        }
+
+        .col-headers .col-label.chua {
+            color: #5d7ea3;
+        }
+
+        .col-headers .col-label.co {
+            color: #1b7a44;
+        }
+
+        .days-list {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 2vw, 12px);
+            margin: clamp(6px, 1.5vw, 12px) 0 clamp(18px, 4vw, 28px) 0;
+        }
+
+        .day-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: clamp(6px, 2vw, 12px);
+            background: #f9fcff;
+            border: 1.5px solid #dbe8fa;
+            border-radius: 18px;
+            padding: clamp(10px, 2.5vw, 14px) clamp(10px, 2.5vw, 20px);
+            transition: all 0.15s ease;
+        }
+
+        .day-row:hover {
+            border-color: #a9c4ec;
+            background: #f4f9ff;
+        }
+
+        .day-row.selected-yes {
+            border-color: #a8d5b8;
+            background: #f2fbf5;
+        }
+
+        .day-row.selected-no {
+            border-color: #f0b6b6;
+            background: #fff6f6;
+        }
+
+        .day-label {
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+            color: #163456;
+            line-height: 1.3;
+            min-width: 0;
+        }
+
+        .day-label .date {
+            font-weight: 700;
+            color: #0f2642;
+            font-size: clamp(0.9rem, 3.4vw, 1.1rem);
+            white-space: nowrap;
+        }
+
+        .day-label .weekday {
+            font-size: clamp(0.68rem, 2.5vw, 0.82rem);
+            color: #5d7ea3;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        /* Ô vuông – mặc định để trống hoàn toàn, không có ký tự */
+        .box-btn {
+            width: clamp(48px, 13vw, 62px);
+            height: clamp(48px, 13vw, 62px);
+            border-radius: clamp(12px, 3vw, 18px);
+            background: #ffffff;
+            border: 2px solid #c2d6f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.5rem, 5.5vw, 2rem);
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.02);
+            flex-shrink: 0;
+            font-weight: 600;
+            padding: 0;
+            color: transparent; /* Ẩn chữ khi chưa tick */
+        }
+
+        .box-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Box "Chưa" – khi được chọn hiển thị X */
+        .box-btn.chua {
+            border-color: #d6e2f2;
+            background: #fafcff;
+        }
+
+        .box-btn.chua.active {
+            border-color: #d94a4a;
+            background: #ffe9e9;
+            color: #b32b2b;
+            box-shadow: 0 4px 10px rgba(217, 74, 74, 0.15);
+        }
+
+        /* Box "Có" – khi được chọn hiển thị ✔ */
+        .box-btn.co {
+            border-color: #cfe6d9;
+            background: #ffffff;
+        }
+
+        .box-btn.co.active {
+            border-color: #2e9b5c;
+            background: #e4f4ea;
+            color: #136b3b;
+            box-shadow: 0 4px 10px rgba(46, 155, 92, 0.18);
+        }
+
+        .summary {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: #f0f6fe;
+            border-radius: 24px;
+            padding: clamp(14px, 3vw, 22px) clamp(16px, 3.5vw, 26px);
+            gap: 16px;
+            border: 1px solid #cfe0f5;
+            margin-top: 6px;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(12px, 3vw, 24px);
+            flex: 1 1 200px;
+            justify-content: flex-start;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: clamp(0.85rem, 3vw, 1.05rem);
+            font-weight: 500;
+            color: #17385e;
+            white-space: nowrap;
+        }
+
+        .stat-badge {
+            font-weight: 700;
+            background: white;
+            padding: clamp(5px, 1.5vw, 8px) clamp(12px, 3vw, 18px);
+            border-radius: 40px;
+            min-width: 44px;
+            text-align: center;
+            border: 1px solid #ccdef5;
+            color: #0b213b;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-badge.chua-badge {
+            background: #ffe3e3;
+            border-color: #f0b6b6;
+            color: #a12a2a;
+        }
+
+        .stat-badge.co-badge {
+            background: #dff2e6;
+            border-color: #a2d6b7;
+            color: #0b5e32;
+        }
+
+        .stat-badge.total-badge {
+            background: #e2ecfe;
+            border-color: #b4caf2;
+            color: #173e7a;
+        }
+
+        .reset-btn {
+            background: white;
+            border: 2px solid #bfd4ee;
+            color: #1f3d63;
+            padding: clamp(8px, 2vw, 12px) clamp(18px, 4vw, 26px);
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: clamp(0.8rem, 2.8vw, 0.95rem);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: 0.2px;
+            margin-left: auto;
+        }
+
+        .reset-btn:hover {
+            background: #e2eefc;
+            border-color: #8aa9d4;
+        }
+
+        .reset-btn:active {
+            transform: scale(0.97);
+        }
+
+        .footer-note {
+            margin-top: clamp(14px, 3vw, 22px);
+            font-size: clamp(0.68rem, 2.6vw, 0.85rem);
+            color: #5b7899;
+            text-align: center;
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 0 4px;
+            border-top: 1px dashed #c9dcf2;
+            padding-top: clamp(12px, 2.5vw, 18px);
+        }
+
+        @media (max-width: 400px) {
+            .day-row {
+                padding: 10px 10px;
+            }
+            .summary {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats {
+                justify-content: space-between;
+            }
+            .reset-btn {
+                width: 100%;
+                margin-left: 0;
+                justify-content: center;
+            }
+            .date-sub {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+            }
+            .col-headers .col-label {
+                font-size: 0.65rem;
+                min-width: 48px;
+            }
+            .box-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (min-width: 700px) {
+            .days-list {
+                gap: 10px;
+            }
+            .day-row {
+                padding: 14px 24px;
+            }
+            .box-btn {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        img, svg, table {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="card">
+            <div class="header">
+                <div class="title-group">
+                    <h1>📋 Điểm danh</h1>
+                    <span class="badge">CHƯA / CÓ</span>
+                </div>
+            </div>
+            <div class="date-sub">
+                📅 24/11/2026 → 30/11/2026 · 7 ngày
+            </div>
+
+            <div class="col-headers">
+                <div></div>
+                <div class="col-label chua">Chưa</div>
+                <div class="col-label co">Có</div>
+            </div>
+
+            <div class="days-list" id="daysList">
+                <div class="day-row" data-day-index="0">
+                    <div class="day-label">
+                        <span class="date">24/11/2026</span>
+                        <span class="weekday">Thứ 2</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 24/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 24/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="1">
+                    <div class="day-label">
+                        <span class="date">25/11/2026</span>
+                        <span class="weekday">Thứ 3</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 25/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 25/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="2">
+                    <div class="day-label">
+                        <span class="date">26/11/2026</span>
+                        <span class="weekday">Thứ 4</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 26/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 26/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="3">
+                    <div class="day-label">
+                        <span class="date">27/11/2026</span>
+                        <span class="weekday">Thứ 5</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 27/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 27/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="4">
+                    <div class="day-label">
+                        <span class="date">28/11/2026</span>
+                        <span class="weekday">Thứ 6</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 28/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 28/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="5">
+                    <div class="day-label">
+                        <span class="date">29/11/2026</span>
+                        <span class="weekday">Thứ 7</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 29/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 29/11"></div>
+                </div>
+
+                <div class="day-row" data-day-index="6">
+                    <div class="day-label">
+                        <span class="date">30/11/2026</span>
+                        <span class="weekday">Chủ nhật</span>
+                    </div>
+                    <div class="box-btn chua" data-state="chua" role="button" tabindex="0" aria-label="Chưa chọn cho ngày 30/11"></div>
+                    <div class="box-btn co" data-state="co" role="button" tabindex="0" aria-label="Có chọn cho ngày 30/11"></div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>❌ Chưa</span>
+                        <span class="stat-badge chua-badge" id="countChua">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>✔️ Có</span>
+                        <span class="stat-badge co-badge" id="countCo">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>📊 Tổng</span>
+                        <span class="stat-badge total-badge" id="countTotal">7</span>
+                    </div>
+                </div>
+                <button class="reset-btn" id="resetBtn" aria-label="Đặt lại tất cả">
+                    <span>↻</span> Đặt lại
+                </button>
+            </div>
+
+            <div class="footer-note">
+                Nhấn vào ô <strong>Chưa</strong> để đánh dấu ❌ · Nhấn vào ô <strong>Có</strong> để đánh dấu ✔<br>
+                Ô trống ban đầu chưa có dấu. Mỗi ngày chỉ chọn được một trong hai.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const rows = document.querySelectorAll('.day-row');
+            const countChuaSpan = document.getElementById('countChua');
+            const countCoSpan = document.getElementById('countCo');
+            const countTotalSpan = document.getElementById('countTotal');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // Trạng thái mỗi hàng: null (chưa chọn, ô trống), 'chua' (X), 'co' (✔)
+            const rowStates = new Array(rows.length).fill(null);
+
+            function renderAll() {
+                rows.forEach((row, idx) => {
+                    const state = rowStates[idx];
+                    const chuaBtn = row.querySelector('.box-btn.chua');
+                    const coBtn = row.querySelector('.box-btn.co');
+
+                    // Reset
+                    chuaBtn.classList.remove('active');
+                    coBtn.classList.remove('active');
+                    chuaBtn.textContent = '';
+                    coBtn.textContent = '';
+                    row.classList.remove('selected-yes', 'selected-no');
+
+                    if (state === 'chua') {
+                        chuaBtn.classList.add('active');
+                        chuaBtn.textContent = '✕';
+                        row.classList.add('selected-no');
+                    } else if (state === 'co') {
+                        coBtn.classList.add('active');
+                        coBtn.textContent = '✔';
+                        row.classList.add('selected-yes');
+                    }
+                    // state === null: cả hai ô đều trống, không có dấu
+                });
+                updateSummary();
+            }
+
+            function updateSummary() {
+                let chuaCount = 0;
+                let coCount = 0;
+                rowStates.forEach(state => {
+                    if (state === 'chua') chuaCount++;
+                    else if (state === 'co') coCount++;
+                });
+                countChuaSpan.textContent = chuaCount;
+                countCoSpan.textContent = coCount;
+                countTotalSpan.textContent = rows.length;
+            }
+
+            // Nhấn "Chưa": nếu đang là 'chua' thì bỏ chọn (về null), ngược lại đặt 'chua'
+            function handleChuaClick(idx) {
+                rowStates[idx] = (rowStates[idx] === 'chua') ? null : 'chua';
+                renderAll();
+            }
+
+            // Nhấn "Có": nếu đang là 'co' thì bỏ chọn (về null), ngược lại đặt 'co'
+            function handleCoClick(idx) {
+                rowStates[idx] = (rowStates[idx] === 'co') ? null : 'co';
+                renderAll();
+            }
+
+            rows.forEach((row, idx) => {
+                const chuaBtn = row.querySelector('.box-btn.chua');
+                const coBtn = row.querySelector('.box-btn.co');
+
+                chuaBtn.addEventListener('click', () => handleChuaClick(idx));
+                coBtn.addEventListener('click', () => handleCoClick(idx));
+
+                chuaBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleChuaClick(idx);
+                    }
+                });
+                coBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCoClick(idx);
+                    }
+                });
+            });
+
+            resetBtn.addEventListener('click', function() {
+                for (let i = 0; i < rowStates.length; i++) rowStates[i] = null;
+                renderAll();
+            });
+
+            renderAll();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+1. Ngày / tháng / năm (thứ mấy) → cột ngày (date column)
+
+
+2. Có / Chưa (hoặc Đồng ý / Không) → cột trạng thái dọc (vertical status columns)
+

@@ -1,0 +1,10 @@
+1. Ô trống mặc định gọi là Ô trống (unchecked box).
+
+
+2. Ô tick (checkbox).
+
+· ✕ gọi là dấu X (cross / dấu chéo)
+· ✔ gọi là dấu tick (checkmark / dấu kiểm)
+
+x là màu đỏ
+✔ là màu xanh

@@ -1,0 +1,32 @@
+Màu sắc:
+
+· ✕ màu đỏ → gọi là dấu X đỏ (red cross)
+· ✔ màu xanh → gọi là dấu tick xanh (green checkmark)
+
+Vẽ bằng CSS như sau:
+
+```css
+/* Dấu X đỏ */
+.box-btn.chua.active {
+    color: #d94a4a;        /* màu đỏ */
+    border-color: #d94a4a;
+    background: #ffe9e9;
+    text-shadow: 0 1px 2px rgba(217, 74, 74, 0.3);
+}
+
+/* Dấu tick xanh */
+.box-btn.co.active {
+    color: #2e9b5c;        /* màu xanh lá */
+    border-color: #2e9b5c;
+    background: #e4f4ea;
+    text-shadow: 0 1px 2px rgba(46, 155, 92, 0.3);
+}
+```
+
+Giải thích:
+
+· color → đổi màu ký tự (✕ hoặc ✔)
+· text-shadow → tạo bóng nhẹ cho dấu nổi hơn
+· border-color + background → đổi màu viền và nền ô cho đồng bộ
+
+Tóm 1 câu: ✕ đỏ = red cross, ✔ xanh = green checkmark — vẽ bằng color + text-shadow trong CSS.

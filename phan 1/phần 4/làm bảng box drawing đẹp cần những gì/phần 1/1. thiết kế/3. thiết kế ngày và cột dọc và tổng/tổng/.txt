@@ -1,0 +1,1 @@
+ dòng tổng kết (summary row) nếu nằm ngang cuối bảng.

@@ -1,0 +1,11 @@
+1.Bảng box drawing  "Checklist dọc"
+
+ví dụ : 3 cộtcột
+
+vết thương | chưa | có
+
+ngày/tháng năm |
+
+
+
+danh sách tổng có và chưa
