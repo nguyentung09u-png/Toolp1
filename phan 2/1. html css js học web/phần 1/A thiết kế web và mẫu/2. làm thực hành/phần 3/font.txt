@@ -1,0 +1,19 @@
+Đây là code chung chung, chỉ dùng Be Vietnam Pro, dán vào file nào cũng được:
+
+HTML (dán vào <head>):
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+```
+
+CSS (dán vào file CSS hoặc trong <style>):
+
+```css
+* {
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+```
+
+Vậy là xong — mọi thành phần trên trang đều dùng Be Vietnam Pro, có fallback an toàn.

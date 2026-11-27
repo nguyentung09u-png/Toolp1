@@ -1,0 +1,241 @@
+FULL UI VISUAL REDESIGN – PRESERVE STRUCTURE & LOGIC
+
+1. VAI TRÒ
+
+Bạn là Senior UI/UX Designer và Senior Frontend Developer chuyên thiết kế giao diện web hiện đại, cao cấp.
+
+Nhiệm vụ của bạn là redesign toàn bộ phong cách trực quan của website dựa trên source code tôi cung cấp.
+
+2. MỤC TIÊU CHÍNH
+
+Thay đổi toàn bộ diện mạo website nhưng phải giữ nguyên:
+
+- Toàn bộ cấu trúc UI hiện tại.
+- Vị trí và thứ tự các thành phần.
+- Bố cục và cách sắp xếp.
+- Toàn bộ HUD hiện tại.
+- Navbar, Sidebar, Header, Card, Button, Input, Modal, Menu.
+- Các thành phần hiển thị và tương tác.
+
+Nguyên tắc: Giữ nguyên cấu trúc, thay đổi hoàn toàn phong cách thiết kế.
+
+Không thiết kế lại bố cục. Không tạo website mới. Không tự ý thêm hoặc xóa thành phần UI.
+
+3. REDESIGN TOÀN BỘ VISUAL
+
+Được phép thay đổi và sáng tạo mới:
+
+- Color Palette.
+- Background.
+- Surface và Layer.
+- Typography.
+- Font Weight và Font Size.
+- Border và Border Radius.
+- Box Shadow.
+- Gradient.
+- Glow và Highlight.
+- Icon Style.
+- Button Style.
+- Card Appearance.
+- Input Appearance.
+- Visual Hierarchy.
+- Hover, Active, Focus.
+- Transition và Animation.
+- Các chi tiết trang trí trực quan.
+
+Yêu cầu thiết kế:
+
+- Modern UI/UX.
+- Premium Visual Design.
+- Dễ nhìn, dễ đọc.
+- Màu sắc hài hòa, có chiều sâu.
+- Typography rõ ràng.
+- Hiệu ứng tinh tế, mượt mà.
+- Không cổ điển, lỗi thời hoặc đơn điệu.
+- Không lạm dụng hiệu ứng gây rối mắt.
+- Đảm bảo tính đồng nhất trên toàn website.
+
+4. KHÔNG LẶP LẠI Ý TƯỞNG CŨ
+
+Đây là yêu cầu bắt buộc.
+
+Mỗi lần redesign phải tạo ra một ngôn ngữ thiết kế mới.
+
+- Không sử dụng lại bảng màu cũ.
+- Không sao chép phong cách visual cũ.
+- Không tái sử dụng cách phối màu cũ.
+- Không lặp lại hiệu ứng trang trí cũ.
+- Không chỉ đổi màu rồi giữ nguyên toàn bộ diện mạo.
+- Không sử dụng một template thiết kế cố định.
+- Chủ động sáng tạo cách phối màu, ánh sáng, độ tương phản và chất liệu mới.
+
+Hãy phân tích giao diện hiện tại trước khi thiết kế để tránh lặp lại ý tưởng.
+
+5. FONT MẶC ĐỊNH – BE VIETNAM PRO
+
+Toàn bộ website bắt buộc sử dụng font Be Vietnam Pro.
+
+Nếu chưa có, thêm vào HTML "<head>":
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+CSS mặc định:
+
+* {
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+Yêu cầu:
+
+- Áp dụng đồng nhất cho UI và HUD.
+- Phân cấp chữ bằng font-size và font-weight.
+- Không tự ý sử dụng font khác.
+- Không thêm Google Fonts trùng lặp nếu đã tồn tại.
+
+6. BẢO TOÀN HUD
+
+HUD phải được giữ nguyên hoàn toàn.
+
+- Không xóa HUD.
+- Không thay đổi chức năng HUD.
+- Không thay đổi cấu trúc và vị trí HUD.
+- Không làm mất các thành phần bên trong HUD.
+- Chỉ được thay đổi màu sắc, typography, border, shadow và hiệu ứng visual nếu cần.
+
+7. BẢO TOÀN LOGIC VÀ CHỨC NĂNG
+
+Tuyệt đối giữ nguyên:
+
+- JavaScript Functions.
+- Variables.
+- Objects.
+- Arrays.
+- Event Listeners.
+- Event Handlers.
+- API và Fetch.
+- Async/Await.
+- LocalStorage.
+- SessionStorage.
+- Form Validation.
+- Điều kiện if/else.
+- Vòng lặp.
+- Thuật toán xử lý dữ liệu.
+- Các chức năng tương tác hiện có.
+
+Không:
+
+- Xóa logic cũ.
+- Đổi tên function.
+- Đổi tên ID hoặc class đang được JavaScript sử dụng.
+- Thay đổi API.
+- Thay đổi cấu trúc dữ liệu.
+- Tạo dữ liệu giả thay dữ liệu thật.
+- Làm hỏng các sự kiện tương tác.
+
+Ưu tiên chỉ chỉnh sửa CSS và những thuộc tính trình bày cần thiết.
+
+Nếu phải thay đổi HTML, hãy bảo toàn toàn bộ liên kết với JavaScript hiện tại.
+
+8. RESPONSIVE
+
+Đảm bảo giao diện hoạt động tốt trên:
+
+- Android Mobile.
+- Tablet.
+- Desktop.
+
+Yêu cầu:
+
+- Không tràn ngang.
+- Không vỡ bố cục.
+- Không chồng chéo thành phần.
+- Không bị che khuất nội dung.
+- Kích thước chữ dễ đọc.
+- Các thành phần tương tác dễ sử dụng.
+
+9. HIỆU ỨNG VÀ TƯƠNG TÁC
+
+Thiết kế trạng thái trực quan cho:
+
+- Hover.
+- Active.
+- Focus.
+- Disabled.
+- Loading.
+- Selected.
+- Open/Close.
+
+Animation phải:
+
+- Mượt mà.
+- Tự nhiên.
+- Không quá phức tạp.
+- Không ảnh hưởng hiệu suất.
+- Ưu tiên trải nghiệm 60FPS.
+
+10. QUY TRÌNH THỰC HIỆN
+
+Bước 1: Đọc và phân tích toàn bộ source code.
+
+Bước 2: Nhận diện toàn bộ UI, HUD và cấu trúc hiện có.
+
+Bước 3: Xác định những thành phần không được phép thay đổi.
+
+Bước 4: Phân tích phong cách visual cũ để tránh lặp lại.
+
+Bước 5: Xây dựng phong cách thiết kế mới.
+
+Bước 6: Áp dụng visual mới lên toàn bộ giao diện.
+
+Bước 7: Kiểm tra logic, chức năng và tương tác cũ.
+
+Bước 8: Kiểm tra responsive và sửa các lỗi phát sinh.
+
+11. KẾT QUẢ ĐẦU RA
+
+Trả về source code hoàn chỉnh sau khi redesign.
+
+Không trả về code minh họa.
+Không bỏ sót thành phần.
+Không dùng placeholder thay thế chức năng thật.
+Không tự ý cắt bớt source code.
+
+Nếu source code có nhiều file, hãy xác định chính xác file cần chỉnh sửa và cung cấp đầy đủ nội dung các file đã thay đổi.
+
+Nếu giới hạn đầu ra, hãy chia thành nhiều phần liên tục, không bỏ qua nội dung.
+
+12. NGUYÊN TẮC CUỐI CÙNG
+
+GIỮ NGUYÊN:
+
+- Cấu trúc UI.
+- Bố cục.
+- HUD.
+- Vị trí thành phần.
+- Logic.
+- Dữ liệu.
+- Chức năng.
+
+THAY ĐỔI:
+
+- Toàn bộ phong cách visual.
+- Màu sắc.
+- Typography.
+- Background.
+- Border.
+- Shadow.
+- Gradient.
+- Icon Style.
+- Animation.
+- Hiệu ứng trang trí.
+
+SÁNG TẠO:
+
+- Phong cách mới.
+- Bảng màu mới.
+- Ngôn ngữ thiết kế mới.
+- Không lặp lại ý tưởng cũ.
+
+Hãy coi source code hiện tại là một hệ thống đang hoạt động. Bạn chỉ được thay đổi lớp thiết kế trực quan, không được phá vỡ cấu trúc và cách hệ thống vận hành.
