@@ -1,0 +1,82 @@
+Người dùng click tab "Cà Phê"
+        ↓
+JS đọc data-category = "ca-phe"
+        ↓
+Lọc mảng products: giữ lại p.category === "ca-phe"
+        ↓
+Xóa HTML lưới cũ → Render lại chỉ card cà phê
+        ↓
+✅ Trà sữa, soda, trà... bị ẨN (không có trong DOM)
+❌ Không đổi URL, không reload trang
+
+
+Tổng quan cách làm (chung chung)
+
+1. HTML: Tạo các <button data-category="..."> trong một <nav>.
+2. CSS: Style dạng pill (border-radius lớn), thêm trạng thái :hover, :focus-visible, .active, :active; dùng flex-wrap để responsive.
+3. JS: Gắn 1 listener click lên <nav> → đọc data-category → filter() mảng dữ liệu → render lại lưới.
+
+---
+
+Code chung chung
+
+HTML
+
+```html
+<nav class="filter-nav" id="filterNav">
+  <button class="filter-btn active" data-category="all">Tất cả</button>
+  <button class="filter-btn" data-category="a">Nhóm A</button>
+  <button class="filter-btn" data-category="b">Nhóm B</button>
+</nav>
+
+<div class="grid" id="grid"></div>
+```
+
+CSS
+
+```css
+.filter-nav { display:flex; flex-wrap:wrap; gap:10px; padding:16px; }
+.filter-btn {
+  padding:8px 18px; border:2px solid #e67e22; border-radius:25px;
+  background:#fff; color:#e67e22; font-weight:600; cursor:pointer;
+  transition: all .3s ease;
+}
+.filter-btn:hover { background:#fef0e0; transform:translateY(-2px); }
+.filter-btn:focus-visible { outline:3px solid #e67e22; outline-offset:2px; }
+.filter-btn:active { transform:scale(.97); }
+.filter-btn.active { background:#e67e22; color:#fff; }
+
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:16px; }
+@media (max-width:768px){ .grid{ grid-template-columns:1fr; } }
+```
+
+JS
+
+```js
+const data = [
+  { name:"Món 1", category:"a" },
+  { name:"Món 2", category:"b" },
+];
+const grid = document.getElementById("grid");
+const nav  = document.getElementById("filterNav");
+
+function render(list){
+  grid.innerHTML = list.map(i => `<div class="card">${i.name}</div>`).join("");
+}
+
+nav.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  const cat = btn.dataset.category;
+  render(cat === "all" ? data : data.filter(i => i.category === cat));
+});
+
+render(data); // khởi tạo
+```
+
+---
+
+Tôi không chắc bạn muốn style chính xác theo màu nào — nếu cần, gửi màu chủ đạo để tôi chỉnh.

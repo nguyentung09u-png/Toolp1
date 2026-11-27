@@ -1,0 +1,705 @@
+/* =========================================================
+   TROPICAL CHROME Y2K — Visual Language v4
+   Silver metal · Cyan neon · Sticker pop · Glossy · Be Vietnam Pro
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  background: #C9D6E4;
+}
+
+body {
+  background-color: #D6E2EE;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(0, 240, 255, 0.55) 0%, transparent 32%),
+    radial-gradient(circle at 88% 15%, rgba(255, 0, 200, 0.45) 0%, transparent 35%),
+    radial-gradient(circle at 70% 92%, rgba(0, 240, 255, 0.4) 0%, transparent 35%),
+    radial-gradient(circle at 18% 88%, rgba(255, 200, 0, 0.35) 0%, transparent 32%),
+    linear-gradient(135deg, #E8EEF5 0%, #C7D4E4 40%, #DDE6F0 75%, #B8C8DC 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  color: #0A0A0A;
+  padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Lưới chrome mờ — signature Y2K */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(10, 10, 10, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 10, 10, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%);
+}
+
+/* Cyan/magenta scan line — anime CRT vibe */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 240, 255, 0.03) 0px,
+    rgba(0, 240, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   HEADER — CHROME PLATE
+   ========================================================= */
+.header {
+  position: relative;
+  text-align: center;
+  padding: 48px 22px 42px;
+  margin-bottom: 30px;
+  color: #0A0A0A;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(220, 230, 240, 0.88) 30%,
+      rgba(190, 205, 222, 0.9) 55%,
+      rgba(230, 240, 250, 0.9) 80%,
+      rgba(200, 215, 232, 0.92) 100%);
+  border-bottom: 3px solid #0A0A0A;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.06) inset,
+    0 12px 40px -20px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+/* Cyan glow bên trái — chrome highlight */
+.header::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.85) 0%, transparent 60%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: multiply;
+}
+
+/* Magenta glow bên phải */
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 0, 200, 0.75) 0%, transparent 60%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: multiply;
+}
+
+/* Đường chrome highlight ngang chính giữa */
+.header::before,
+.header::after {
+  /* gộp các thuộc tính chung ở trên */
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+              transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.header-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(22px, 5.9vw, 40px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  word-break: break-word;
+  text-transform: uppercase;
+  background: linear-gradient(180deg,
+    #FFFFFF 0%,
+    #C8D6E5 15%,
+    #5B6B7F 40%,
+    #1A2530 55%,
+    #4A5A6E 70%,
+    #0A0A0A 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(0, 240, 255, 0.15);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.15));
+}
+
+.header-emoji {
+  font-size: clamp(26px, 6.4vw, 40px);
+  line-height: 1;
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  color: initial;
+  filter:
+    drop-shadow(0 0 12px rgba(0, 240, 255, 0.75))
+    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+.header:hover .header-emoji {
+  transform: rotate(-14deg) scale(1.15);
+}
+
+.header p {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(10.5px, 2.7vw, 12.5px);
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  padding: 5px 12px;
+  display: inline-block;
+  background: linear-gradient(180deg, #E0E8F2 0%, #B0BECF 100%);
+  border: 2px solid #0A0A0A;
+  border-radius: 4px;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 1),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
+}
+
+/* =========================================================
+   GRID CONTAINER
+   ========================================================= */
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 20px;
+  padding: 0 18px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   MENU CARD — CHROME STICKER
+   ========================================================= */
+.menu-card {
+  position: relative;
+  background:
+    linear-gradient(165deg,
+      #F0F4F8 0%,
+      #DCE4EE 20%,
+      #C0CEDE 45%,
+      #E4ECF4 65%,
+      #C8D5E3 90%);
+  border-radius: 22px;
+  border: 2.5px solid #0A0A0A;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  min-width: 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.08) inset,
+    5px 5px 0 rgba(0, 0, 0, 1),
+    6px 6px 0 rgba(0, 240, 255, 0.6);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s ease;
+}
+
+.menu-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.08) inset,
+    8px 8px 0 rgba(0, 0, 0, 1),
+    10px 10px 0 rgba(0, 240, 255, 0.85),
+    10px 10px 30px -4px rgba(0, 240, 255, 0.5);
+}
+
+/* Chrome highlight chạy dọc card — gloss */
+.menu-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 20px 20px 0 0;
+}
+
+/* Cyan stripe trượt ở bottom khi hover */
+.menu-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg,
+    #FF00C8 0%,
+    #00F0FF 50%,
+    #FF00C8 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.menu-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* =========================================================
+   IMAGE — SATURATED POP
+   ========================================================= */
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background-color: #C0CEDE;
+  height: auto;
+  border-bottom: 2.5px solid #0A0A0A;
+  filter: saturate(1.15) contrast(1.05);
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+
+.menu-card:hover .card-img {
+  filter: saturate(1.35) contrast(1.08) brightness(1.05);
+  transform: scale(1.06);
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+.card-body {
+  padding: 14px 14px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  min-width: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(220, 230, 240, 0.6) 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 22px;
+  flex-wrap: wrap;
+}
+
+.ma-mon {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0A0A0A;
+  background: linear-gradient(180deg, #FFFFFF 0%, #C8D6E5 100%);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 2px solid #0A0A0A;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  margin-left: auto;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 1);
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  background: linear-gradient(135deg, #FFE566 0%, #FFB800 100%);
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  border: 2px solid #0A0A0A;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow:
+    2px 2px 0 rgba(0, 0, 0, 1),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  transform: rotate(-2deg);
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FF00C8;
+  box-shadow:
+    0 0 0 1.5px #0A0A0A,
+    0 0 10px 2px rgba(255, 0, 200, 0.9);
+  animation: badge-pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(0.7); opacity: 0.6; }
+}
+
+/* =========================================================
+   TITLE + PRICE
+   ========================================================= */
+.menu-card h3 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(14.5px, 3.9vw, 17px);
+  font-weight: 800;
+  color: #0A0A0A;
+  margin-bottom: 8px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.menu-card .price {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 900;
+  font-size: clamp(15px, 3.9vw, 17px);
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
+  color: #FF0080;
+  display: inline-block;
+  text-shadow:
+    0 1px 0 #FFFFFF,
+    0 0 14px rgba(255, 0, 128, 0.35);
+}
+
+/* =========================================================
+   BUTTON — CHROME POP
+   ========================================================= */
+.menu-card .btn-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(180deg, #E8EFF7 0%, #B8C8DC 40%, #8CA0B8 60%, #C8D6E5 100%);
+  color: #0A0A0A;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border: 2.5px solid #0A0A0A;
+  text-decoration: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(10.5px, 3vw, 12.5px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: auto;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  min-height: 44px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.15) inset,
+    3px 3px 0 rgba(0, 0, 0, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.menu-card .btn-contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #FFE566 0%, #FF9500 60%, #FF00C8 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: -1;
+}
+
+.menu-card .btn-contact:hover,
+.menu-card .btn-contact:focus-visible {
+  transform: translate(-1px, -1px);
+  color: #0A0A0A;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.15) inset,
+    5px 5px 0 rgba(0, 0, 0, 1);
+  outline: none;
+}
+
+.menu-card .btn-contact:hover::before,
+.menu-card .btn-contact:focus-visible::before {
+  opacity: 1;
+}
+
+.menu-card .btn-contact:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.15) inset,
+    1px 1px 0 rgba(0, 0, 0, 1);
+}
+
+/* =========================================================
+   ZALO FLOATING BUTTON — STICKER CHROME
+   ========================================================= */
+.zalo-btn {
+  position: fixed;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  right: calc(22px + env(safe-area-inset-right, 0px));
+  background: linear-gradient(180deg, #FFFFFF 0%, #D8E3EE 40%, #B0C0D4 70%, #E0E8F2 100%);
+  color: #0A0A0A;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px 11px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 2.5px solid #0A0A0A;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    4px 4px 0 rgba(0, 0, 0, 1),
+    5px 5px 0 rgba(255, 0, 200, 0.8),
+    5px 5px 28px -4px rgba(255, 0, 200, 0.5);
+  z-index: 100;
+  max-width: calc(100vw - 44px);
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s ease;
+  overflow: visible;
+}
+
+/* Cyan ring xoay ngoài */
+.zalo-btn::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 2px dashed rgba(0, 240, 255, 0.85);
+  z-index: -1;
+  animation: zalo-spin 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes zalo-spin {
+  to { transform: rotate(360deg); }
+}
+
+.zalo-btn:hover,
+.zalo-btn:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    6px 6px 0 rgba(0, 0, 0, 1),
+    8px 8px 0 rgba(255, 0, 200, 1),
+    8px 8px 34px -4px rgba(255, 0, 200, 0.7);
+  outline: none;
+}
+
+.zalo-btn img {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+  border: 2px solid #0A0A0A;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.zalo-btn:hover img {
+  transform: rotate(-12deg) scale(1.1);
+}
+
+.zalo-btn span {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 374px) {
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 14px;
+  }
+
+  .header {
+    padding: 38px 14px 34px;
+    margin-bottom: 24px;
+  }
+
+  .zalo-btn {
+    padding: 9px 14px 9px 9px;
+    gap: 8px;
+  }
+
+  .zalo-btn span {
+    font-size: 11.5px;
+  }
+
+  .zalo-btn img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .zalo-btn::before {
+    inset: -4px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 767px) {
+  .menu-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header {
+    padding: 58px 26px 50px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    padding: 0 26px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .header {
+    padding: 66px 34px 58px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 26px;
+    padding: 0 34px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .header {
+    padding: 76px 42px 66px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 30px;
+    padding: 0 42px;
+    max-width: 1480px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .menu-card,
+  .card-img,
+  .menu-card .btn-contact,
+  .zalo-btn,
+  .zalo-btn img,
+  .zalo-btn::before,
+  .badge::before,
+  .header-emoji,
+  .header-content {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .header-content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-card:hover,
+  .zalo-btn:hover,
+  .menu-card .btn-contact:hover {
+    transform: none;
+  }
+}

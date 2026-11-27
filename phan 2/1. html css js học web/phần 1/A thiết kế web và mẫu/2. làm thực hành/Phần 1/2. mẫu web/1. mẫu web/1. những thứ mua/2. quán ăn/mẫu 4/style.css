@@ -1,0 +1,654 @@
+/* =========================================================
+   AURORA GLASS — Visual Language v3
+   Glassmorphism · Aurora gradient · Soft light · Be Vietnam Pro
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  background: #EEF2F7;
+}
+
+body {
+  background-color: #EEF2F7;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(160, 240, 220, 0.55) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(200, 180, 255, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 70% 90%, rgba(255, 200, 180, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 20% 85%, rgba(180, 220, 255, 0.5) 0%, transparent 45%),
+    linear-gradient(180deg, #F4F7FB 0%, #E8EDF5 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  color: #1F2937;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Aurora chuyển động chậm — depth layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  background-image:
+    radial-gradient(ellipse 40% 30% at 30% 40%, rgba(160, 240, 220, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 75% 60%, rgba(200, 180, 255, 0.35) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 50% 85%, rgba(255, 200, 180, 0.35) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  animation: aurora-drift 22s ease-in-out infinite alternate;
+  filter: blur(40px);
+  opacity: 0.7;
+}
+
+@keyframes aurora-drift {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate(3%, 2%) rotate(2deg) scale(1.05); }
+  100% { transform: translate(-2%, -1%) rotate(-1deg) scale(1.02); }
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   HEADER — FROSTED GLASS AURORA
+   ========================================================= */
+.header {
+  position: relative;
+  text-align: center;
+  padding: 44px 22px 40px;
+  margin-bottom: 28px;
+  color: #1F2937;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0.7) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 12px 40px -20px rgba(120, 140, 180, 0.35);
+  z-index: 1;
+}
+
+/* Hai quầng aurora nội bộ — khác hẳn v2 (blob đen) */
+.header::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: -80px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(120, 220, 200, 0.55) 0%, transparent 65%);
+  filter: blur(50px);
+  pointer-events: none;
+  animation: header-float 18s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  right: -80px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(180, 160, 255, 0.5) 0%, transparent 65%);
+  filter: blur(50px);
+  pointer-events: none;
+  animation: header-float 20s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+}
+
+@keyframes header-float {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, 20px) scale(1.15); }
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+              transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.header-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(22px, 5.8vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  margin-bottom: 10px;
+  word-break: break-word;
+  background: linear-gradient(120deg,
+    #0F766E 0%,
+    #4F46E5 40%,
+    #DB2777 75%,
+    #EA580C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(79, 70, 229, 0.18));
+}
+
+.header-emoji {
+  font-size: clamp(24px, 6.2vw, 36px);
+  line-height: 1;
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  color: initial;
+  filter: drop-shadow(0 4px 12px rgba(120, 220, 200, 0.45));
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+.header:hover .header-emoji {
+  transform: rotate(-12deg) scale(1.1);
+}
+
+.header p {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(10.5px, 2.7vw, 12.5px);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #64748B;
+}
+
+/* =========================================================
+   GRID CONTAINER
+   ========================================================= */
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 18px;
+  padding: 0 18px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   MENU CARD — GLASS TILE
+   ========================================================= */
+.menu-card {
+  position: relative;
+  background:
+    linear-gradient(150deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.62) 55%,
+      rgba(255, 255, 255, 0.72) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 24px -10px rgba(100, 120, 160, 0.25),
+    0 24px 48px -28px rgba(100, 120, 160, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  min-width: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.5s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 12px 32px -10px rgba(100, 120, 160, 0.35),
+    0 30px 60px -30px rgba(100, 120, 160, 0.45),
+    0 0 40px -10px rgba(160, 180, 240, 0.4);
+}
+
+/* Aurora border-top khi hover */
+.menu-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #34D399 20%,
+    #818CF8 50%,
+    #F472B6 80%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.menu-card:hover::after {
+  opacity: 1;
+}
+
+/* =========================================================
+   IMAGE — CLEAN BRIGHT TINT
+   ========================================================= */
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background-color: #E2E8F0;
+  height: auto;
+  filter: saturate(1.02) contrast(1.02);
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+.menu-card:hover .card-img {
+  filter: saturate(1.12) contrast(1.04) brightness(1.03);
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+.card-body {
+  padding: 16px 15px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  min-width: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.75) 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 20px;
+  flex-wrap: wrap;
+}
+
+.ma-mon {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #065F46;
+  background: linear-gradient(135deg,
+    rgba(52, 211, 153, 0.25) 0%,
+    rgba(129, 140, 248, 0.2) 100%);
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 10px -2px rgba(52, 211, 153, 0.3);
+}
+
+.badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px 1px rgba(16, 185, 129, 0.8);
+  animation: badge-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* =========================================================
+   TITLE + PRICE
+   ========================================================= */
+.menu-card h3 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(14.5px, 3.9vw, 17px);
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.menu-card .price {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 800;
+  font-size: clamp(14px, 3.7vw, 16px);
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
+  background: linear-gradient(120deg, #0F766E 0%, #4F46E5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+/* =========================================================
+   BUTTON — AURORA GRADIENT
+   ========================================================= */
+.menu-card .btn-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #10B981 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: none;
+  text-decoration: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(11px, 3vw, 12.5px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: auto;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  min-height: 42px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 6px 18px -6px rgba(79, 70, 229, 0.45);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+  z-index: 1;
+}
+
+.menu-card .btn-contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #34D399 0%, #818CF8 50%, #F472B6 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+
+.menu-card .btn-contact:hover,
+.menu-card .btn-contact:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 10px 26px -6px rgba(79, 70, 229, 0.6),
+    0 0 30px -4px rgba(129, 140, 248, 0.5);
+  outline: none;
+}
+
+.menu-card .btn-contact:hover::before,
+.menu-card .btn-contact:focus-visible::before {
+  opacity: 1;
+}
+
+.menu-card .btn-contact:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   ZALO FLOATING BUTTON — GLASS + AURORA RING
+   ========================================================= */
+.zalo-btn {
+  position: fixed;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  right: calc(22px + env(safe-area-inset-right, 0px));
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  color: #1F2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px 11px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 12px 30px -10px rgba(100, 120, 160, 0.4),
+    0 0 24px -6px rgba(160, 180, 240, 0.35);
+  z-index: 100;
+  max-width: calc(100vw - 44px);
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+  overflow: visible;
+}
+
+.zalo-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(52, 211, 153, 0.7) 60deg,
+    rgba(129, 140, 248, 0.7) 120deg,
+    rgba(244, 114, 182, 0.7) 180deg,
+    transparent 240deg,
+    transparent 360deg
+  );
+  z-index: -1;
+  opacity: 0.75;
+  animation: zalo-orbit 5s linear infinite;
+  filter: blur(1px);
+}
+
+@keyframes zalo-orbit {
+  to { transform: rotate(360deg); }
+}
+
+.zalo-btn:hover,
+.zalo-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: #FFFFFF;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 16px 36px -10px rgba(100, 120, 160, 0.5),
+    0 0 36px -6px rgba(129, 140, 248, 0.6);
+  outline: none;
+}
+
+.zalo-btn img {
+  width: 26px;
+  height: 26px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(0, 104, 255, 0.25);
+}
+
+.zalo-btn:hover img {
+  transform: rotate(-10deg) scale(1.08);
+}
+
+.zalo-btn span {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 374px) {
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 14px;
+  }
+
+  .header {
+    padding: 34px 14px 32px;
+    margin-bottom: 22px;
+  }
+
+  .zalo-btn {
+    padding: 9px 14px 9px 9px;
+    gap: 8px;
+  }
+
+  .zalo-btn span {
+    font-size: 12px;
+  }
+
+  .zalo-btn img {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 767px) {
+  .menu-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header {
+    padding: 56px 26px 50px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    padding: 0 26px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .header {
+    padding: 64px 34px 56px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    padding: 0 34px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .header {
+    padding: 74px 42px 64px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 28px;
+    padding: 0 42px;
+    max-width: 1480px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .header::before,
+  .header::after,
+  .zalo-btn::before,
+  .badge::before,
+  .menu-card,
+  .card-img,
+  .menu-card .btn-contact,
+  .zalo-btn,
+  .zalo-btn img,
+  .header-emoji,
+  .header-content {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .header-content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-card:hover {
+    transform: none;
+  }
+}

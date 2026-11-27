@@ -1,0 +1,22 @@
+1. Tab lọc danh mục (Category Filter Tabs).
+ví dụ : cà phê , trà sữa 
+
+Không phải chuyển trang. Đây là lọc tại chỗ (filter on the same page):
+
+· Click "Cà Phê" → các card sản phẩm trà sữa, soda, trà... ẩn đi, chỉ còn card cà phê hiện ra.
+· URL không đổi, không tải lại trang, không chuyển trang.
+· Click "Tất cả" → hiện lại toàn bộ.
+
+Đây gọi là "lọc client-side" (lọc phía trình duyệt) — dùng JavaScript để ẩn/hiện card dựa trên data-category, chứ không phải điều hướng sang trang khác.
+
+
+
+----
+
+tóm gọn : nó gọi là tab lọc danh mục tìm theo từ khóa liên quan
+và ẩn những từ khóa không liên quan
+
+
+Đúng. ✅
+
+Tóm gọn: Tab lọc danh mục = tìm/hiện sản phẩm theo từ khóa liên quan và ẩn những sản phẩm không liên quan — tất cả trên cùng một trang, không chuyển trang.

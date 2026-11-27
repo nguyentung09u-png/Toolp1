@@ -1,0 +1,656 @@
+/* =========================================================
+   FOREST BOTANICAL — Visual Language v5
+   Herbarium paper · Sage · Botanic line art · Serif · Be Vietnam Pro
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  background: #DDE1CE;
+}
+
+body {
+  background-color: #E5E8D8;
+  background-image:
+    radial-gradient(circle at 8% 5%, rgba(106, 132, 92, 0.18) 0%, transparent 28%),
+    radial-gradient(circle at 92% 12%, rgba(140, 155, 120, 0.14) 0%, transparent 30%),
+    radial-gradient(circle at 78% 95%, rgba(106, 132, 92, 0.12) 0%, transparent 32%),
+    radial-gradient(circle at 20% 90%, rgba(160, 175, 140, 0.14) 0%, transparent 30%),
+    linear-gradient(180deg, #EDF0E0 0%, #DDE1CE 60%, #D2D7BD 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  color: #2A3520;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Nhiễu giấy mịn — signature herbarium */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(42, 53, 32, 0.08) 0.5px, transparent 1px),
+    radial-gradient(circle at 60% 70%, rgba(42, 53, 32, 0.06) 0.4px, transparent 0.9px),
+    radial-gradient(circle at 85% 40%, rgba(42, 53, 32, 0.07) 0.5px, transparent 1px);
+  background-size: 4px 4px, 7px 7px, 5px 5px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}
+
+/* Botanical line art mờ — signature layer */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><g fill='none' stroke='%232A3520' stroke-width='0.8' opacity='0.14'><path d='M30 160 Q40 120 60 80 Q70 60 65 40'/><path d='M60 80 Q40 78 30 60'/><path d='M60 80 Q80 72 90 55'/><path d='M65 40 Q55 30 45 25'/><path d='M65 40 Q80 30 88 20'/><circle cx='65' cy='40' r='2' fill='%232A3520' opacity='0.4'/><path d='M140 170 Q135 130 150 100 Q160 80 155 60'/><path d='M150 100 Q130 100 122 85'/><path d='M150 100 Q170 92 175 75'/><circle cx='155' cy='60' r='2' fill='%232A3520' opacity='0.4'/></g></svg>");
+  background-size: 380px 380px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 40%, transparent 90%);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   HEADER — HERBARIUM PLAQUE
+   ========================================================= */
+.header {
+  position: relative;
+  text-align: center;
+  padding: 48px 24px 44px;
+  margin-bottom: 32px;
+  color: #2A3520;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg,
+      rgba(237, 240, 224, 0.95) 0%,
+      rgba(229, 232, 216, 0.92) 60%,
+      rgba(215, 220, 198, 0.95) 100%);
+  border-bottom: 1px solid rgba(42, 53, 32, 0.28);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 12px 40px -20px rgba(42, 53, 32, 0.22);
+  z-index: 2;
+}
+
+/* Double-line border dưới kiểu sách cổ */
+.header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(42, 53, 32, 0.5) 15%, rgba(42, 53, 32, 0.5) 85%, transparent 100%) no-repeat 0 0 / 100% 1px,
+    linear-gradient(90deg, transparent 0%, rgba(42, 53, 32, 0.35) 20%, rgba(42, 53, 32, 0.35) 80%, transparent 100%) no-repeat 0 3px / 100% 1px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Lá cây góc — botanical decoration */
+.header::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 42px;
+  height: 60px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 60' fill='none' stroke='%236A845C' stroke-width='1.2' opacity='0.7'><path d='M21 58 Q20 40 22 22 Q24 10 20 2'/><path d='M22 22 Q12 20 8 12 Q14 14 22 22Z' fill='%236A845C' fill-opacity='0.2'/><path d='M22 22 Q32 20 36 12 Q30 14 22 22Z' fill='%236A845C' fill-opacity='0.2'/><path d='M22 34 Q14 32 10 24 Q16 26 22 34Z' fill='%236A845C' fill-opacity='0.2'/><path d='M22 34 Q30 32 34 24 Q28 26 22 34Z' fill='%236A845C' fill-opacity='0.2'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+              transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.header-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(24px, 6.2vw, 44px);
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  word-break: break-word;
+  color: #2A3520;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.header-emoji {
+  font-size: clamp(24px, 6.2vw, 38px);
+  line-height: 1;
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  color: initial;
+  filter: sepia(0.3) hue-rotate(60deg) saturate(0.85) drop-shadow(0 2px 4px rgba(42, 53, 32, 0.2));
+  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+.header:hover .header-emoji {
+  transform: rotate(-10deg) scale(1.08);
+}
+
+.header p {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(10.5px, 2.7vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #6A845C;
+  position: relative;
+  display: inline-block;
+  padding: 0 20px;
+}
+
+/* Đường gạch 2 bên subtitle */
+.header p::before,
+.header p::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: #8A9B78;
+}
+
+.header p::before { left: 0; }
+.header p::after { right: 0; }
+
+/* =========================================================
+   GRID CONTAINER
+   ========================================================= */
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 20px;
+  padding: 0 18px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   MENU CARD — HERBARIUM SPECIMEN CARD
+   ========================================================= */
+.menu-card {
+  position: relative;
+  background:
+    linear-gradient(180deg,
+      #F5F3E5 0%,
+      #EDEAD6 100%);
+  border-radius: 2px;
+  border: 1px solid rgba(42, 53, 32, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  min-width: 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 0 0 3px rgba(255, 255, 255, 0.35),
+    0 2px 4px rgba(42, 53, 32, 0.08),
+    0 16px 32px -18px rgba(42, 53, 32, 0.35);
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s ease,
+    border-color 0.5s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(106, 132, 92, 0.6);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 0 0 3px rgba(255, 255, 255, 0.5),
+    0 3px 6px rgba(42, 53, 32, 0.1),
+    0 24px 44px -18px rgba(42, 53, 32, 0.42);
+}
+
+/* Góc trang trí — 4 góc L-shape botanical */
+.menu-card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid transparent;
+  pointer-events: none;
+  z-index: 5;
+  border-image: 
+    linear-gradient(90deg, rgba(106, 132, 92, 0.35) 0%, transparent 15%, transparent 85%, rgba(106, 132, 92, 0.35) 100%) 1;
+  opacity: 0.8;
+}
+
+/* Underline botanical khi hover */
+.menu-card::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 60%;
+  height: 1px;
+  background: #6A845C;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.menu-card:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* =========================================================
+   IMAGE — MUTED BOTANICAL TINT
+   ========================================================= */
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background-color: #D8DCC0;
+  height: auto;
+  filter: sepia(0.12) saturate(0.82) contrast(1.02) brightness(0.98);
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+.menu-card:hover .card-img {
+  filter: sepia(0.04) saturate(1.02) contrast(1.04) brightness(1.02);
+  transform: scale(1.03);
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+.card-body {
+  padding: 16px 15px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  border-bottom: 1px dotted rgba(42, 53, 32, 0.22);
+}
+
+.ma-mon {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  color: #8A9B78;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #4A5C3A;
+  background: transparent;
+  padding: 2px 0;
+  border-radius: 0;
+  border: none;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid #6A845C;
+}
+
+.badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6A845C;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(106, 132, 92, 0.2);
+}
+
+/* =========================================================
+   TITLE + PRICE
+   ========================================================= */
+.menu-card h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(15.5px, 4.1vw, 18px);
+  font-weight: 600;
+  font-style: normal;
+  color: #2A3520;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.008em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.menu-card .price {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(15px, 3.9vw, 17px);
+  color: #4A5C3A;
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(74, 92, 58, 0.35);
+}
+
+/* =========================================================
+   BUTTON — OUTLINE BOTANICAL
+   ========================================================= */
+.menu-card .btn-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: transparent;
+  color: #2A3520;
+  padding: 11px 10px;
+  border-radius: 0;
+  border: 1.5px solid #2A3520;
+  text-decoration: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(10.5px, 3vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: auto;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  min-height: 42px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    color 0.4s ease,
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.menu-card .btn-contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #4A5C3A;
+  transform: translateY(101%);
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: -1;
+}
+
+.menu-card .btn-contact:hover,
+.menu-card .btn-contact:focus-visible {
+  color: #F5F3E5;
+  border-color: #4A5C3A;
+  outline: none;
+}
+
+.menu-card .btn-contact:hover::before,
+.menu-card .btn-contact:focus-visible::before {
+  transform: translateY(0);
+}
+
+.menu-card .btn-contact:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================
+   ZALO FLOATING BUTTON — BOTANICAL SEAL
+   ========================================================= */
+.zalo-btn {
+  position: fixed;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  right: calc(22px + env(safe-area-inset-right, 0px));
+  background: linear-gradient(180deg, #F5F3E5 0%, #E0DFC8 100%);
+  color: #2A3520;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px 11px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1.5px solid #2A3520;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 4px 12px rgba(42, 53, 32, 0.18),
+    0 12px 30px -10px rgba(42, 53, 32, 0.3);
+  z-index: 100;
+  max-width: calc(100vw - 44px);
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.4s ease,
+    background 0.4s ease;
+  overflow: visible;
+}
+
+/* Vòng lá xoay chậm — dashed botanical ring */
+.zalo-btn::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+  border: 1px dashed rgba(106, 132, 92, 0.55);
+  animation: zalo-rotate 30s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes zalo-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.zalo-btn:hover,
+.zalo-btn:focus-visible {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #EAF0DA 0%, #D4D9BD 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 6px 16px rgba(42, 53, 32, 0.24),
+    0 18px 36px -10px rgba(42, 53, 32, 0.38);
+  outline: none;
+}
+
+.zalo-btn img {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(42, 53, 32, 0.25);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
+  filter: sepia(0.15) hue-rotate(50deg) saturate(0.9);
+}
+
+.zalo-btn:hover img {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.zalo-btn span {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 374px) {
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 14px;
+  }
+
+  .header {
+    padding: 38px 16px 36px;
+    margin-bottom: 24px;
+  }
+
+  .header::after {
+    width: 32px;
+    height: 48px;
+    top: 14px;
+    right: 14px;
+  }
+
+  .zalo-btn {
+    padding: 9px 16px 9px 9px;
+    gap: 8px;
+  }
+
+  .zalo-btn span {
+    font-size: 11.5px;
+  }
+
+  .zalo-btn img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 767px) {
+  .menu-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header {
+    padding: 58px 28px 52px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    padding: 0 26px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .header {
+    padding: 66px 36px 60px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 26px;
+    padding: 0 34px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .header {
+    padding: 78px 44px 68px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 30px;
+    padding: 0 42px;
+    max-width: 1480px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .menu-card,
+  .card-img,
+  .menu-card .btn-contact,
+  .menu-card .btn-contact::before,
+  .zalo-btn,
+  .zalo-btn img,
+  .zalo-btn::before,
+  .header-emoji,
+  .header-content {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .header-content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-card:hover {
+    transform: none;
+  }
+}

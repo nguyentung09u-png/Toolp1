@@ -1,0 +1,573 @@
+/* =========================================================
+   TIỆM QUẦN ÁO — "NOIR ATELIER"
+   Editorial Luxury · Quiet Fashion · Paper & Ink
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Paper & Ink palette */
+  --ink:        #141210;
+  --ink-soft:   #2a2622;
+  --paper:      #f4efe6;
+  --paper-2:    #ebe4d6;
+  --paper-3:    #e0d7c4;
+  --line:       rgba(20, 18, 16, 0.14);
+  --line-soft:  rgba(20, 18, 16, 0.08);
+
+  /* Accents */
+  --terra:      #b8532f;   /* terracotta */
+  --terra-deep: #8a3a1e;
+  --champagne:  #c9a86a;
+  --olive:      #6b6b3a;
+
+  /* Text */
+  --text-1: #141210;
+  --text-2: #4a4339;
+  --text-3: #8a8175;
+
+  /* Shape */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  background-color: var(--paper);
+  background-image:
+    /* subtle paper grain */
+    radial-gradient(circle at 20% 30%, rgba(184, 83, 47, 0.035), transparent 55%),
+    radial-gradient(circle at 85% 75%, rgba(201, 168, 106, 0.05), transparent 55%),
+    radial-gradient(circle at 50% 5%, rgba(20, 18, 16, 0.025), transparent 60%);
+  color: var(--text-1);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern", "ss01";
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 96px 24px 64px;
+  text-align: center;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 720px);
+  height: min(90vw, 720px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 168, 106, 0.18) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Kicker — small caps editorial */
+.header-content::before {
+  content: '✦ ATELIER · EST. 2024 ✦';
+  display: block;
+  margin-bottom: 28px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--terra);
+}
+
+.shop-name {
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-wrap: balance;
+  font-style: normal;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.shop-name::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 1px;
+  margin: 24px auto 0;
+  background: var(--ink);
+}
+
+.shop-slogan {
+  margin-top: 20px;
+  font-size: clamp(0.82rem, 2.2vw, 0.92rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ===== BỘ LỌC DANH MỤC ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  padding: 20px 20px;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(244, 239, 230, 0.92);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.25s var(--ease-soft), background 0.25s var(--ease-soft);
+}
+
+.filter-btn::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 6px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s var(--ease);
+}
+
+.filter-btn:hover {
+  color: var(--ink);
+}
+
+.filter-btn:hover::after {
+  transform: scaleX(1);
+}
+
+.filter-btn:focus-visible {
+  outline: 1px solid var(--terra);
+  outline-offset: 2px;
+}
+
+.filter-btn.active {
+  color: var(--terra);
+  background: transparent;
+  font-weight: 700;
+}
+
+.filter-btn.active::after {
+  background: var(--terra);
+  transform: scaleX(1);
+}
+
+/* ===== LƯỚI SẢN PHẨM ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  padding: 1px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.product-grid > p {
+  grid-column: 1 / -1;
+  background: var(--paper);
+  color: var(--text-3) !important;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  padding: 80px 20px !important;
+}
+
+/* ===== CARD SẢN PHẨM ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  transition: background 0.4s var(--ease-soft);
+  will-change: background;
+}
+
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.4s var(--ease-soft);
+}
+
+.product-card:hover {
+  background: var(--paper-2);
+}
+
+.product-card:hover::after {
+  border-color: var(--line);
+}
+
+.card-image {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+  background: var(--paper-2);
+  filter: grayscale(0.15) contrast(1.02);
+  transition: filter 0.6s var(--ease-soft), transform 0.8s var(--ease-soft);
+  position: relative;
+  z-index: 0;
+}
+
+.product-card:hover .card-image {
+  filter: grayscale(0) contrast(1.04);
+  transform: scale(1.02);
+}
+
+.card-body {
+  position: relative;
+  padding: 24px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: transparent;
+  min-height: 0;
+  justify-content: flex-start;
+  z-index: 2;
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--terra);
+  background: transparent;
+  padding: 0 0 8px;
+  border: none;
+  border-bottom: 1px solid var(--terra);
+  border-radius: 0;
+  margin-bottom: 16px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.18rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.18rem * 1.35 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  margin-bottom: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-price::before {
+  content: '';
+  color: var(--text-3);
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--ink);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--ink);
+  transition: background 0.35s var(--ease-soft),
+              color 0.35s var(--ease-soft),
+              border-color 0.35s var(--ease-soft),
+              letter-spacing 0.35s var(--ease-soft);
+  cursor: pointer;
+  position: relative;
+  min-width: 0;
+  white-space: nowrap;
+  line-height: 1;
+  align-self: stretch;
+}
+
+.card-btn:hover {
+  background: var(--terra);
+  border-color: var(--terra);
+  letter-spacing: 0.24em;
+}
+
+.card-btn:active {
+  background: var(--terra-deep);
+  border-color: var(--terra-deep);
+}
+
+.card-btn:focus-visible {
+  outline: 2px solid var(--terra);
+  outline-offset: 2px;
+}
+
+.card-btn img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 1px;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 72px 24px 120px;
+  margin-top: 0;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  background: var(--ink);
+  letter-spacing: 0.06em;
+  overflow: hidden;
+}
+
+.footer::after {
+  content: 'TIỆM QUẦN ÁO';
+  display: block;
+  margin-bottom: 24px;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.48em;
+  color: var(--champagne);
+}
+
+.footer p {
+  margin-bottom: 10px;
+  color: var(--paper-3);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.footer p:last-child {
+  color: var(--champagne);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-top: 24px;
+  letter-spacing: 0.1em;
+  display: inline-block;
+  padding: 10px 22px;
+  border: 1px solid rgba(201, 168, 106, 0.35);
+  border-radius: var(--radius-xs);
+  background: transparent;
+}
+
+/* ===== FAB ZALO ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 12px 14px;
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+  color: var(--paper);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  box-shadow: 0 10px 32px -12px rgba(20, 18, 16, 0.5);
+  z-index: 100;
+  transition: background 0.35s var(--ease-soft),
+              border-color 0.35s var(--ease-soft),
+              transform 0.35s var(--ease-soft),
+              box-shadow 0.35s var(--ease-soft);
+}
+
+.fab-zalo:hover {
+  background: var(--terra);
+  border-color: var(--terra);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px -12px rgba(184, 83, 47, 0.55);
+}
+
+.fab-zalo:active {
+  transform: translateY(0);
+}
+
+.fab-zalo:focus-visible {
+  outline: 2px solid var(--terra);
+  outline-offset: 3px;
+}
+
+.fab-zalo img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .header { padding: 80px 20px 56px; }
+  .card-image { height: 260px; }
+  .card-body { padding: 22px 22px 28px; }
+}
+
+@media (max-width: 768px) {
+  .header { padding: 68px 20px 48px; }
+  .header-content::before { font-size: 0.6rem; letter-spacing: 0.34em; margin-bottom: 22px; }
+  .shop-name::after { margin-top: 20px; }
+
+  .filter-nav { gap: 0; padding: 16px 8px; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .filter-nav::-webkit-scrollbar { display: none; }
+  .filter-btn { padding: 8px 14px; font-size: 0.68rem; letter-spacing: 0.14em; flex-shrink: 0; }
+  .filter-btn::after { left: 14px; right: 14px; }
+
+  .card-image { height: 200px; }
+  .card-body { padding: 18px 18px 22px; }
+  .card-category-tag { font-size: 0.56rem; letter-spacing: 0.2em; margin-bottom: 12px; }
+  .card-name { font-size: 1rem; min-height: calc(1rem * 1.35 * 2); margin-bottom: 10px; }
+  .card-price { font-size: 0.92rem; margin-bottom: 18px; }
+  .card-btn { padding: 12px 14px; font-size: 0.66rem; letter-spacing: 0.16em; }
+  .card-btn:hover { letter-spacing: 0.18em; }
+
+  .footer { padding: 56px 20px 104px; }
+  .footer::after { letter-spacing: 0.4em; }
+
+  .fab-zalo { bottom: 16px; right: 16px; padding: 11px 16px 11px 12px; font-size: 0.64rem; letter-spacing: 0.14em; }
+  .fab-zalo img { width: 20px; height: 20px; }
+}
+
+@media (max-width: 480px) {
+  .card-image { height: 170px; }
+  .card-body { padding: 16px 16px 20px; }
+  .card-category-tag { font-size: 0.54rem; letter-spacing: 0.18em; }
+  .card-name { font-size: 0.94rem; min-height: calc(0.94rem * 1.35 * 2); }
+  .card-price { font-size: 0.86rem; }
+  .card-btn { font-size: 0.62rem; padding: 11px 10px; letter-spacing: 0.14em; }
+  .product-card::after { inset: 10px; }
+}
+
+@media (max-width: 400px) {
+  .header { padding: 56px 16px 40px; }
+  .card-image { height: 150px; }
+  .fab-zalo { padding: 13px; border-radius: var(--radius-sm); }
+  .fab-zalo span { display: none; }
+  .fab-zalo img { width: 22px; height: 22px; }
+}
+
+@media (max-width: 340px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .card-image { height: 220px; }
+}

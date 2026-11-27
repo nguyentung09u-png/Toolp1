@@ -1,0 +1,659 @@
+/* =========================================================
+   MIDNIGHT SAKURA NOIR — Visual Language v2
+   Plum · Sakura · Chrome · Aurora · Beveled Geometry
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  background: #140A17;
+}
+
+body {
+  background-color: #1A0E1F;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 15% -10%, rgba(255, 126, 182, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 50% at 85% 0%, rgba(167, 139, 250, 0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 70% at 50% 110%, rgba(255, 126, 182, 0.08) 0%, transparent 55%);
+  background-attachment: fixed;
+  color: #E8E3EC;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Hạt bụi sakura mờ trên nền — depth layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 126, 182, 0.35) 0.6px, transparent 1.2px),
+    radial-gradient(circle at 70% 60%, rgba(255, 200, 230, 0.25) 0.5px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(167, 139, 250, 0.3) 0.6px, transparent 1.2px),
+    radial-gradient(circle at 85% 20%, rgba(255, 126, 182, 0.22) 0.5px, transparent 1px);
+  background-size: 180px 180px, 240px 240px, 200px 200px, 260px 260px;
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   HEADER — ASYMMETRIC AURORA BLOCK
+   ========================================================= */
+.header {
+  position: relative;
+  text-align: center;
+  padding: 46px 22px 42px;
+  margin-bottom: 30px;
+  color: #E8E3EC;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg,
+      rgba(255, 126, 182, 0.14) 0%,
+      rgba(167, 139, 250, 0.10) 40%,
+      rgba(20, 10, 23, 0.65) 100%),
+    linear-gradient(180deg, #2A1730 0%, #1F1024 100%);
+  border-bottom: 1px solid rgba(255, 126, 182, 0.22);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 40px -20px rgba(255, 126, 182, 0.35),
+    0 30px 60px -30px rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* Ánh sakura lướt ngang — không dùng shine cũ, đây là blur blob */
+.header::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(255, 126, 182, 0.35) 0%, transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: header-drift 14s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -100px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.28) 0%, transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: header-drift 16s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+}
+
+@keyframes header-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 20px) scale(1.15); }
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+              transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.header-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(22px, 5.8vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  word-break: break-word;
+  background: linear-gradient(120deg, #E8E3EC 0%, #FFC8E6 40%, #FF7EB6 70%, #A78BFA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 12px rgba(255, 126, 182, 0.28));
+}
+
+.header-emoji {
+  font-size: clamp(24px, 6.2vw, 36px);
+  line-height: 1;
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  color: initial;
+  filter: drop-shadow(0 4px 12px rgba(255, 126, 182, 0.5));
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+.header:hover .header-emoji {
+  transform: rotate(-14deg) scale(1.12);
+}
+
+.header p {
+  font-family: 'Space Grotesk', monospace;
+  font-size: clamp(10.5px, 2.7vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(232, 227, 236, 0.55);
+}
+
+/* =========================================================
+   GRID CONTAINER
+   ========================================================= */
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 18px;
+  padding: 0 18px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   MENU CARD — BEVELED NOIR TILE + AURORA BORDER
+   ========================================================= */
+.menu-card {
+  position: relative;
+  background:
+    linear-gradient(165deg, #2E1B33 0%, #241528 55%, #1F1024 100%);
+  border-radius: 0;
+  clip-path: polygon(
+    14px 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    14px 100%,
+    0 calc(100% - 14px),
+    0 14px
+  );
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  min-width: 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 20px 40px -24px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 126, 182, 0.08);
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.menu-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 30px 60px -24px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 126, 182, 0.35),
+    0 0 40px -8px rgba(255, 126, 182, 0.3);
+}
+
+/* Aurora border (dùng gradient border-top khi hover) */
+.menu-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #FF7EB6 20%,
+    #A78BFA 50%,
+    #FF7EB6 80%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.menu-card:hover::after {
+  opacity: 1;
+}
+
+/* =========================================================
+   IMAGE — NOIR TINT + SAKURA HOVER
+   ========================================================= */
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background-color: #2A1730;
+  height: auto;
+  filter: saturate(0.85) contrast(1.05) brightness(0.92);
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+.menu-card:hover .card-img {
+  filter: saturate(1.15) contrast(1.05) brightness(1.02);
+  transform: scale(1.06);
+}
+
+/* Overlay gradient tím đè lên ảnh — tạo độ sâu */
+.card-img::after {
+  content: "";
+}
+
+.menu-card .card-img {
+  position: relative;
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+.card-body {
+  padding: 16px 15px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  min-width: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(31, 16, 36, 0.5) 0%,
+      rgba(36, 21, 40, 0.85) 40%,
+      rgba(36, 21, 40, 0.98) 100%);
+  position: relative;
+  z-index: 2;
+}
+
+/* Card Header — badge + mã số */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 20px;
+  flex-wrap: wrap;
+}
+
+.ma-mon {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(232, 227, 236, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #FFC8E6;
+  background: linear-gradient(135deg,
+    rgba(255, 126, 182, 0.18) 0%,
+    rgba(167, 139, 250, 0.14) 100%);
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 126, 182, 0.35);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 0 12px -2px rgba(255, 126, 182, 0.4);
+}
+
+.badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #FF7EB6;
+  box-shadow: 0 0 8px 1px rgba(255, 126, 182, 0.9);
+  animation: badge-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* =========================================================
+   TITLE + PRICE
+   ========================================================= */
+.menu-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(14.5px, 3.9vw, 17px);
+  font-weight: 600;
+  color: #E8E3EC;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.menu-card .price {
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 700;
+  font-size: clamp(14px, 3.7vw, 16px);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, #FF7EB6 0%, #A78BFA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+/* =========================================================
+   BUTTON — SAKURA GRADIENT GLOW
+   ========================================================= */
+.menu-card .btn-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #FF7EB6 0%, #A78BFA 100%);
+  color: #1A0E1F;
+  padding: 12px 10px;
+  border-radius: 999px;
+  border: none;
+  text-decoration: none;
+  font-family: 'Space Grotesk', monospace;
+  font-size: clamp(10.5px, 3vw, 12px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: auto;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  min-height: 42px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 6px 18px -6px rgba(255, 126, 182, 0.55);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+  z-index: 1;
+}
+
+.menu-card .btn-contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #FFC8E6 0%, #FF7EB6 50%, #A78BFA 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+
+.menu-card .btn-contact:hover,
+.menu-card .btn-contact:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 10px 26px -6px rgba(255, 126, 182, 0.75),
+    0 0 30px -4px rgba(167, 139, 250, 0.6);
+  outline: none;
+}
+
+.menu-card .btn-contact:hover::before,
+.menu-card .btn-contact:focus-visible::before {
+  opacity: 1;
+}
+
+.menu-card .btn-contact:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   ZALO FLOATING BUTTON — DARK GLASS + SAKURA RING
+   ========================================================= */
+.zalo-btn {
+  position: fixed;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  right: calc(22px + env(safe-area-inset-right, 0px));
+  background: rgba(36, 21, 40, 0.85);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  color: #E8E3EC;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px 11px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 126, 182, 0.28);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 12px 30px -10px rgba(0, 0, 0, 0.7),
+    0 0 24px -6px rgba(255, 126, 182, 0.35);
+  z-index: 100;
+  max-width: calc(100vw - 44px);
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+  overflow: visible;
+}
+
+/* Vòng sáng xoay quanh — signature detail */
+.zalo-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 126, 182, 0.7) 60deg,
+    rgba(167, 139, 250, 0.7) 120deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  z-index: -1;
+  opacity: 0.7;
+  animation: zalo-orbit 4s linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes zalo-orbit {
+  to { transform: rotate(360deg); }
+}
+
+.zalo-btn:hover,
+.zalo-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255, 126, 182, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 16px 36px -10px rgba(0, 0, 0, 0.8),
+    0 0 36px -6px rgba(255, 126, 182, 0.6);
+  outline: none;
+}
+
+.zalo-btn img {
+  width: 26px;
+  height: 26px;
+  background: #FBF7F1;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.zalo-btn:hover img {
+  transform: rotate(-10deg) scale(1.08);
+}
+
+.zalo-btn span {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Mobile nhỏ: 320px – 374px */
+@media (max-width: 374px) {
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 14px;
+  }
+
+  .header {
+    padding: 36px 14px 34px;
+    margin-bottom: 22px;
+  }
+
+  .zalo-btn {
+    padding: 9px 14px 9px 9px;
+    gap: 8px;
+  }
+
+  .zalo-btn span {
+    font-size: 11.5px;
+  }
+
+  .zalo-btn img {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Mobile: 375px – 767px */
+@media (min-width: 375px) and (max-width: 767px) {
+  .menu-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
+/* Tablet: 768px – 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header {
+    padding: 58px 26px 50px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    padding: 0 26px;
+  }
+}
+
+/* Laptop: 1024px – 1439px */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .header {
+    padding: 66px 34px 56px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    padding: 0 34px;
+  }
+}
+
+/* Desktop lớn: 1440px+ */
+@media (min-width: 1440px) {
+  .header {
+    padding: 76px 42px 64px;
+  }
+
+  .menu-container {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 28px;
+    padding: 0 42px;
+    max-width: 1480px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .header::before,
+  .header::after,
+  .zalo-btn::before,
+  .badge::before,
+  .menu-card,
+  .card-img,
+  .menu-card .btn-contact,
+  .zalo-btn,
+  .zalo-btn img,
+  .header-emoji,
+  .header-content {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .header-content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-card:hover {
+    transform: none;
+  }
+}

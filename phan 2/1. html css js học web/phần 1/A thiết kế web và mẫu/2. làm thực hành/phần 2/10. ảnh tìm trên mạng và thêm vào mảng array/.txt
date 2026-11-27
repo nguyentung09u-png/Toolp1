@@ -1,0 +1,33 @@
+nhớ gửi ảnh menu
++
+gửi .html .css .js
+đầy đủ cho nó tự phân tích và sửa lại thêm vào mảng array giúp
+
+
+
+
+----
+
+
+VAI TRÒ: Frontend developer hỗ trợ tạo dữ liệu sản phẩm.
+
+NHIỆM VỤ: Tôi gửi danh sách món (tên + giá + danh mục). Bạn trả về mảng `products` với object viết INLINE trên 1 dòng mỗi object.
+
+CẤU TRÚC OBJECT (inline):
+{ name: "...", price: 0, category: "...", image: "..." }
+
+QUY TẮC:
+- Mỗi object trên 1 dòng, không xuống dòng trong object.
+- Tự tìm link ảnh từ Unsplash/Pexels/Pixabay, gắn ?w=400&q=80.
+- Chỉ dùng link có thật, không bịa photo-ID.
+- Không chắc ảnh đúng món → ghi chú "cần kiểm tra".
+- Không tìm được → dùng placeholder + ghi rõ.
+- Trả về TOÀN BỘ mảng, trong 1 code block ```javascript.
+
+VÍ DỤ OUTPUT:
+const products = [
+  { name: "Trà Sữa Trân Châu", price: 20000, category: "tra-sua", image: "https://images.unsplash.com/photo-1558857563-b371033873b8?w=400&q=80" },
+  { name: "Cà Phê Sữa Đá", price: 15000, category: "ca-phe", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80" }
+];
+
+INPUT: (gửi danh sách món bên dưới)

@@ -1,0 +1,639 @@
+/* =========================================================
+   TIỆM NHÀ SÓC NHÍM — MONOCHROME ZEN
+   Redesign visual v3. Structure / HUD / logic: untouched.
+   Kèm fix lệch hàng (card-name clamp) + fix cắt chữ (card-btn).
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Nền & bề mặt */
+  --bg: #fafaf7;
+  --bg-2: #f3f3ee;
+  --surface: #ffffff;
+  --surface-hover: #fbfbf8;
+
+  /* Đường kẻ */
+  --line-1: #e6e6df;
+  --line-2: #d4d4cc;
+  --line-strong: #1a1a17;
+
+  /* Ink (chữ) */
+  --ink-1: #1a1a17;
+  --ink-2: #4a4a44;
+  --ink-3: #8a8a80;
+  --ink-4: #b5b5aa;
+
+  /* Accent duy nhất — đỏ son Nhật */
+  --shu: #c0392b;
+  --shu-soft: #f3e4e1;
+
+  /* Spacing / shape */
+  --radius: 2px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background:
+    /* Vân giấy washi rất nhẹ — 2 lớp chấm lệch nhau */
+    radial-gradient(rgba(26, 26, 23, 0.025) 0.6px, transparent 0.6px) 0 0 / 12px 12px,
+    radial-gradient(rgba(26, 26, 23, 0.018) 0.8px, transparent 0.8px) 6px 6px / 12px 12px,
+    var(--bg);
+  color: var(--ink-1);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern", "ss01";
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 72px 20px 56px;
+  text-align: center;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line-1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Đường kẻ mảnh ngang hai bên chữ */
+.header::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 44px;
+  height: 1px;
+  background: var(--line-2);
+  z-index: 0;
+}
+
+/* Chấm son đỏ nhỏ góc trái — điểm nhấn duy nhất */
+.header::after {
+  content: '';
+  position: absolute;
+  top: 44px;
+  left: 8%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--shu);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px var(--line-2);
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Chữ "EST. 2024" nhỏ phía trên */
+.header-content::before {
+  content: 'TIỆM TRÀ · EST. 2024';
+  display: block;
+  margin-bottom: 24px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.36em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.shop-name {
+  font-size: clamp(1.85rem, 5.2vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  color: var(--ink-1);
+  text-wrap: balance;
+}
+
+/* Dấu chấm son đỏ nhỏ sau chữ — điểm nhấn Nhật */
+.shop-name::after {
+  content: '。';
+  color: var(--shu);
+  font-weight: 400;
+  margin-left: 2px;
+  font-size: 0.7em;
+  vertical-align: 0.15em;
+}
+
+.shop-slogan {
+  margin-top: 20px;
+  font-size: clamp(0.85rem, 2.3vw, 0.98rem);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--ink-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Đường kẻ mảnh hai bên slogan */
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--line-2);
+}
+
+/* ===== BỘ LỌC DANH MỤC ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  padding: 0 16px;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 250, 247, 0.94);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border-bottom: 1px solid var(--line-1);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 16px 18px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ink-3);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease);
+  position: relative;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  color: var(--ink-1);
+  background: rgba(26, 26, 23, 0.02);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  color: var(--ink-1);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.filter-btn.active {
+  color: var(--ink-1);
+  font-weight: 700;
+  border-bottom-color: var(--shu);
+  background: transparent;
+}
+
+/* ===== LƯỚI SẢN PHẨM ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 48px 24px 72px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-3) !important;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ===== CARD SẢN PHẨM ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition:
+    border-color 0.35s var(--ease),
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
+  will-change: transform;
+}
+
+.product-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 var(--line-1),
+    0 12px 28px -12px rgba(26, 26, 23, 0.14);
+}
+
+/* Ảnh — tỉ lệ đều, không zoom mạnh */
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line-1);
+  filter: grayscale(15%) contrast(1.02);
+  transition: filter 0.5s var(--ease);
+  /* Loading shimmer dạng washi */
+  background-image: linear-gradient(
+    110deg,
+    var(--bg-2) 8%,
+    #ebebe4 18%,
+    var(--bg-2) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmerWashi 1.9s linear infinite;
+}
+
+.product-card:hover .card-image {
+  filter: grayscale(0%) contrast(1.04);
+}
+
+@keyframes shimmerWashi {
+  to { background-position-x: -200%; }
+}
+
+/* Body */
+.card-body {
+  position: relative;
+  padding: 18px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface);
+  min-height: 0;
+  justify-content: flex-start;
+}
+
+/* Badge danh mục — kiểu chữ nhỏ ngang, không nền, có gạch chân son */
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: transparent;
+  padding: 0 0 4px 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--shu);
+  /* Chống tràn tag dài */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-1);
+  margin-bottom: 12px;
+  letter-spacing: -0.005em;
+  /* Fix: giới hạn 2 dòng + khóa chiều cao để card đều nhau */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.05rem * 1.4 * 2);
+  word-break: break-word;
+}
+
+/* Giá — kiểu số nhật, có đường kẻ mảnh dưới */
+.card-price {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+  padding: 0 0 8px 0;
+  border-bottom: 1px solid var(--line-1);
+  margin-bottom: 20px;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+}
+
+/* ===== NÚT LIÊN HỆ ===== */
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--surface);
+  background: var(--line-strong);
+  transition:
+    background 0.3s var(--ease),
+    color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+  cursor: pointer;
+  position: relative;
+  /* Fix: bỏ overflow hidden + co giãn trong grid */
+  overflow: visible;
+  min-width: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.card-btn:hover {
+  background: var(--shu);
+  border-color: var(--shu);
+  color: #fff;
+}
+
+.card-btn:active {
+  transform: translateY(1px);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--shu);
+}
+
+.card-btn img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 1px;
+  flex-shrink: 0;
+  filter: grayscale(100%);
+  transition: filter 0.3s var(--ease);
+}
+
+.card-btn:hover img {
+  filter: grayscale(0%);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 56px 20px 116px;
+  margin-top: 0;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  background: var(--surface);
+  border-top: 1px solid var(--line-1);
+  letter-spacing: 0.01em;
+}
+
+/* Chữ "TIỆM NHÀ SÓC NHÍM" nhỏ phía trên */
+.footer::before {
+  content: 'TIỆM NHÀ SÓC NHÍM';
+  display: block;
+  margin-bottom: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.36em;
+  color: var(--ink-3);
+}
+
+.footer p {
+  margin-bottom: 8px;
+  color: var(--ink-2);
+}
+
+.footer p:last-child {
+  color: var(--ink-1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== FAB ZALO ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 12px 14px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--surface);
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+  background: var(--line-strong);
+  border: 1px solid var(--line-strong);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 8px 22px -10px rgba(26, 26, 23, 0.4);
+  z-index: 100;
+  transition:
+    background 0.3s var(--ease),
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+
+.fab-zalo:hover {
+  background: var(--shu);
+  border-color: var(--shu);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 12px 28px -10px rgba(192, 57, 43, 0.45);
+}
+
+.fab-zalo:active {
+  transform: translateY(0);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--shu);
+}
+
+.fab-zalo img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 20px;
+    padding: 36px 20px 60px;
+  }
+
+  .card-image {
+    height: 175px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 56px 16px 44px;
+  }
+
+  .header::before,
+  .header::after {
+    display: none; /* ẩn đường kẻ + chấm son trên mobile cho gọn */
+  }
+
+  .filter-nav {
+    gap: 0;
+    padding: 0 8px;
+  }
+
+  .filter-btn {
+    padding: 13px 12px;
+    font-size: 0.78rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 28px 14px 56px;
+  }
+
+  .card-image {
+    height: 148px;
+  }
+
+  .card-body {
+    padding: 13px 13px 15px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.4 * 2);
+    margin-bottom: 10px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 15px 10px 11px;
+    font-size: 0.82rem;
+  }
+
+  .footer {
+    padding: 40px 16px 100px;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 46px 12px 34px;
+  }
+
+  .header-content::before {
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    margin-bottom: 18px;
+  }
+
+  .card-image {
+    height: 130px;
+  }
+
+  .card-category-tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    margin-bottom: 10px;
+  }
+
+  .card-name {
+    font-size: 0.85rem;
+    min-height: calc(0.85rem * 1.4 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 6px;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  /* FAB gọn còn icon */
+  .fab-zalo {
+    padding: 12px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
