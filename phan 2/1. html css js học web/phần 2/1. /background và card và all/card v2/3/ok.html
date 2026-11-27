@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void:      #08060f;
+    --void-2:    #0e0a1c;
+    --void-3:    #150f28;
+    --violet:    #6b3fd4;
+    --violet-2:  #4a1fa8;
+    --magenta:   #d43fa8;
+    --cyan:      #4fd4d4;
+    --white:     #ece6f5;
+    --muted:     #7a6f94;
+    --hairline:  rgba(107, 63, 212, 0.28);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+    background: var(--void);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: CONIC SWEEP TĨNH ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      conic-gradient(from 200deg at 65% 35%,
+        rgba(107, 63, 212, 0.18) 0deg,
+        rgba(212, 63, 168, 0.14) 90deg,
+        rgba(79, 212, 212, 0.06) 180deg,
+        transparent 260deg,
+        rgba(74, 31, 168, 0.12) 360deg),
+      radial-gradient(ellipse 80% 60% at 30% 70%, rgba(107, 63, 212, 0.15), transparent 65%),
+      linear-gradient(180deg, #08060f 0%, #0e0a1c 55%, #06040c 100%);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.65  0 0 0 0 0.5  0 0 0 0 0.85  0 0 0 0.045 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+  }
+
+  /* ---------- CARD: VERTICAL PILL + ASYMMETRIC FLARE ---------- */
+  .card {
+    position: relative;
+    width: min(420px, 100%);
+    padding: 40px 34px 38px;
+    background:
+      linear-gradient(155deg, #1a1230 0%, #120c24 45%, #08060f 100%);
+    /* Góc: trên-trái flare lớn, dưới-phải flare lớn — asymmetric pill */
+    border-radius: 40px 14px 40px 14px;
+    border: 1px solid var(--hairline);
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(107, 63, 212, 0.12),
+      0 0 80px -25px rgba(107, 63, 212, 0.45),
+      0 0 60px -30px rgba(212, 63, 168, 0.3),
+      inset 0 1px 0 rgba(236, 230, 245, 0.10);
+    overflow: hidden;
+
+    opacity: 0;
+    transform: scale(0.96) rotate(-0.6deg);
+    animation: cardIn 1000ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+  /* Top hairline gradient */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 20px; right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(107, 63, 212, 0.7) 25%,
+      rgba(212, 63, 168, 0.7) 50%,
+      rgba(79, 212, 212, 0.5) 75%,
+      transparent);
+  }
+  /* Ambient corner glow */
+  .card::after {
+    content: "";
+    position: absolute;
+    top: -40%;
+    right: -30%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(212, 63, 168, 0.18), transparent 65%);
+    pointer-events: none;
+  }
+
+  /* ---------- LAYOUT: LEFT VERTICAL NAME + RIGHT STACK ---------- */
+  .content {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: stretch;
+  }
+
+  /* Left rail: tên dọc + baseline bar */
+  .rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 6px;
+    gap: 16px;
+  }
+
+  .baseline-bar {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(180deg,
+      var(--violet) 0%,
+      var(--magenta) 55%,
+      transparent 100%);
+    box-shadow: 0 0 10px rgba(212, 63, 168, 0.5);
+    border-radius: 1px;
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: barGrow 900ms cubic-bezier(.2,.7,.2,1) 500ms forwards;
+  }
+  .bar-cap {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--magenta);
+    box-shadow: 0 0 12px rgba(212, 63, 168, 0.9);
+    opacity: 0;
+    animation: fadeIn 500ms ease 1300ms forwards;
+  }
+
+  .name-vertical {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Helvetica Neue', system-ui, sans-serif;
+    font-size: clamp(22px, 5.5vw, 30px);
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--white);
+    white-space: nowrap;
+    opacity: 0;
+    animation: revealName 1100ms cubic-bezier(.2,.7,.2,1) 600ms forwards;
+  }
+
+  /* Right stack: meta */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    padding-top: 4px;
+  }
+  .meta-item {
+    display: grid;
+    gap: 6px;
+    opacity: 0;
+    animation: slideRise 800ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .meta-item:nth-child(1) { animation-delay: 950ms; }
+  .meta-item:nth-child(2) { animation-delay: 1120ms; }
+
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-family: 'Helvetica Neue', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: var(--white);
+  }
+
+  /* Điểm nhấn cyan nhỏ cho value đầu (spark) */
+  .meta-item:nth-child(1) .meta-val::after {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-left: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px rgba(79, 212, 212, 0.8);
+    vertical-align: middle;
+    opacity: 0;
+    animation: fadeIn 500ms ease 1500ms forwards;
+  }
+
+  /* ---------- ANIMATIONS ---------- */
+  @keyframes cardIn {
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  @keyframes barGrow {
+    to { opacity: 1; transform: scaleY(1); }
+  }
+  @keyframes revealName {
+    from { opacity: 0; transform: rotate(180deg) translateX(12px); filter: blur(3px); }
+    to   { opacity: 1; transform: rotate(180deg) translateX(0);    filter: blur(0); }
+  }
+  @keyframes slideRise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .baseline-bar, .bar-cap, .name-vertical, .meta-item,
+    .meta-item:nth-child(1) .meta-val::after {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+    .name-vertical { transform: rotate(180deg) !important; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card { padding: 34px 22px 32px; border-radius: 32px 12px 32px 12px; }
+    .content { gap: 20px; }
+    .name-vertical { font-size: 22px; letter-spacing: 0.5px; }
+    .meta-val { font-size: 18px; }
+    .meta-key { letter-spacing: 3px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND CONIC SWEEP -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- CARD -->
+    <article class="card">
+      <div class="content">
+
+        <!-- Rail trái: tên dọc + baseline -->
+        <div class="rail">
+          <div class="baseline-bar" aria-hidden="true"></div>
+          <div class="bar-cap" aria-hidden="true"></div>
+          <h1 class="name-vertical">Nguyễn Thanh Huy</h1>
+        </div>
+
+        <!-- Stack phải: meta -->
+        <div class="stack">
+          <div class="meta-item">
+            <div class="meta-key">Năm sinh</div>
+            <div class="meta-val">2007</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-key">Quê quán</div>
+            <div class="meta-val">Quảng Nam</div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>

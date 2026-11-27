@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void:     #0a0812;
+    --void-2:   #12101e;
+    --void-3:   #1a1828;
+    --silver:   #e8e6f0;
+    --silver-2: #b8b6c8;
+    --mirror:   #ffffff;
+    --accent:   #7fd4d4;
+    --rose:     #e8a0c0;
+    --muted:    #6a6880;
+    --line:     rgba(232, 230, 240, 0.14);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--void);
+    color: var(--silver);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: DARK MIRROR ROOM ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 50% 40% at 30% 20%, rgba(127, 212, 212, 0.10), transparent 60%),
+      radial-gradient(ellipse 45% 35% at 75% 80%, rgba(232, 160, 192, 0.10), transparent 60%),
+      linear-gradient(180deg, #0a0812 0%, #12101e 50%, #0a0812 100%);
+  }
+  /* Grid horizon line mờ — tạo cảm giác phòng mirror */
+  .bg::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background-image:
+      linear-gradient(rgba(232, 230, 240, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232, 230, 240, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: linear-gradient(to top, black 0%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 90%);
+    transform: perspective(400px) rotateX(50deg);
+    transform-origin: bottom center;
+  }
+  /* Grain */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.28;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.7  0 0 0 0 0.7  0 0 0 0 0.85  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER (có reflection bên dưới) ---------- */
+  .scene {
+    position: relative;
+    width: min(340px, 88vw);
+    opacity: 0;
+    animation: sceneIn 1100ms cubic-bezier(.16,1,.3,1) 100ms forwards;
+  }
+  @keyframes sceneIn { to { opacity: 1; } }
+
+  .card-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    transform: perspective(1200px) rotateX(2deg);
+    transform-origin: bottom center;
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px;
+    overflow: hidden;
+    /* Nền mirror glass */
+    background:
+      linear-gradient(145deg,
+        rgba(30, 28, 48, 0.85) 0%,
+        rgba(18, 16, 30, 0.95) 50%,
+        rgba(10, 8, 18, 1) 100%);
+    border: 1px solid var(--line);
+    box-shadow:
+      0 50px 100px -40px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(232, 230, 240, 0.06),
+      0 0 80px -30px rgba(127, 212, 212, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  /* Specular highlight chéo — phản chiếu mạnh */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg,
+        transparent 0%,
+        transparent 30%,
+        rgba(255, 255, 255, 0.10) 45%,
+        rgba(255, 255, 255, 0.20) 50%,
+        rgba(255, 255, 255, 0.10) 55%,
+        transparent 70%,
+        transparent 100%);
+    pointer-events: none;
+    z-index: 3;
+    mix-blend-mode: screen;
+  }
+
+  /* Inner soft mirror tint */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(127, 212, 212, 0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(232, 160, 192, 0.08), transparent 40%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ---------- REFLECTION BÊN DƯỚI ---------- */
+  .reflection {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    margin-top: -1px;
+    overflow: hidden;
+    opacity: 0.28;
+    transform: scaleY(-1) perspective(1200px) rotateX(20deg);
+    transform-origin: top center;
+    filter: blur(2px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+    pointer-events: none;
+  }
+  /* Reflection dùng gradient đơn giản mô phỏng card */
+  .reflection::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(145deg,
+        rgba(30, 28, 48, 0.85) 0%,
+        rgba(18, 16, 30, 0.7) 50%,
+        rgba(10, 8, 18, 0.3) 100%);
+    border-radius: 24px;
+  }
+  /* Reflection specular line */
+  .reflection::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg,
+      transparent 30%,
+      rgba(127, 212, 212, 0.15) 50%,
+      transparent 70%);
+  }
+
+  /* ---------- NỘI DUNG ---------- */
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 40px 32px 32px;
+  }
+
+  /* Top: index + dot */
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0;
+    animation: fadeUp 700ms ease 450ms forwards;
+  }
+  .index-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .top-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffffff, var(--accent));
+    box-shadow: 0 0 12px var(--accent);
+    animation: dotGlow 3s ease-in-out infinite;
+  }
+  @keyframes dotGlow {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  /* Mid: name mirror text */
+  .mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px 0;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--silver-2);
+    opacity: 0;
+    animation: fadeUp 700ms ease 600ms forwards;
+  }
+
+  .name {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(38px, 10vw, 50px);
+    font-weight: 200;
+    letter-spacing: -1.5px;
+    line-height: 0.95;
+    color: var(--silver);
+    opacity: 0;
+    animation: fadeUp 1000ms cubic-bezier(.16,1,.3,1) 750ms forwards;
+  }
+  .name strong {
+    font-weight: 800;
+    display: block;
+    /* Mirror gradient text */
+    background: linear-gradient(180deg,
+      #ffffff 0%,
+      #e8e6f0 30%,
+      #b8b6c8 50%,
+      #e8e6f0 70%,
+      #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(232, 230, 240, 0.3));
+  }
+
+  /* Hairline mirror rule */
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 700ms ease 950ms forwards;
+  }
+  .rule-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+      rgba(232, 230, 240, 0.5),
+      rgba(232, 230, 240, 0.15),
+      transparent);
+  }
+  .rule-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* Bottom meta */
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(232, 230, 240, 0.08);
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) forwards;
+  }
+  .meta-item:nth-child(1) { animation-delay: 1100ms; }
+  .meta-item:nth-child(2) { animation-delay: 1220ms; border-bottom: none; }
+
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    color: var(--silver);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .scene, .top-row, .top-dot, .eyebrow, .name, .rule, .meta-item {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .scene { width: min(300px, 84vw); }
+    .content { padding: 34px 24px 26px; }
+    .name { letter-spacing: -1px; }
+    .meta-val { font-size: 15px; }
+    .reflection { height: 60px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .scene { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- SCENE (card + reflection) -->
+    <div class="scene">
+      <div class="card-wrap">
+
+        <article class="card">
+          <div class="content">
+
+            <!-- Top -->
+            <div class="top-row">
+              <span class="index-tag">N° 07</span>
+              <span class="top-dot" aria-hidden="true"></span>
+            </div>
+
+            <!-- Mid -->
+            <div class="mid">
+              <span class="eyebrow">Nguyễn Thanh</span>
+              <h1 class="name">
+                <strong>Huy</strong>
+              </h1>
+              <div class="rule" aria-hidden="true">
+                <span class="rule-line"></span>
+                <span class="rule-tag">Profile</span>
+              </div>
+            </div>
+
+            <!-- Bottom -->
+            <div class="meta">
+              <div class="meta-item">
+                <span class="meta-key">Năm sinh</span>
+                <span class="meta-val">2007</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-key">Quê quán</span>
+                <span class="meta-val">Quảng Nam</span>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Reflection dưới -->
+      <div class="reflection" aria-hidden="true"></div>
+    </div>
+
+  </main>
+
+</body>
+</html>

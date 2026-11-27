@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --obsidian:  #0a0f0d;
+    --obsidian-2:#0f1714;
+    --emerald:   #1f7a5a;
+    --sage:      #a8d5ba;
+    --sage-soft: #d4e8dc;
+    --pale:      #eaf2ee;
+    --muted:     #5e7a6e;
+    --hairline:  rgba(168, 213, 186, 0.22);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--obsidian);
+    color: var(--pale);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: TOPOGRAPHIC CONTOUR ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 45%, rgba(31, 122, 90, 0.14), transparent 70%),
+      radial-gradient(ellipse 90% 70% at 20% 80%, rgba(31, 122, 90, 0.06), transparent 60%),
+      linear-gradient(180deg, #0a0f0d 0%, #0d1411 50%, #080c0a 100%);
+  }
+  /* Contour lines SVG tĩnh — tạo chiều sâu địa hình */
+  .bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.14;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'><g fill='none' stroke='%23a8d5ba' stroke-width='0.8'><ellipse cx='200' cy='200' rx='180' ry='120'/><ellipse cx='200' cy='200' rx='150' ry='100'/><ellipse cx='200' cy='200' rx='120' ry='80'/><ellipse cx='200' cy='200' rx='90' ry='60'/><ellipse cx='200' cy='200' rx='60' ry='40'/><ellipse cx='200' cy='200' rx='30' ry='20'/></g></svg>");
+    background-size: 600px 600px;
+    background-position: center;
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.66  0 0 0 0 0.83  0 0 0 0 0.73  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+  }
+
+  /* ---------- CARD: CHAMFER 4 GÓC + NOTCH CẠNH ---------- */
+  .card {
+    position: relative;
+    width: min(420px, 100%);
+    padding: 0;
+    background:
+      linear-gradient(155deg, #12201b 0%, #0d1714 45%, #080c0a 100%);
+    /* Chamfer 4 góc + notch giữa cạnh trên/dưới */
+    clip-path: polygon(
+      22px 0,
+      calc(50% - 14px) 0,
+      calc(50% - 8px) 8px,
+      calc(50% + 8px) 8px,
+      calc(50% + 14px) 0,
+      calc(100% - 22px) 0,
+      100% 22px,
+      100% calc(100% - 22px),
+      calc(100% - 22px) 100%,
+      22px 100%,
+      0 calc(100% - 22px),
+      0 22px
+    );
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.95),
+      0 0 70px -25px rgba(31, 122, 90, 0.35);
+
+    opacity: 0;
+    animation: cardWipe 1100ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+
+  /* Inner gradient layer (bên trong clip-path) */
+  .card-inner {
+    position: relative;
+    padding: 44px 36px 40px;
+    border: 1px solid var(--hairline);
+    clip-path: inherit;
+    background: linear-gradient(155deg, #12201b 0%, #0d1714 45%, #080c0a 100%);
+  }
+
+  /* ---------- CORNER BRACKETS (accent khung góc) ---------- */
+  .bracket {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+  }
+  .bracket::before,
+  .bracket::after {
+    content: "";
+    position: absolute;
+    background: var(--sage);
+    opacity: 0.85;
+  }
+  .bracket-tl { top: 30px; left: 26px; }
+  .bracket-tl::before { top: 0; left: 0; width: 100%; height: 1px; }
+  .bracket-tl::after  { top: 0; left: 0; width: 1px; height: 100%; }
+
+  .bracket-br { bottom: 30px; right: 26px; transform: rotate(180deg); }
+  .bracket-br::before { top: 0; left: 0; width: 100%; height: 1px; }
+  .bracket-br::after  { top: 0; left: 0; width: 1px; height: 100%; }
+
+  /* ---------- SPLIT DIAGONAL LAYOUT ---------- */
+  .split {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  /* Vùng trên: Tên (serif italic) */
+  .name-zone {
+    position: relative;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(168, 213, 186, 0.14);
+  }
+  .name-zone::after {
+    /* Đường chéo nhỏ tạo cá tính split */
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    width: 32px;
+    height: 1px;
+    background: var(--sage);
+    transform: skewX(-45deg);
+    transform-origin: right;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 14px;
+    opacity: 0;
+    animation: fadeIn 600ms ease 500ms forwards;
+  }
+
+  .name {
+    font-size: clamp(26px, 6vw, 34px);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
+    color: var(--pale);
+    opacity: 0;
+    animation: wipeReveal 1000ms cubic-bezier(.65,0,.35,1) 600ms forwards;
+  }
+
+  /* Vùng dưới: Meta 2 cột, trái-key phải-value */
+  .meta-zone {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 20px;
+  }
+  .meta-cell {
+    opacity: 0;
+    animation: slideIn 800ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .meta-cell:nth-child(1) { animation-delay: 1000ms; }
+  .meta-cell:nth-child(2) { animation-delay: 1140ms; }
+
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .meta-val {
+    font-family: 'Georgia', serif;
+    font-size: 19px;
+    letter-spacing: 0.3px;
+    color: var(--sage-soft);
+    font-style: italic;
+  }
+
+  /* ---------- ANIMATIONS ---------- */
+  @keyframes cardWipe {
+    from { opacity: 0; transform: translateY(16px); clip-path: polygon(22px 0, calc(50% - 14px) 0, calc(50% - 8px) 8px, calc(50% + 8px) 8px, calc(50% + 14px) 0, calc(100% - 22px) 0, 100% 22px, 100% 30%, 90% 100%, 22px 100%, 0 100%, 0 22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes wipeReveal {
+    from { opacity: 0; clip-path: inset(0 100% 0 0); }
+    to   { opacity: 1; clip-path: inset(0 0 0 0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .eyebrow, .name, .meta-cell {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-inner { padding: 38px 24px 34px; }
+    .bracket-tl { top: 24px; left: 20px; }
+    .bracket-br { bottom: 24px; right: 20px; }
+    .meta-zone { gap: 14px; }
+    .meta-val { font-size: 17px; }
+    .name { font-size: 25px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND CONTOUR -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- CARD -->
+    <article class="card">
+      <div class="card-inner">
+        <span class="bracket bracket-tl" aria-hidden="true"></span>
+        <span class="bracket bracket-br" aria-hidden="true"></span>
+
+        <div class="split">
+          <!-- Vùng 1: Tên -->
+          <div class="name-zone">
+            <span class="eyebrow">Profile</span>
+            <h1 class="name">Nguyễn Thanh Huy</h1>
+          </div>
+
+          <!-- Vùng 2: Meta -->
+          <div class="meta-zone">
+            <div class="meta-cell">
+              <div class="meta-key">Năm sinh</div>
+              <div class="meta-val">2007</div>
+            </div>
+            <div class="meta-cell">
+              <div class="meta-key">Quê quán</div>
+              <div class="meta-val">Quảng Nam</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+1.flex cần những gì để sài
+
+khai báo trong css :
+-  display: flex;
+khoảng cách giữa các card :
+- gap: 12px;
+
+
+---chọn flex -----
+ngang 
+flex-wrap: wrap;
+
+
+hoặc
+xếp dọc :
+  flex-direction: column; /* Ép xếp thành 1 cột dọc */

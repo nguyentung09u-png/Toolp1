@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Swiss Editorial Grid — Sidebar v7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ROOT
+     ============================================================ */
+  :root {
+    --paper:      #fafaf7;
+    --paper-alt:  #f0f0eb;
+    --ink:        #000000;
+    --ink-mid:    #4a4a4a;
+    --ink-mute:   #8a8a8a;
+    --rule:       #000000;
+    --red:        #e30613;
+    --red-deep:   #b8050f;
+
+    --sidebar-w:  360px;
+
+    --font:       'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--font);
+    font-weight: 400;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Grid 12 cột mờ — Swiss style */
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ============================================================
+     HAMBURGER — Swiss square (góc trái)
+     ============================================================ */
+  .hamburger {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 60;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .hamburger:hover {
+    background: var(--ink);
+  }
+
+  .hamburger:hover .hamburger__bar {
+    background: var(--paper);
+  }
+
+  .hamburger:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  .hamburger__bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--ink);
+    transition:
+      transform 0.3s cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 0.15s steps(1),
+      background 0.2s ease;
+    transform-origin: center;
+  }
+
+  /* Morph 3 gạch → X */
+  .hamburger[aria-expanded="true"] {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger__bar {
+    background: var(--paper);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* ============================================================
+     BACKDROP
+     ============================================================ */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+  }
+
+  /* ============================================================
+     SIDEBAR — Full-height trái, không shadow
+     ============================================================ */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 80;
+    width: var(--sidebar-w);
+    max-width: 92vw;
+
+    background: var(--paper);
+    border-right: 2px solid var(--ink);
+
+    display: flex;
+    flex-direction: column;
+
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* ============================================================
+     HEADER — Swiss masthead
+     ============================================================ */
+  .sidebar__header {
+    flex-shrink: 0;
+    padding: 20px 24px 16px;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .sidebar__masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar__title {
+    font-family: var(--font);
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--ink);
+    text-transform: lowercase;
+  }
+
+  .sidebar__title::before {
+    content: "●";
+    color: var(--red);
+    font-size: 14px;
+    vertical-align: super;
+    margin-right: 2px;
+    letter-spacing: 0;
+  }
+
+  .sidebar__version {
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+
+  .sidebar__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    border-top: 1px solid var(--ink);
+    padding-top: 8px;
+    margin-top: 12px;
+  }
+
+  .sidebar__meta span:nth-child(2) {
+    color: var(--red);
+    font-weight: 700;
+  }
+
+  /* ============================================================
+     CLOSE BUTTON — top-right of sidebar
+     ============================================================ */
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 6;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s ease,
+      background 0.15s steps(1),
+      color 0.15s steps(1);
+  }
+
+  .sidebar.is-open .close-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 0.15s;
+  }
+
+  .close-btn:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--paper);
+  }
+
+  .close-btn:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  .close-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: square;
+  }
+
+  /* ============================================================
+     NAV — Grid rows, no icons
+     ============================================================ */
+  .nav {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--paper);
+  }
+
+  .nav::-webkit-scrollbar { width: 6px; }
+  .nav::-webkit-scrollbar-track { background: var(--paper-alt); }
+  .nav::-webkit-scrollbar-thumb {
+    background: var(--ink);
+  }
+
+  .nav__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav__item {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav__item:first-child {
+    border-top: 1px solid var(--rule);
+  }
+
+  .nav__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 0;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--paper);
+    transition:
+      background 0.1s steps(1),
+      color 0.1s steps(1);
+  }
+
+  /* Số thứ tự — cột trái, viền phải ngăn cách */
+  .nav__index {
+    display: grid;
+    place-items: center;
+    height: 72px;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--ink-mute);
+    background: var(--paper-alt);
+    border-right: 1px solid var(--rule);
+    transition:
+      background 0.1s steps(1),
+      color 0.1s steps(1);
+  }
+
+  /* Label chính */
+  .nav__label {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .nav__label-main {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav__label-sub {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    transition: color 0.1s steps(1);
+  }
+
+  /* Arrow indicator (typographic, không phải SVG) */
+  .nav__arrow {
+    padding-right: 20px;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--ink-mute);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity 0.15s ease,
+      transform 0.25s ease,
+      color 0.1s steps(1);
+  }
+
+  /* HOVER */
+  .nav__link:hover {
+    background: var(--paper-alt);
+  }
+
+  .nav__link:hover .nav__index {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .nav__link:hover .nav__arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--ink);
+  }
+
+  .nav__link:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: -3px;
+  }
+
+  /* ACTIVE — đỏ Thụy Sĩ */
+  .nav__link.is-active {
+    background: var(--red);
+    color: var(--paper);
+  }
+
+  .nav__link.is-active .nav__index {
+    background: var(--red-deep);
+    color: var(--paper);
+    border-right-color: var(--paper);
+  }
+
+  .nav__link.is-active .nav__label-sub {
+    color: rgba(250, 250, 247, 0.75);
+  }
+
+  .nav__link.is-active .nav__arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--paper);
+  }
+
+  /* ============================================================
+     FOOTER — Colophon
+     ============================================================ */
+  .sidebar__footer {
+    flex-shrink: 0;
+    padding: 16px 24px 20px;
+    border-top: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    background: var(--paper-alt);
+  }
+
+  .sidebar__footer-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sidebar__footer-tag::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: var(--red);
+  }
+
+  /* ============================================================
+     BODY LOCK
+     ============================================================ */
+  body.is-locked { overflow: hidden; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 640px) {
+    :root { --sidebar-w: 92vw; }
+    .hamburger {
+      top: 16px;
+      left: 16px;
+      width: 50px;
+      height: 50px;
+    }
+    .hamburger__bar { width: 22px; }
+    .sidebar__header { padding: 16px 20px 14px; }
+    .sidebar__title { font-size: 22px; }
+    .nav__index { height: 64px; }
+    .nav__label { padding: 0 16px; }
+    .nav__label-main { font-size: 16px; }
+    .nav__arrow { padding-right: 16px; font-size: 18px; }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    :root { --sidebar-w: 340px; }
+  }
+
+  /* ============================================================
+     REDUCED MOTION
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      transition-delay: 0s !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HAMBURGER — góc trái -->
+  <button
+    class="hamburger"
+    id="hamburgerBtn"
+    aria-label="Mở menu điều hướng"
+    aria-expanded="false"
+    aria-controls="sidebar"
+    type="button"
+  >
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+  </button>
+
+  <!-- BACKDROP -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- SIDEBAR -->
+  <aside
+    class="sidebar"
+    id="sidebar"
+    aria-label="Điều hướng chính"
+    aria-hidden="true"
+  >
+    <!-- HEADER -->
+    <div class="sidebar__header">
+      <div class="sidebar__masthead">
+        <div class="sidebar__title">navigation</div>
+        <div class="sidebar__version">v7 / 2025</div>
+      </div>
+      <div class="sidebar__meta">
+        <span>Interface</span>
+        <span>Primary</span>
+        <span>04 items</span>
+      </div>
+
+      <!-- Close -->
+      <button
+        class="close-btn"
+        id="closeBtn"
+        aria-label="Đóng menu điều hướng"
+        type="button"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav" role="navigation">
+      <ul class="nav__list" role="list">
+
+        <li class="nav__item">
+          <a href="#" class="nav__link is-active" data-nav="home" aria-current="page">
+            <span class="nav__index" aria-hidden="true">01</span>
+            <span class="nav__label">
+              <span class="nav__label-main">Trang chủ</span>
+              <span class="nav__label-sub">Home</span>
+            </span>
+            <span class="nav__arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="explore">
+            <span class="nav__index" aria-hidden="true">02</span>
+            <span class="nav__label">
+              <span class="nav__label-main">Khám phá</span>
+              <span class="nav__label-sub">Explore</span>
+            </span>
+            <span class="nav__arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="library">
+            <span class="nav__index" aria-hidden="true">03</span>
+            <span class="nav__label">
+              <span class="nav__label-main">Thư viện</span>
+              <span class="nav__label-sub">Library</span>
+            </span>
+            <span class="nav__arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="settings">
+            <span class="nav__index" aria-hidden="true">04</span>
+            <span class="nav__label">
+              <span class="nav__label-main">Cài đặt</span>
+              <span class="nav__label-sub">Settings</span>
+            </span>
+            <span class="nav__arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- FOOTER -->
+    <div class="sidebar__footer">
+      <div class="sidebar__footer-tag">Swiss Editorial</div>
+      <div>№ 7</div>
+    </div>
+  </aside>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    (function () {
+      'use strict';
+
+      const hamburger = document.getElementById('hamburgerBtn');
+      const sidebar   = document.getElementById('sidebar');
+      const backdrop  = document.getElementById('backdrop');
+      const closeBtn  = document.getElementById('closeBtn');
+      const navLinks  = sidebar.querySelectorAll('.nav__link');
+
+      const isMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+
+      function openSidebar() {
+        sidebar.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        sidebar.setAttribute('aria-hidden', 'false');
+        hamburger.setAttribute('aria-expanded', 'true');
+        hamburger.setAttribute('aria-label', 'Đóng menu điều hướng');
+        if (isMobile()) document.body.classList.add('is-locked');
+        setTimeout(() => closeBtn.focus({ preventScroll: true }), 200);
+      }
+
+      function closeSidebar(returnFocus = true) {
+        sidebar.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        sidebar.setAttribute('aria-hidden', 'true');
+        hamburger.setAttribute('aria-expanded', 'false');
+        hamburger.setAttribute('aria-label', 'Mở menu điều hướng');
+        document.body.classList.remove('is-locked');
+        if (returnFocus) hamburger.focus({ preventScroll: true });
+      }
+
+      function toggleSidebar() {
+        sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+      }
+
+      hamburger.addEventListener('click', toggleSidebar);
+      closeBtn.addEventListener('click', () => closeSidebar());
+      backdrop.addEventListener('click', () => closeSidebar());
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+          closeSidebar();
+        }
+      });
+
+      /* Active state thực */
+      navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach((l) => {
+            l.classList.remove('is-active');
+            l.removeAttribute('aria-current');
+          });
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'page');
+          if (isMobile()) closeSidebar(false);
+        });
+      });
+
+      /* Resize — body lock */
+      window.addEventListener('resize', () => {
+        if (!isMobile()) {
+          document.body.classList.remove('is-locked');
+        } else if (sidebar.classList.contains('is-open')) {
+          document.body.classList.add('is-locked');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

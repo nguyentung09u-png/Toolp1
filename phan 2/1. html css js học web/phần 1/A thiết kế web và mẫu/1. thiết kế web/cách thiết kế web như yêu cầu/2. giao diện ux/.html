@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button — Phóng to nhẹ khi click</title>
+
+<!-- ===== CSS INLINE ===== -->
+<style>
+  /* ===== BUTTON — Chỉ phóng to nhẹ khi click ===== */
+  button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease;
+  }
+
+  /* Click (đang bấm giữ): phóng to nhẹ */
+  button:active {
+    transform: scale(1.08);
+  }
+
+  /* Tắt hiệu ứng nếu user bật Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    button {
+      transition-duration: 0.01ms !important;
+      transform: none !important;
+    }
+  }
+
+  /* ===== DEMO LAYOUT (tùy chọn — xóa khi nhúng dự án thật) ===== */
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f5f5;
+    font-family: system-ui, Arial, sans-serif;
+  }
+  .demo-btn {
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 2px solid #333;
+    background: transparent;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+  <button class="demo-btn">Nhấn vào đây</button>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --deep:      #050b18;
+    --deep-2:    #081428;
+    --ocean:     #0f2a52;
+    --ice:       #7fd4ff;
+    --ice-soft:  #a8e2ff;
+    --white:     #eaf4ff;
+    --muted:     #5b7ba6;
+    --hairline:  rgba(127, 212, 255, 0.28);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+    background: var(--deep);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: AURORA BLUE (đơn giản, tĩnh) ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 15%, rgba(15, 42, 82, 0.85), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(127, 212, 255, 0.12), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(8, 20, 40, 0.6), transparent 70%),
+      linear-gradient(180deg, #050b18 0%, #060d1d 50%, #040815 100%);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.83  0 0 0 0 1  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: screen;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+  }
+
+  /* ---------- CARD: ARCH-TOP ASYMMETRIC ---------- */
+  .card {
+    position: relative;
+    width: min(400px, 100%);
+    padding: 56px 40px 44px;
+    background:
+      linear-gradient(165deg, #0c1e3a 0%, #081428 55%, #050b18 100%);
+    /* Vòm trên + vuông dưới (arch-top) */
+    border-radius: 200px 200px 4px 4px;
+    border: 1px solid var(--hairline);
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(127, 212, 255, 0.06),
+      0 0 80px -25px rgba(127, 212, 255, 0.22),
+      inset 0 1px 0 rgba(168, 226, 255, 0.12);
+
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    animation: cardIn 1000ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+  /* Inner top highlight — ánh sáng vòm */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, rgba(127, 212, 255, 0.10), transparent 80%);
+    border-radius: 200px 200px 0 0;
+    pointer-events: none;
+  }
+
+  /* ---------- VERTICAL SPINE (accent dọc trái, khác bản trước) ---------- */
+  .spine {
+    position: absolute;
+    left: 22px;
+    top: 68px;
+    bottom: 68px;
+    width: 1px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(127, 212, 255, 0.55) 20%,
+      rgba(127, 212, 255, 0.55) 80%,
+      transparent 100%);
+  }
+  .spine::before,
+  .spine::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--ice);
+    transform: translateX(-50%);
+    box-shadow: 0 0 12px rgba(127, 212, 255, 0.9);
+  }
+  .spine::before { top: 0; }
+  .spine::after  { bottom: 0; }
+
+  /* ---------- MONOGRAM BADGE ---------- */
+  .monogram {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 22px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--hairline);
+    border-radius: 50%;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--ice);
+    background: radial-gradient(circle, rgba(127, 212, 255, 0.10), transparent 70%);
+    box-shadow: 0 0 24px -6px rgba(127, 212, 255, 0.4), inset 0 0 12px rgba(127, 212, 255, 0.15);
+    opacity: 0;
+    animation: badgeIn 800ms cubic-bezier(.2,.7,.2,1) 500ms forwards;
+  }
+
+  /* ---------- NỘI DUNG ---------- */
+  .content {
+    position: relative;
+    text-align: center;
+    padding-left: 8px; /* nhường chỗ cho spine */
+  }
+
+  .name {
+    font-size: clamp(24px, 5.5vw, 30px);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+    color: var(--white);
+    text-shadow: 0 0 30px rgba(127, 212, 255, 0.15);
+    opacity: 0;
+    filter: blur(4px);
+    animation: blurReveal 900ms ease 700ms forwards;
+  }
+
+  /* Divider mảnh có gradient — khác bản trước (bản trước line ngang + dot) */
+  .divider {
+    width: 48px;
+    height: 1px;
+    margin: 20px auto 26px;
+    background: linear-gradient(90deg, transparent, var(--ice), transparent);
+    opacity: 0;
+    animation: fadeIn 700ms ease 900ms forwards;
+  }
+
+  /* Meta: centered stack, key trên value (khác layout 2 cột bản trước) */
+  .meta {
+    display: grid;
+    gap: 20px;
+  }
+  .meta-item {
+    opacity: 0;
+    filter: blur(3px);
+    animation: blurReveal 750ms ease forwards;
+  }
+  .meta-item:nth-child(1) { animation-delay: 1000ms; }
+  .meta-item:nth-child(2) { animation-delay: 1120ms; }
+
+  .meta-key {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .meta-val {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--ice-soft);
+  }
+
+  /* ---------- ANIMATIONS ---------- */
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes badgeIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes blurReveal {
+    from { opacity: 0; filter: blur(4px); transform: translateY(6px); }
+    to   { opacity: 1; filter: blur(0);   transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .monogram, .name, .divider, .meta-item {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card { padding: 48px 26px 36px; border-radius: 160px 160px 4px 4px; }
+    .spine { left: 16px; top: 56px; bottom: 56px; }
+    .name { font-size: 24px; }
+    .meta-val { font-size: 15px; }
+    .monogram { width: 50px; height: 50px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND AURORA BLUE -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- CARD -->
+    <article class="card">
+      <span class="spine" aria-hidden="true"></span>
+
+      <div class="monogram" aria-hidden="true">NH</div>
+
+      <div class="content">
+        <h1 class="name">Nguyễn Thanh Huy</h1>
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="meta">
+          <div class="meta-item">
+            <span class="meta-key">Năm sinh</span>
+            <span class="meta-val">2007</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-key">Quê quán</span>
+            <span class="meta-val">Quảng Nam</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>

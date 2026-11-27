@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Isometric 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0d1530;
+    --bg-1: #131d3d;
+    --bg-2: #1a2650;
+
+    --cobalt: #4a6fff;
+    --cobalt-dark: #2c4ac7;
+    --cobalt-light: #7a95ff;
+    --sky: #8fb4ff;
+    --sun: #ffd84d;
+    --sun-dark: #d4ab1a;
+
+    --text: #e8edff;
+    --text-bright: #ffffff;
+    --text-mute: #7d8ab8;
+    --text-dim: #4a5580;
+
+    --face-top: #5a7aff;
+    --face-front: #3d5ae0;
+    --face-side: #2a3fa8;
+
+    --face-top-active: #ffd84d;
+    --face-front-active: #d4ab1a;
+    --face-side-active: #a8860d;
+
+    --face-top-idle: #1e2a58;
+    --face-front-idle: #16204a;
+    --face-side-idle: #0f1738;
+
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --iso-angle: 30deg;
+    --item-height: 56px;
+    --item-depth: 8px;
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 32px 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — isometric grid + light gradient
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 700px at 15% 10%, rgba(74, 111, 255, 0.25), transparent 60%),
+      radial-gradient(700px 600px at 90% 85%, rgba(143, 180, 255, 0.14), transparent 60%),
+      radial-gradient(500px 400px at 60% 20%, rgba(255, 216, 77, 0.08), transparent 60%),
+      linear-gradient(160deg, #0d1530 0%, #131d3d 55%, #0d1530 100%);
+  }
+
+  /* isometric diamond grid */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image:
+      linear-gradient(30deg, rgba(74, 111, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(-30deg, rgba(74, 111, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(143, 180, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(143, 180, 255, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 120px 120px, 120px 120px;
+    mask-image: radial-gradient(ellipse at 25% 40%, #000 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 25% 40%, #000 0%, transparent 70%);
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — isometric panel
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    flex: 0 0 auto;
+    padding: 20px 0 0;
+    background: linear-gradient(160deg, var(--bg-2) 0%, var(--bg-1) 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(74, 111, 255, 0.28);
+
+    /* isometric panel skew nhẹ */
+    transform: perspective(1200px) rotateY(-3deg) rotateX(1deg);
+
+    box-shadow:
+      24px 24px 0 rgba(0, 0, 0, 0.15),
+      24px 24px 40px -10px rgba(74, 111, 255, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 0 0 1px rgba(143, 180, 255, 0.08);
+
+    /* load */
+    opacity: 0;
+    animation: panelIn 0.8s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes panelIn {
+    0% { opacity: 0; transform: perspective(1200px) rotateY(-3deg) rotateX(1deg) translateY(16px); }
+    100% { opacity: 1; transform: perspective(1200px) rotateY(-3deg) rotateX(1deg) translateY(0); }
+  }
+
+  /* light source highlight góc trên-trái */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle at 0% 0%, rgba(143, 180, 255, 0.18), transparent 70%);
+    border-radius: 8px 0 0 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .sidebar-head {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(74, 111, 255, 0.2);
+    margin-bottom: 6px;
+  }
+
+  /* brand khối 3D nhỏ */
+  .head-cube {
+    width: 36px;
+    height: 36px;
+    position: relative;
+    flex: 0 0 auto;
+    transform: rotateX(50deg) rotateZ(45deg) translateZ(0);
+    transform-style: preserve-3d;
+  }
+  .head-cube .top,
+  .head-cube .front,
+  .head-cube .side {
+    position: absolute;
+    inset: 0;
+    background: var(--cobalt);
+    border-radius: 3px;
+  }
+  .head-cube .top {
+    background: var(--sky);
+    transform: translateZ(8px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .head-cube .front {
+    background: var(--cobalt);
+    transform: rotateX(-50deg) translateY(8px) translateZ(4px);
+    opacity: 0.85;
+  }
+  .head-cube .side {
+    background: var(--cobalt-dark);
+    transform: rotateY(45deg) translateX(8px) translateZ(4px);
+    opacity: 0.85;
+  }
+
+  .head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .head-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .head-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+    color: var(--text-bright);
+  }
+  .head-title em {
+    font-style: normal;
+    color: var(--sun);
+  }
+
+  /* axis indicator */
+  .head-axis {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    flex: 0 0 auto;
+    text-align: right;
+  }
+  .head-axis .x { color: var(--cobalt-light); }
+  .head-axis .y { color: var(--sky); }
+  .head-axis .z { color: var(--sun); }
+
+  /* ============================================================
+     NAV — các khối 3D isometric
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px 20px 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nav-item {
+    position: relative;
+    /* reserve space cho khối nổi lên */
+    padding-top: 0;
+    transition: padding-top 0.5s var(--ease-spring);
+  }
+
+  /* item active đẩy các item dưới xuống nhẹ */
+  .nav-item:has(.nav-link.is-active) {
+    padding-top: 8px;
+  }
+
+  /* khối 3D */
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: var(--text-mute);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+
+    /* mặt trên của khối (top face) */
+    background: var(--face-top-idle);
+    border-radius: 6px;
+
+    /* transform 3D nhẹ tạo cảm giác khối */
+    transform: translateY(0) translateZ(0);
+
+    /* các mặt bên bằng box-shadow giả lập khối 3D */
+    box-shadow:
+      /* mặt phải (side) */
+      3px 3px 0 var(--face-front-idle),
+      /* mặt đáy (bottom) */
+      6px 6px 0 var(--face-side-idle),
+      /* outer glow */
+      6px 6px 12px -2px rgba(0, 0, 0, 0.3);
+
+    transition:
+      transform 0.45s var(--ease-spring),
+      box-shadow 0.45s var(--ease-out),
+      background 0.35s var(--ease-out),
+      color 0.3s ease,
+      padding 0.35s var(--ease-out);
+  }
+
+  /* top face highlight (ánh sáng) */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(143, 180, 255, 0.12), transparent);
+    border-radius: 6px 6px 0 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  /* icon */
+  .iso-icon {
+    position: relative;
+    z-index: 1;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-mute);
+    transition: color 0.3s ease, transform 0.4s var(--ease-spring);
+  }
+  .iso-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* extrusion nhẹ dưới icon (giả 3D) */
+  .iso-icon::after {
+    content: "";
+    position: absolute;
+    inset: 1px 1px 1px 1px;
+    border-radius: 2px;
+    z-index: -1;
+    opacity: 0.25;
+    background: currentColor;
+    transform: translate(1.5px, 1.5px);
+    transition: transform 0.4s var(--ease-spring), opacity 0.3s ease;
+  }
+
+  /* label */
+  .iso-label {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+
+  /* meta number bên phải */
+  .iso-meta {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.4px;
+    color: var(--text-dim);
+    transition: color 0.3s ease;
+    flex: 0 0 auto;
+  }
+
+  /* ---- Hover ---- */
+  .nav-link:hover {
+    color: var(--text);
+    transform: translateY(-2px) translateZ(0);
+    box-shadow:
+      3px 3px 0 var(--face-front-idle),
+      6px 6px 0 var(--face-side-idle),
+      10px 10px 16px -2px rgba(0, 0, 0, 0.4);
+  }
+  .nav-link:hover .iso-icon {
+    color: var(--cobalt-light);
+    transform: translateY(-1px);
+  }
+  .nav-link:hover .iso-icon::after {
+    transform: translate(2px, 2px);
+    opacity: 0.35;
+  }
+  .nav-link:hover .iso-meta { color: var(--text-mute); }
+
+  /* ---- ACTIVE: khối nâng lên (khối sun-yellow) ---- */
+  .nav-link.is-active {
+    background: var(--face-top-active);
+    color: #1a1400;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    transform: translateY(-8px) translateZ(0);
+    box-shadow:
+      4px 4px 0 var(--face-front-active),
+      8px 8px 0 var(--face-side-active),
+      14px 14px 28px -2px rgba(255, 216, 77, 0.35),
+      8px 8px 20px -4px rgba(0, 0, 0, 0.5);
+  }
+  .nav-link.is-active::before {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  }
+  .nav-link.is-active .iso-icon {
+    color: #1a1400;
+    transform: scale(1.08);
+  }
+  .nav-link.is-active .iso-icon::after {
+    opacity: 0.4;
+    background: #1a1400;
+  }
+  .nav-link.is-active .iso-meta {
+    color: rgba(26, 20, 0, 0.6);
+  }
+
+  /* indicator "▲" nhỏ dưới khối active — chỉ hướng lên */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 6px 8px 6px;
+    border-color: transparent transparent var(--sun) transparent;
+    filter: drop-shadow(0 2px 4px rgba(255, 216, 77, 0.4));
+  }
+
+  /* ============================================================
+     FOOTER — isometric pedestal
+     ============================================================ */
+  .sidebar-foot {
+    position: relative;
+    z-index: 2;
+    padding: 12px 20px 14px;
+    border-top: 1px solid rgba(74, 111, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.2px;
+    color: var(--text-mute);
+    background: linear-gradient(180deg, transparent, rgba(74, 111, 255, 0.04));
+  }
+  .sidebar-foot .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+  }
+  .sidebar-foot .live::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--sun);
+    border-radius: 1px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px rgba(255, 216, 77, 0.5);
+    animation: liveBlink 2s ease-in-out infinite;
+  }
+  @keyframes liveBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar {
+      width: 300px;
+      transform: perspective(1200px) rotateY(-2deg) rotateX(0.5deg);
+    }
+    .sidebar-head { padding: 0 16px 14px; }
+    .head-title { font-size: 16px; }
+    .nav { padding: 12px 16px 16px; gap: 12px; }
+    .nav-link { padding: 12px 16px; font-size: 13px; gap: 12px; }
+    .nav-link.is-active { padding-top: 15px; padding-bottom: 15px; }
+    .iso-icon { width: 20px; height: 20px; }
+  }
+
+  /* Mobile — bỏ isometric transform, hàng ngang khối phẳng */
+  @media (max-width: 640px) {
+    body {
+      padding: 16px 12px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+      transform: none;
+      padding: 14px 0 0;
+      border-radius: 12px;
+    }
+    .sidebar-head { padding: 0 14px 12px; }
+    .head-title { font-size: 16px; }
+    .head-axis { display: none; }
+
+    .nav {
+      flex-direction: row;
+      gap: 8px;
+      padding: 10px 12px 14px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      padding-top: 0 !important;
+    }
+    .nav-item:has(.nav-link.is-active) { padding-top: 0 !important; }
+
+    .nav-link {
+      flex-direction: column;
+      gap: 5px;
+      padding: 12px 14px;
+      min-width: 80px;
+      font-size: 11px;
+      text-align: center;
+      border-radius: 8px;
+      /* giữ hiệu ứng khối nhưng nhẹ hơn */
+      box-shadow:
+        2px 2px 0 var(--face-front-idle),
+        4px 4px 0 var(--face-side-idle),
+        4px 4px 8px -2px rgba(0, 0, 0, 0.3);
+    }
+    .nav-link.is-active {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      transform: translateY(-4px);
+      box-shadow:
+        3px 3px 0 var(--face-front-active),
+        6px 6px 0 var(--face-side-active),
+        8px 8px 16px -2px rgba(255, 216, 77, 0.3),
+        4px 4px 12px -4px rgba(0, 0, 0, 0.4);
+    }
+    .iso-icon { width: 22px; height: 22px; }
+    .iso-icon::after { display: none; }
+    .iso-meta { display: none; }
+    .iso-label { font-size: 11px; }
+
+    /* indicator dưới */
+    .nav-link.is-active::after {
+      bottom: -10px;
+      border-width: 0 5px 6px 5px;
+    }
+    .nav-link.is-active::before {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .sidebar-foot { padding: 10px 14px; font-size: 9px; }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 70px; padding: 10px 12px; }
+    .iso-icon { width: 20px; height: 20px; }
+    .iso-label { font-size: 10px; }
+    .head-title { font-size: 14px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    .nav-item { padding-top: 0 !important; }
+    .sidebar-foot .live::before { animation: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sun);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- HEADER -->
+    <div class="sidebar-head">
+      <span class="head-cube" aria-hidden="true">
+        <span class="top"></span>
+        <span class="front"></span>
+        <span class="side"></span>
+      </span>
+      <div class="head-text">
+        <span class="head-eyebrow">Isometric · 3D</span>
+        <span class="head-title">Nav<em>.</em>panel</span>
+      </div>
+      <span class="head-axis" aria-hidden="true">
+        <span class="x">X·→</span>
+        <span class="y">Y·↗</span>
+        <span class="z">Z·↑</span>
+      </span>
+    </div>
+
+    <!-- NAV -->
+    <ul class="nav" role="tablist">
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="iso-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+          </span>
+          <span class="iso-label">Trang chủ</span>
+          <span class="iso-meta">01</span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="iso-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+          </span>
+          <span class="iso-label">Khám phá</span>
+          <span class="iso-meta">02</span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="iso-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+          </span>
+          <span class="iso-label">Dự án</span>
+          <span class="iso-meta">03</span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="iso-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+          </span>
+          <span class="iso-label">Thông báo</span>
+          <span class="iso-meta">04</span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="iso-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="iso-label">Cài đặt</span>
+          <span class="iso-meta">05</span>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- FOOTER -->
+    <div class="sidebar-foot">
+      <span class="live">READY</span>
+      <span>ISO · X-Y-Z · v9</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     ISOMETRIC 3D — active state
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+
+      // mobile: scroll active vào giữa
+      if (isMobile() && !prefersReduced) {
+        const nav = document.querySelector(".nav");
+        const navRect = nav.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+        nav.scrollBy({ left: delta, behavior: "smooth" });
+      }
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello World — Premium Card 07</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --card-w: min(500px, 90vw);
+    --card-h: min(320px, 68vw);
+    --chamfer: 30px;
+
+    --navy-1: #0a1424;
+    --navy-2: #0e1b30;
+    --navy-3: #050b16;
+    --sapphire: #1c3055;
+    --copper: #b87333;
+    --copper-glow: rgba(184, 115, 51, 0.55);
+    --copper-soft: rgba(184, 115, 51, 0.22);
+    --pale-gold: #e6cfa0;
+    --ivory: #f1ead9;
+    --ink-dim: #8a94a8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #04070d;
+    color: var(--ivory);
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: 40px 20px;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Ambient — midnight sapphire với copper bloom rất nhẹ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(700px 500px at 18% 15%, rgba(184, 115, 51, 0.10), transparent 55%),
+      radial-gradient(900px 700px at 85% 88%, rgba(28, 48, 85, 0.85), transparent 65%),
+      linear-gradient(180deg, #04070d 0%, #070d18 55%, #03060b 100%);
+    z-index: -2;
+  }
+
+  /* Vignette + noise */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.30 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ============ CARD STAGE ============ */
+  .card-stage {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    isolation: isolate;
+  }
+
+  /* Copper aura phía sau */
+  .card-aura {
+    position: absolute;
+    inset: -6%;
+    background: radial-gradient(
+      60% 60% at 50% 50%,
+      var(--copper-soft),
+      transparent 70%
+    );
+    filter: blur(28px);
+    opacity: 0.55;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+    z-index: 0;
+    animation: auraEnter 1.4s 0.2s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Card — bát giác chamfer đối xứng */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(
+      var(--chamfer) 0,
+      calc(100% - var(--chamfer)) 0,
+      100% var(--chamfer),
+      100% calc(100% - var(--chamfer)),
+      calc(100% - var(--chamfer)) 100%,
+      var(--chamfer) 100%,
+      0 calc(100% - var(--chamfer)),
+      0 var(--chamfer)
+    );
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    /* Crystal layers: 4 lớp gradient khác nhau tạo chiều sâu */
+    background:
+      radial-gradient(110% 90% at 20% 0%, rgba(184, 115, 51, 0.14), transparent 45%),
+      radial-gradient(90% 80% at 90% 100%, rgba(28, 48, 85, 0.65), transparent 55%),
+      linear-gradient(155deg, var(--navy-2) 0%, var(--navy-1) 55%, var(--navy-3) 100%);
+    transition: transform 0.7s cubic-bezier(.2,.7,.2,1),
+                filter 0.6s ease;
+    animation: cardEnter 1.15s cubic-bezier(.2,.7,.2,1) both;
+    will-change: transform;
+  }
+
+  /* Specular sweep — dải sáng chéo mảnh chạy qua */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(241, 234, 217, 0.06) 45%,
+      rgba(230, 207, 160, 0.14) 50%,
+      rgba(241, 234, 217, 0.06) 55%,
+      transparent 70%
+    );
+    pointer-events: none;
+    transform: translateX(-15%);
+    transition: transform 1.1s cubic-bezier(.2,.7,.2,1);
+    z-index: 2;
+  }
+
+  /* Copper border mảnh theo clip-path (dùng SVG-like inline border bằng mask) */
+  .card-frame-outer,
+  .card-frame-inner {
+    position: absolute;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .card-frame-outer {
+    inset: 0;
+    background: linear-gradient(135deg, var(--copper) 0%, #7a4a20 50%, var(--copper) 100%);
+    clip-path: polygon(
+      var(--chamfer) 0,
+      calc(100% - var(--chamfer)) 0,
+      100% var(--chamfer),
+      100% calc(100% - var(--chamfer)),
+      calc(100% - var(--chamfer)) 100%,
+      var(--chamfer) 100%,
+      0 calc(100% - var(--chamfer)),
+      0 var(--chamfer),
+      var(--chamfer) 0,
+      var(--chamfer) 1.5px,
+      1.5px calc(var(--chamfer) - 4px),
+      1.5px calc(100% - var(--chamfer) + 4px),
+      calc(var(--chamfer) - 4px) calc(100% - 1.5px),
+      calc(100% - var(--chamfer) + 4px) calc(100% - 1.5px),
+      calc(100% - 1.5px) calc(100% - var(--chamfer) + 4px),
+      calc(100% - 1.5px) calc(var(--chamfer) - 4px),
+      calc(100% - var(--chamfer) + 4px) 1.5px,
+      var(--chamfer) 1.5px
+    );
+    opacity: 0.9;
+  }
+
+  .card-frame-inner {
+    inset: 14px;
+    background: linear-gradient(135deg, rgba(230, 207, 160, 0.55), rgba(184, 115, 51, 0.15) 50%, rgba(230, 207, 160, 0.45));
+    clip-path: polygon(
+      18px 0,
+      calc(100% - 18px) 0,
+      100% 18px,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      18px 100%,
+      0 calc(100% - 18px),
+      0 18px,
+      18px 0,
+      18px 1px,
+      1px 17px,
+      1px calc(100% - 17px),
+      17px calc(100% - 1px),
+      calc(100% - 17px) calc(100% - 1px),
+      calc(100% - 1px) calc(100% - 17px),
+      calc(100% - 1px) 17px,
+      calc(100% - 17px) 1px,
+      18px 1px
+    );
+    opacity: 0.55;
+  }
+
+  /* Jewel accents tại 4 điểm chamfer — hình thoi nhỏ, thuần trang trí */
+  .jewel {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, var(--pale-gold), var(--copper));
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px var(--copper-glow);
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .jewel.tl { top: 14px; left: 14px; }
+  .jewel.tr { top: 14px; right: 14px; }
+  .jewel.bl { bottom: 14px; left: 14px; }
+  .jewel.br { bottom: 14px; right: 14px; }
+
+  /* Nội dung — căn giữa */
+  .card-content {
+    position: relative;
+    z-index: 3;
+    padding: 40px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-text {
+    font-family: 'Playfair Display', 'Times New Roman', serif;
+    font-weight: 500;
+    font-size: clamp(34px, 7.4vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    background: linear-gradient(
+      170deg,
+      #f6efdc 0%,
+      #e6cfa0 40%,
+      #b87333 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6));
+    transition: transform 0.7s cubic-bezier(.2,.7,.2,1),
+                letter-spacing 0.7s ease;
+    animation: textEnter 1.2s 0.35s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* --- Hover --- */
+  .card-stage:hover .card {
+    transform: translateY(-4px);
+  }
+  .card-stage:hover .card::before {
+    transform: translateX(15%);
+  }
+  .card-stage:hover .card-aura {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  .card-stage:hover .jewel {
+    box-shadow: 0 0 14px var(--copper-glow);
+  }
+  .card-stage:hover .card-text {
+    transform: translateY(-1px);
+    letter-spacing: 0.004em;
+  }
+  .card-stage:hover .card-frame-inner {
+    opacity: 0.85;
+  }
+
+  @media (hover: none) {
+    .card:active { transform: translateY(-2px); }
+  }
+
+  /* --- Entrance --- */
+  @keyframes cardEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(12px) scale(0.96);
+      filter: blur(8px) brightness(1.3);
+    }
+    60% {
+      filter: blur(0.4px) brightness(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0) brightness(1);
+    }
+  }
+  @keyframes textEnter {
+    0% { opacity: 0; transform: translateY(8px); filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes auraEnter {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 0.55; transform: scale(1); }
+  }
+
+  /* --- Reduced motion --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .card-stage:hover .card,
+    .card-stage:hover .card-text,
+    .card-stage:hover .card-aura { transform: none; }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+    :root {
+      --chamfer: 22px;
+      --card-h: min(260px, 68vw);
+    }
+    .card-content { padding: 28px 28px; }
+    .card-frame-inner { inset: 10px; }
+    .jewel { width: 6px; height: 6px; }
+    .jewel.tl, .jewel.tr { top: 10px; }
+    .jewel.bl, .jewel.br { bottom: 10px; }
+    .jewel.tl, .jewel.bl { left: 10px; }
+    .jewel.tr, .jewel.br { right: 10px; }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --card-w: 540px;
+      --card-h: 340px;
+      --chamfer: 34px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-stage">
+    <div class="card-aura" aria-hidden="true"></div>
+    <div class="card" role="group" aria-label="Hello World card">
+      <span class="card-frame-outer" aria-hidden="true"></span>
+      <span class="card-frame-inner" aria-hidden="true"></span>
+      <span class="jewel tl" aria-hidden="true"></span>
+      <span class="jewel tr" aria-hidden="true"></span>
+      <span class="jewel bl" aria-hidden="true"></span>
+      <span class="jewel br" aria-hidden="true"></span>
+      <div class="card-content">
+        <span class="card-text">Hello World</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Card thuần tĩnh — JS chỉ ghi nhận chế độ reduced-motion.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = 'true';
+      }
+    })();
+  </script>
+
+</body>
+</html>

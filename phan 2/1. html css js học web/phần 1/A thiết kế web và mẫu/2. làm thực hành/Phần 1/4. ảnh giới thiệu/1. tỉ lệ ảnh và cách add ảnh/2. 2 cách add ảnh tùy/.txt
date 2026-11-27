@@ -1,0 +1,48 @@
+Tổng quan chung
+
+Cả 2 cách đều dùng chung cơ chế: thuộc tính hinhAnh trong object → thẻ <img src> → CSS hiển thị. Chỉ khác nguồn ảnh:
+
+· Cách 1 (Online): hinhAnh chứa URL internet (https://...jpg)
+· Cách 2 (Offline): hinhAnh chứa đường dẫn file trong máy (images/ten.jpg)
+
+---
+
+Code minh họa chung (giả định)
+
+Dữ liệu (script.js):
+
+```javascript
+const menuData = [
+  // Cách 1: Ảnh online
+  { ma: "#1", ten: "Gà chiên giòn", gia: "20K", hinhAnh: "https://example.com/ga.jpg" },
+  // Cách 2: Ảnh offline (file trong thư mục images/)
+  { ma: "#2", ten: "Trà sữa", gia: "50K", hinhAnh: "images/tra-sua.jpg" }
+];
+```
+
+Render (script.js):
+
+```javascript
+card.innerHTML = `
+  <img src="${mon.hinhAnh}" alt="${mon.ten}" class="card-img">
+  <h3>${mon.ten}</h3>
+  <p class="price">${mon.gia}</p>
+`;
+```
+
+CSS (style.css):
+
+```css
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 10px;
+}
+```
+
+---
+
+Lưu ý: Code trên là minh họa chung. URL example.com/ga.jpg không có thật — cần thay bằng link ảnh thực tế (Cách 1) hoặc file ảnh có thật trong thư mục images/ (Cách 2).
+
+🎯 Tóm 1 câu: Chỉ cần thay giá trị hinhAnh (URL hoặc đường dẫn file), phần code render và CSS giữ nguyên cho cả 2 cách.

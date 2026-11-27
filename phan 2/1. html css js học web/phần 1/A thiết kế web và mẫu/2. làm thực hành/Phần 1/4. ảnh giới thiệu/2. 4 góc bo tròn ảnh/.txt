@@ -1,0 +1,6 @@
+Bo tròn dùng border-radius. 
+```css
+border-radius: 10px;
+```
+
+🎯 Tóm 1 câu: Bo tròn = border-radius: 10px (số càng lớn càng tròn, 50% là tròn hoàn toàn).

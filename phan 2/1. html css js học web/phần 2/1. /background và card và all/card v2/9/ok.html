@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dusk-0:   #0f0a14;
+    --dusk-1:   #1a1020;
+    --dusk-2:   #24162a;
+    --dusk-3:   #2e1a2e;
+    --amber:    #f5a623;
+    --amber-2:  #d98612;
+    --rose:     #e8a0b0;
+    --cream:    #f5ecd8;
+    --cream-2:  #e8d8b8;
+    --muted:    #8a7a8a;
+    --line:     rgba(245, 166, 35, 0.25);
+    --line-2:   rgba(232, 160, 176, 0.20);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+    background: var(--dusk-0);
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: AMBER DUSK ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 50% 88%, rgba(245, 166, 35, 0.22), transparent 65%),
+      radial-gradient(ellipse 50% 35% at 50% 15%, rgba(232, 160, 176, 0.10), transparent 65%),
+      linear-gradient(180deg, #0f0a14 0%, #1a1020 40%, #24162a 70%, #2e1a2e 100%);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.32;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.65  0 0 0 0 0.3  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- FLIP WRAPPER ---------- */
+  .flip-wrap {
+    width: min(340px, 88vw);
+    aspect-ratio: 9 / 16;
+    perspective: 1400px;
+    opacity: 0;
+    animation: wrapIn 900ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+  @keyframes wrapIn { to { opacity: 1; } }
+
+  /* ---------- FLIP INNER ---------- */
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 900ms cubic-bezier(.7, 0, .3, 1);
+  }
+  .flip-wrap:hover .flip-inner,
+  .flip-wrap:focus-within .flip-inner,
+  .flip-wrap.is-flipped .flip-inner {
+    transform: rotateY(180deg);
+  }
+
+  /* ---------- FACES ---------- */
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 44px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== FRONT ===== */
+  .face-front {
+    background:
+      linear-gradient(180deg,
+        #24162a 0%,
+        #1a1020 45%,
+        #0f0a14 100%);
+    border: 1px solid var(--line);
+    box-shadow:
+      0 50px 100px -40px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(245, 166, 35, 0.08),
+      0 0 80px -30px rgba(245, 166, 35, 0.35),
+      inset 0 1px 0 rgba(245, 236, 216, 0.10);
+  }
+  .face-front::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0.7;
+  }
+  /* Seam dọc giữa card gợi "bản lề" */
+  .face-front::after {
+    content: "";
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(180deg,
+      transparent,
+      rgba(245, 166, 35, 0.15) 20%,
+      rgba(245, 166, 35, 0.15) 80%,
+      transparent);
+    pointer-events: none;
+  }
+
+  /* ===== BACK ===== */
+  .face-back {
+    transform: rotateY(180deg);
+    background:
+      linear-gradient(180deg,
+        #2e1a2e 0%,
+        #24162a 45%,
+        #0f0a14 100%);
+    border: 1px solid var(--line-2);
+    box-shadow:
+      0 50px 100px -40px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(232, 160, 176, 0.08),
+      0 0 80px -30px rgba(232, 160, 176, 0.30),
+      inset 0 1px 0 rgba(245, 236, 216, 0.10);
+    color: var(--cream);
+  }
+  .face-back::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    opacity: 0.7;
+  }
+
+  /* Hinge notch 2 bên trái/phải — gợi "thẻ gập" */
+  .hinge {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--dusk-0);
+    transform: translateY(-50%);
+    box-shadow: inset 0 0 0 1px var(--line);
+    z-index: 3;
+  }
+  .hinge-l { left: -7px; }
+  .hinge-r { right: -7px; }
+
+  /* ---------- FRONT CONTENT ---------- */
+  .front-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 42px 32px 38px;
+  }
+
+  .front-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .corner-mark {
+    width: 24px;
+    height: 24px;
+    border-top: 1px solid var(--amber);
+    border-left: 1px solid var(--amber);
+    opacity: 0.8;
+  }
+  .corner-mark-r {
+    border-top: 1px solid var(--amber);
+    border-left: none;
+    border-right: 1px solid var(--amber);
+  }
+
+  .front-mid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .name-front {
+    font-family: 'Helvetica Neue', 'Arial Narrow', system-ui, sans-serif;
+    font-size: clamp(30px, 8vw, 42px);
+    font-weight: 700;
+    letter-spacing: -1.2px;
+    line-height: 0.95;
+    color: var(--cream);
+  }
+  .name-front .accent {
+    display: block;
+    color: var(--amber);
+    font-weight: 300;
+    font-style: italic;
+    font-family: 'Georgia', serif;
+    letter-spacing: -0.5px;
+  }
+
+  .front-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flip-hint {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .flip-hint-arrow {
+    width: 14px;
+    height: 1px;
+    background: var(--amber);
+    position: relative;
+  }
+  .flip-hint-arrow::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: -2px;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid var(--amber);
+    border-right: 1px solid var(--amber);
+    transform: rotate(45deg);
+  }
+
+  /* ---------- BACK CONTENT ---------- */
+  .back-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 42px 32px 38px;
+  }
+
+  .back-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--rose);
+    box-shadow: 0 0 10px rgba(232, 160, 176, 0.8);
+  }
+  .back-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rose);
+  }
+
+  .back-mid {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .back-row {
+    display: grid;
+    gap: 8px;
+  }
+  .back-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .back-val {
+    font-family: 'Georgia', serif;
+    font-size: 22px;
+    font-style: italic;
+    letter-spacing: 0.3px;
+    color: var(--cream-2);
+  }
+
+  .back-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .back-bottom::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: var(--rose);
+    opacity: 0.6;
+  }
+
+  /* ---------- FALLBACK: focus/hover rõ ràng ---------- */
+  .flip-wrap:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 6px;
+    border-radius: 44px;
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .flip-wrap { animation: none !important; opacity: 1 !important; }
+    .flip-inner { transition: none !important; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .flip-wrap { width: min(300px, 84vw); }
+    .front-body, .back-body { padding: 36px 26px 32px; }
+    .name-front { font-size: 30px; }
+    .back-val { font-size: 20px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .flip-wrap { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND AMBER DUSK -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- FLIP CARD -->
+    <div class="flip-wrap" tabindex="0" aria-label="Thẻ hồ sơ — hover hoặc chạm để lật">
+      <div class="flip-inner">
+
+        <!-- ===== FRONT ===== -->
+        <div class="face face-front">
+          <span class="hinge hinge-l" aria-hidden="true"></span>
+          <span class="hinge hinge-r" aria-hidden="true"></span>
+
+          <div class="front-body">
+            <div class="front-top">
+              <span class="corner-mark" aria-hidden="true"></span>
+              <span class="corner-mark corner-mark-r" aria-hidden="true"></span>
+            </div>
+
+            <div class="front-mid">
+              <span class="eyebrow">Hồ sơ</span>
+              <h1 class="name-front">
+                Nguyễn
+                <span class="accent">Thanh Huy</span>
+              </h1>
+            </div>
+
+            <div class="front-bottom">
+              <span class="flip-hint">Chạm để xem</span>
+              <span class="flip-hint-arrow" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== BACK ===== -->
+        <div class="face face-back">
+          <span class="hinge hinge-l" aria-hidden="true"></span>
+          <span class="hinge hinge-r" aria-hidden="true"></span>
+
+          <div class="back-body">
+            <div class="back-top">
+              <span class="back-dot"></span>
+              <span class="back-label">Chi tiết</span>
+            </div>
+
+            <div class="back-mid">
+              <div class="back-row">
+                <span class="back-key">Năm sinh</span>
+                <span class="back-val">2007</span>
+              </div>
+              <div class="back-row">
+                <span class="back-key">Quê quán</span>
+                <span class="back-val">Quảng Nam</span>
+              </div>
+            </div>
+
+            <div class="back-bottom">Nguyễn Thanh Huy</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    /* Tap/click để flip trên mobile (vì mobile không hover) */
+    (function () {
+      const wrap = document.querySelector('.flip-wrap');
+      if (!wrap) return;
+
+      // Click / tap toggle
+      wrap.addEventListener('click', () => {
+        wrap.classList.toggle('is-flipped');
+      });
+
+      // Keyboard toggle (Enter / Space)
+      wrap.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          wrap.classList.toggle('is-flipped');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

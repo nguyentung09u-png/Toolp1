@@ -1,0 +1,23 @@
+1. tỉ lệ 1:1 cho nhỏ dễ sài
+Cụ thể 2 dòng làm việc đó:
+
+
+1.0
+nếu icon nhỏ đừng sài tỉ lệ
+hãy sài 24px 24px
+border-radius: 50%; /* Bo tròn thành hình tròn */
+  object-fit: cover;  /* Cắt gọn vừa khung, không méo ảnh */
+}
+2. cắt sẵn ảnh 
+
+
+Đúng, chỉ cần 2 dòng đó là đủ để ảnh tự cắt vuông 1:1.
+
+```css
+aspect-ratio: 1 / 1;
+object-fit: cover;
+```
+
+Nhưng để ảnh hiển thị đúng, vẫn cần width: 100% (để ảnh rộng bằng khung) — dòng này bạn đã có sẵn trong code.
+
+🎯 Tóm 1 câu: Chỉ cần 2 dòng aspect-ratio: 1/1 + object-fit: cover (kèm width: 100% có sẵn) là đủ.

@@ -1,0 +1,99 @@
+1. Đúng rồi 👍 — gọi ngắn gọn là header box bo tròn 2 góc dưới (header box with rounded bottom corners).
+
+
+Tổng quan cách làm Header box 2 góc bo tròn
+
+Cơ chế: Tạo khung <header> có nền màu/gradient, đệm trong, căn giữa chữ, và bo tròn riêng 2 góc dưới bằng border-bottom-left-radius + border-bottom-right-radius.
+
+Các bước chung:
+
+1. Dựng thẻ <header> bọc nội dung (tiêu đề, phụ đề).
+2. Gán nền: background (màu hoặc gradient).
+3. Thêm đệm: padding.
+4. Căn giữa chữ: text-align: center.
+5. Bo 2 góc dưới: border-bottom-left-radius, border-bottom-right-radius.
+6. Tuỳ chọn: box-shadow, lớp kính ::before + backdrop-filter, fade up.
+
+---
+
+Code chung chung
+
+Bản cơ bản (đủ 2 góc bo tròn dưới)
+
+```html
+<header class="header">
+  <h1>Tiêu đề</h1>
+  <p>Phụ đề</p>
+</header>
+
+<style>
+  .header {
+    background: #a52a2a;
+    padding: 22px 16px 26px;
+    text-align: center;
+    color: #fff;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+</style>
+```
+
+Bản thêm gradient + kính mờ + fade up
+
+```html
+<header class="header">
+  <div class="header-content">
+    <h1>Tiêu đề</h1>
+    <p>Phụ đề</p>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 16px 26px;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(135deg, #a52a2a, #e67e22);
+    border-bottom-left-radius: 22px;
+    border-bottom-right-radius: 22px;
+    box-shadow: 0 4px 14px rgba(165,42,42,0.28);
+  }
+
+  /* Lớp kính mờ */
+  .header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.7s ease;
+  }
+  .header-content.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  window.addEventListener("load", () => {
+    document.querySelector(".header-content").classList.add("show");
+  });
+</script>
+```
+
+Lưu ý: backdrop-filter chỉ thể hiện rõ khi phía sau có ảnh/gradient; trên nền trơn sẽ khó thấy khác biệt. border-radius: inherit giúp lớp kính khớp góc bo với khung cha.

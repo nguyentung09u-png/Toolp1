@@ -1,0 +1,37 @@
+1. mãng array 
+
+const product = [
+chứa object
+]
+
+2. object 
+
+{ ten: "Áo thun", moTa: "Áo cotton thoáng mát", gia: 150 }
+   └─────────────────────────────────────────────────────┘
+                    ĐÂY LÀ 1 object
+                    
+                 Object một dòng (inline) → viết gọn trong 1 dòng: { ma: "#1", ten: "Gà", gia: "20K" }
+                 
+                    
+                 
+                    
+                    
+3. render tự động              
+Render động (Dynamic Rendering) — vòng lặp tự biến mỗi object trong mảng thành 1 card.
+
+
+
+
+
+------- vậy cách yêu cầu gpt ---
+làm html css js web mini bán hàng sài 
+display : gird      
+grid-template-columns: 1fr 1fr 
+2cột
+Responsive: Tự điều chỉnh card phù hợp với điện thoại Android, tablet và máy tính, không tràn ngang hoặc vỡ bố cụ
+
+yêu cầu :
+sài mãng array 
+object inline : tên sản phẩm , mô tả
+render tự động tạo card và nút liên hệ nếu thêm object 
+https://zalo.me/0367411225

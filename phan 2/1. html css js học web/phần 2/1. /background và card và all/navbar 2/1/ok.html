@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Neon Scroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Fragment+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0a0616;
+    --bg-1: #120a24;
+    --bg-2: #1a0f30;
+
+    --violet: #b48cff;
+    --violet-deep: #7c4dff;
+    --violet-soft: rgba(180, 140, 255, 0.14);
+    --violet-line: rgba(180, 140, 255, 0.38);
+
+    --orange: #ff8a4c;
+    --orange-soft: rgba(255, 138, 76, 0.16);
+
+    --text: #f4ecff;
+    --text-mute: #8a7aa8;
+    --text-dim: #564a6e;
+
+    --glass: rgba(18, 10, 36, 0.65);
+    --glass-strong: rgba(12, 7, 26, 0.85);
+
+    --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+    --font-mono: "Fragment Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — sunset radial + organic blobs + noise + rain
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(820px 620px at 15% 15%, rgba(180, 140, 255, 0.22), transparent 60%),
+      radial-gradient(700px 560px at 95% 25%, rgba(255, 138, 76, 0.16), transparent 60%),
+      radial-gradient(900px 780px at 40% 115%, rgba(124, 77, 255, 0.2), transparent 65%),
+      linear-gradient(170deg, #0a0616 0%, #120a24 55%, #0a0616 100%);
+    animation: bgBreathe 24s ease-in-out infinite alternate;
+  }
+  @keyframes bgBreathe {
+    0%   { background-position: 0% 0%, 100% 0%, 40% 100%, 0 0; }
+    100% { background-position: 6% 4%, 92% 6%, 36% 98%, 0 0; }
+  }
+
+  /* grain */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* light rain particles */
+  .rain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .rain i {
+    position: absolute;
+    top: -10px;
+    width: 1.5px;
+    height: 1.5px;
+    border-radius: 50%;
+    background: var(--violet);
+    box-shadow: 0 0 6px var(--violet);
+    opacity: 0.6;
+    animation: fall linear infinite;
+  }
+  .rain i:nth-child(1)  { left: 8%;  animation-duration: 14s; animation-delay: 0s;   }
+  .rain i:nth-child(2)  { left: 22%; animation-duration: 18s; animation-delay: 2s;   background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+  .rain i:nth-child(3)  { left: 38%; animation-duration: 12s; animation-delay: 4s;   }
+  .rain i:nth-child(4)  { left: 51%; animation-duration: 20s; animation-delay: 1s;   background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+  .rain i:nth-child(5)  { left: 67%; animation-duration: 16s; animation-delay: 5s;   }
+  .rain i:nth-child(6)  { left: 78%; animation-duration: 22s; animation-delay: 3s;   background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+  .rain i:nth-child(7)  { left: 88%; animation-duration: 15s; animation-delay: 6s;   }
+  .rain i:nth-child(8)  { left: 94%; animation-duration: 19s; animation-delay: 0.5s; background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+  .rain i:nth-child(9)  { left: 15%; animation-duration: 24s; animation-delay: 7s;   }
+  .rain i:nth-child(10) { left: 60%; animation-duration: 17s; animation-delay: 8s;   }
+
+  @keyframes fall {
+    0%   { transform: translateY(-20px); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — "scroll" panel, cong 2 phía, viền răng cưa nhẹ
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 310px;
+    flex: 0 0 auto;
+    padding: 26px 20px 26px 20px;
+
+    background: var(--glass);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+    /* bo cong mềm 2 phía, giống cuộn giấy được gấp */
+    border-radius: 28px 10px 28px 10px;
+    border: 1px solid rgba(180, 140, 255, 0.16);
+
+    box-shadow:
+      0 0 0 1px rgba(180, 140, 255, 0.05),
+      0 40px 90px -44px rgba(180, 140, 255, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    /* load: ribbon unroll */
+    opacity: 0;
+    clip-path: inset(0 100% 0 0 round 28px 10px 28px 10px);
+    animation: unroll 0.9s var(--ease-out) 0.15s forwards;
+  }
+  @keyframes unroll {
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0 round 28px 10px 28px 10px);
+    }
+  }
+
+  /* mép trên "gáy cuộn" — đường kẻ mảnh */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 22px;
+    right: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-line) 20%, var(--orange-soft) 80%, transparent);
+  }
+
+  /* dot pulse ở góc */
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 14px var(--orange), 0 0 30px rgba(255, 138, 76, 0.5);
+    animation: cornerPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes cornerPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.75); }
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .sidebar-head {
+    position: relative;
+    margin-bottom: 24px;
+    padding: 8px 6px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sidebar-head .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-head .eyebrow::before {
+    content: "";
+    width: 16px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--violet), var(--orange));
+    box-shadow: 0 0 6px var(--violet);
+  }
+  .sidebar-head .brand {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .sidebar-head .brand em {
+    font-style: italic;
+    font-weight: 800;
+    background: linear-gradient(110deg, var(--violet) 0%, var(--orange) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  /* đường kẻ dưới header */
+  .sidebar-head::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 6px;
+    right: 6px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--violet-line) 0%, transparent 70%);
+    opacity: 0.6;
+  }
+
+  /* ============================================================
+     NAV — Ribbon curved tabs
+     ============================================================ */
+  .nav {
+    position: relative;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-item { position: relative; }
+
+  /* energy bar (bên trái) — co giãn theo item active */
+  .energy-rail {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 3px;
+    height: 40px;
+    border-radius: 3px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      var(--violet) 25%,
+      var(--orange) 50%,
+      var(--violet) 75%,
+      transparent 100%);
+    box-shadow:
+      0 0 10px var(--violet),
+      0 0 22px rgba(180, 140, 255, 0.55);
+    transition:
+      transform 0.6s var(--ease-spring),
+      height 0.4s var(--ease-out),
+      opacity 0.3s ease;
+    z-index: 4;
+    pointer-events: none;
+    will-change: transform, height;
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px 14px 18px;
+    text-decoration: none;
+    color: var(--text-mute);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    isolation: isolate;
+
+    /* ribbon curve: trái phẳng, phải bo lớn */
+    border-radius: 4px 22px 22px 4px;
+
+    transition:
+      color 0.3s var(--ease-out),
+      padding-left 0.35s var(--ease-out),
+      background 0.35s var(--ease-out);
+  }
+
+  /* lớp nền ribbon */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(180, 140, 255, 0.02);
+    border: 1px solid rgba(180, 140, 255, 0.06);
+    transition:
+      background 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out);
+    z-index: -2;
+  }
+
+  /* ink bleed layer — chỉ hiện khi active */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 30% 50%,
+        rgba(180, 140, 255, 0.5) 0%,
+        rgba(124, 77, 255, 0.28) 30%,
+        rgba(255, 138, 76, 0.12) 60%,
+        transparent 80%);
+    filter: blur(8px);
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 0.55s var(--ease-out),
+      transform 0.65s var(--ease-spring);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Hover */
+  .nav-link:hover {
+    color: var(--text);
+    padding-left: 22px;
+  }
+  .nav-link:hover::before {
+    background: rgba(180, 140, 255, 0.06);
+    border-color: rgba(180, 140, 255, 0.2);
+  }
+  .nav-link:hover .nav-icon {
+    color: var(--violet);
+    transform: translateY(-1px) scale(1.08);
+  }
+
+  /* Active */
+  .nav-link.is-active {
+    color: var(--text);
+    font-weight: 600;
+    padding-left: 22px;
+  }
+  .nav-link.is-active::before {
+    background: linear-gradient(100deg,
+      rgba(180, 140, 255, 0.16) 0%,
+      rgba(180, 140, 255, 0.08) 45%,
+      rgba(255, 138, 76, 0.06) 100%);
+    border-color: rgba(180, 140, 255, 0.45);
+  }
+  .nav-link.is-active::after {
+    opacity: 1;
+    transform: scale(1);
+    animation: inkBreathe 4s ease-in-out infinite;
+  }
+  @keyframes inkBreathe {
+    0%, 100% { filter: blur(8px); opacity: 0.85; }
+    50%      { filter: blur(12px); opacity: 1; }
+  }
+  .nav-link.is-active .nav-icon {
+    color: var(--violet);
+    filter: drop-shadow(0 0 8px rgba(180, 140, 255, 0.7));
+  }
+  .nav-link.is-active .nav-accent-dot {
+    background: var(--orange);
+    box-shadow: 0 0 10px var(--orange);
+    opacity: 1;
+    transform: scale(1);
+  }
+  .nav-link.is-active .nav-index {
+    color: var(--orange);
+    opacity: 1;
+  }
+
+  /* Icon — rounded thick-line */
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    transition:
+      color 0.3s var(--ease-out),
+      transform 0.4s var(--ease-spring),
+      filter 0.3s ease;
+  }
+  .nav-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Label */
+  .nav-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+
+  /* accent dot bên phải */
+  .nav-accent-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    opacity: 0.5;
+    transform: scale(0.8);
+    transition:
+      background 0.3s ease,
+      opacity 0.3s ease,
+      transform 0.35s var(--ease-spring);
+    flex: 0 0 auto;
+  }
+
+  /* index micro */
+  .nav-index {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    opacity: 0.6;
+    transition: color 0.3s ease, opacity 0.3s ease;
+    flex: 0 0 auto;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 280px; padding: 22px 16px; border-radius: 24px 8px 24px 8px; }
+    .sidebar-head .brand { font-size: 22px; }
+    .nav-link { padding: 12px 18px 12px 16px; font-size: 14px; }
+    .nav-icon { width: 20px; height: 20px; }
+    .energy-rail { height: 36px; }
+  }
+
+  /* Mobile — horizontal ribbon bar */
+  @media (max-width: 640px) {
+    body {
+      padding: 14px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 16px 12px 12px;
+      border-radius: 22px 8px 22px 8px;
+    }
+
+    .sidebar::before,
+    .sidebar::after { display: none; }
+
+    .sidebar-head {
+      margin-bottom: 12px;
+      padding: 4px 4px 12px;
+    }
+    .sidebar-head .brand { font-size: 19px; }
+
+    /* Ẩn energy rail dọc */
+    .energy-rail { display: none; }
+
+    /* Nav horizontal scroll */
+    .nav {
+      flex-direction: row;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 2px 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      flex-direction: column;
+      gap: 5px;
+      padding: 12px 14px;
+      min-width: 76px;
+      font-size: 11px;
+      text-align: center;
+      border-radius: 16px;
+    }
+    .nav-link:hover,
+    .nav-link.is-active {
+      padding-left: 14px;
+    }
+    .nav-icon { width: 20px; height: 20px; }
+    .nav-label { font-size: 11px; }
+    .nav-accent-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 5px;
+      height: 5px;
+    }
+    .nav-index { display: none; }
+
+    /* energy bar dưới item active (mini) */
+    .nav-link.is-active::before {
+      background: linear-gradient(180deg,
+        rgba(180, 140, 255, 0.2) 0%,
+        rgba(180, 140, 255, 0.1) 100%);
+      border-color: rgba(180, 140, 255, 0.45);
+    }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 68px; padding: 10px 10px; }
+    .sidebar-head .brand { font-size: 17px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar {
+      opacity: 1;
+      clip-path: none;
+    }
+    body::before { animation: none; }
+    .rain { display: none; }
+    .energy-rail { transition: none; }
+    .nav-link.is-active::after { animation: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- light rain -->
+  <div class="rain" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- Header -->
+    <div class="sidebar-head">
+      <span class="eyebrow">Neon Scroll</span>
+      <span class="brand">Điều hướng <em>menu</em></span>
+    </div>
+
+    <!-- Nav -->
+    <ul class="nav" role="tablist">
+
+      <!-- energy rail (được JS di chuyển) -->
+      <span class="energy-rail" aria-hidden="true"></span>
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+          </span>
+          <span class="nav-label">Trang chủ</span>
+          <span class="nav-index">01</span>
+          <span class="nav-accent-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+          </span>
+          <span class="nav-label">Khám phá</span>
+          <span class="nav-index">02</span>
+          <span class="nav-accent-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+          </span>
+          <span class="nav-label">Dự án</span>
+          <span class="nav-index">03</span>
+          <span class="nav-accent-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+          </span>
+          <span class="nav-label">Thông báo</span>
+          <span class="nav-index">04</span>
+          <span class="nav-accent-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="nav-label">Cài đặt</span>
+          <span class="nav-index">05</span>
+          <span class="nav-accent-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     NEON SCROLL — active state + energy rail
+     ============================================================ */
+  (function () {
+    const nav = document.querySelector(".nav");
+    const links = document.querySelectorAll(".nav-link");
+    const rail = document.querySelector(".energy-rail");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ----- di chuyển energy rail tới item active (desktop) ----- */
+    function moveRail(link) {
+      if (!rail || !nav || isMobile()) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const offsetTop = linkRect.top - navRect.top + linkRect.height / 2;
+      const railH = 40; // = height của .energy-rail
+      rail.style.transform = `translateY(${offsetTop - railH / 2}px)`;
+    }
+
+    /* hiệu ứng co giãn: bar co lại rồi giãn ra tại vị trí mới */
+    function pulseRail() {
+      if (!rail || isMobile() || prefersReduced) return;
+      rail.style.height = "16px";
+      setTimeout(() => {
+        rail.style.height = "40px";
+      }, 200);
+    }
+
+    /* ----- kích hoạt ----- */
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+      moveRail(link);
+      pulseRail();
+    }
+
+    /* ----- click handler (chức năng thật) ----- */
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+
+    /* ----- khởi tạo ----- */
+    function init() {
+      const active = document.querySelector(".nav-link.is-active");
+      if (!active) return;
+
+      if (prefersReduced) {
+        rail.style.transition = "none";
+        rail.style.height = "40px";
+      }
+
+      // đợi unroll animation (~0.9s) + fonts ổn định
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => moveRail(active));
+      });
+    }
+    init();
+
+    /* ----- reposition ----- */
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const active = document.querySelector(".nav-link.is-active");
+        if (active && !isMobile()) moveRail(active);
+      }, 120);
+    });
+
+    /* ----- mobile: scroll active vào giữa ----- */
+    nav.addEventListener("click", (e) => {
+      const link = e.target.closest(".nav-link");
+      if (!link || !isMobile()) return;
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+      nav.scrollBy({ left: delta, behavior: prefersReduced ? "auto" : "smooth" });
+    });
+  })();
+</script>
+</body>
+</html>

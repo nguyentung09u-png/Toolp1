@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Paper Fold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* paper */
+    --paper: #f5ecd9;
+    --paper-soft: #faf3e2;
+    --paper-shadow: #e0d4bc;
+    --paper-edge: #d4c5a8;
+
+    /* ink */
+    --ink: #1a1611;
+    --ink-soft: #3d342a;
+    --ink-mute: #6b5d4a;
+    --ink-faint: #a89a82;
+
+    /* accent */
+    --vermilion: #d94f2b;
+    --vermilion-dark: #a83a1e;
+
+    /* desk bg */
+    --desk-0: #2a211a;
+    --desk-1: #3d3128;
+    --desk-2: #4a3b30;
+
+    --font-serif: "Cormorant Garamond", Georgia, serif;
+    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--desk-0);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 32px 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — gỗ tối + ambient light ấm
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 700px at 20% 30%, rgba(245, 236, 217, 0.12), transparent 60%),
+      radial-gradient(600px 500px at 90% 80%, rgba(217, 79, 43, 0.08), transparent 60%),
+      linear-gradient(160deg, #2a211a 0%, #3d3128 55%, #2a211a 100%);
+  }
+
+  /* wood grain texture mờ */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: repeating-linear-gradient(
+      92deg,
+      rgba(245, 236, 217, 0.4) 0px,
+      rgba(245, 236, 217, 0.4) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  }
+
+  /* ============================================================
+     SIDEBAR — tờ giấy gấp origami
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    flex: 0 0 auto;
+    background: var(--paper);
+    border-radius: 2px;
+    padding: 0;
+    overflow: hidden;
+    isolation: isolate;
+
+    /* mép giấy răng cưa nhẹ bằng clip-path */
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - 2px),
+      calc(100% - 2px) 100%,
+      2px 100%,
+      0 calc(100% - 2px)
+    );
+
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 -2px 0 var(--paper-edge) inset,
+      -1px 0 0 rgba(255, 255, 255, 0.5) inset,
+      1px 0 0 var(--paper-shadow) inset,
+      0 30px 60px -20px rgba(0, 0, 0, 0.55),
+      0 15px 30px -10px rgba(0, 0, 0, 0.3);
+
+    /* load */
+    opacity: 0;
+    transform: translateY(14px) rotate(-0.3deg);
+    animation: paperIn 0.75s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes paperIn {
+    to { opacity: 1; transform: translateY(0) rotate(-0.3deg); }
+  }
+
+  /* fiber texture giấy */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(168, 154, 130, 0.15) 0%, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(168, 154, 130, 0.12) 0%, transparent 1px),
+      radial-gradient(circle at 40% 80%, rgba(168, 154, 130, 0.14) 0%, transparent 1px);
+    background-size: 3px 3px, 5px 5px, 7px 7px;
+    background-position: 0 0, 12px 18px, 30px 8px;
+    mix-blend-mode: multiply;
+  }
+
+  /* ============================================================
+     HEADER — tiêu đề serif + con dấu nhỏ
+     ============================================================ */
+  .sidebar-head {
+    position: relative;
+    z-index: 2;
+    padding: 22px 24px 18px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--paper-shadow);
+  }
+
+  .head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .head-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  .head-title {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .head-title::after {
+    content: ".";
+    color: var(--vermilion);
+    font-style: normal;
+  }
+  .head-sub {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-mute);
+    margin-top: 4px;
+  }
+
+  /* con dấu nhỏ header */
+  .head-seal {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    background: var(--vermilion);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.15),
+      0 2px 6px rgba(168, 58, 30, 0.4);
+    transform: rotate(-3deg);
+    position: relative;
+    margin-top: 4px;
+  }
+  .head-seal::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+  }
+  .head-seal svg {
+    width: 18px;
+    height: 18px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.95;
+  }
+
+  /* ============================================================
+     NAV — nếp gấp origami
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nav-item {
+    position: relative;
+    border-bottom: 1px solid var(--paper-shadow);
+  }
+  .nav-item:last-child { border-bottom: none; }
+
+  /* đường gấp chéo 45° trên mỗi item */
+  .nav-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent var(--paper-shadow) transparent transparent;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.35s var(--ease-out);
+  }
+
+  .nav-link {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 22px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition:
+      padding 0.55s var(--ease-spring),
+      background 0.35s var(--ease-out),
+      color 0.3s var(--ease-out);
+  }
+
+  /* icon hand-drawn */
+  .fold-icon {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    transition: color 0.35s var(--ease-out), transform 0.4s var(--ease-spring);
+  }
+  .fold-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* run nhẹ bằng filter giả lập tay vẽ */
+    filter: url(#roughen);
+  }
+
+  /* label chính */
+  .fold-label {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .fold-main {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    line-height: 1.15;
+    letter-spacing: 0.3px;
+    transition: color 0.3s ease;
+  }
+  .fold-sub {
+    font-family: var(--font-serif);
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-faint);
+    line-height: 1.15;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-4px);
+    transition:
+      max-height 0.5s var(--ease-spring),
+      opacity 0.4s var(--ease-out) 0.1s,
+      transform 0.5s var(--ease-out) 0.1s;
+  }
+
+  /* số thứ tự bên phải */
+  .fold-num {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-faint);
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease, transform 0.3s var(--ease-spring);
+  }
+
+  /* con dấu "chop" đỏ — chỉ active */
+  .seal {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-6deg) scale(0.5);
+    width: 30px;
+    height: 30px;
+    background: var(--vermilion);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+      0 2px 8px rgba(168, 58, 30, 0.4);
+    transition:
+      opacity 0.4s var(--ease-out) 0.15s,
+      transform 0.5s var(--ease-spring) 0.1s;
+  }
+  .seal::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 1px;
+  }
+  .seal svg {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---- Hover ---- */
+  .nav-link:hover {
+    background: rgba(217, 79, 43, 0.04);
+    color: var(--ink);
+  }
+  .nav-link:hover .fold-icon {
+    color: var(--vermilion);
+    transform: translateX(2px) rotate(-3deg);
+  }
+  .nav-link:hover .fold-main { color: var(--ink); }
+  .nav-link:hover .fold-num { color: var(--ink-mute); }
+
+  /* ---- ACTIVE: unfold ---- */
+  .nav-link.is-active {
+    background: linear-gradient(180deg, var(--paper-soft) 0%, var(--paper) 100%);
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+
+  /* mép gấp trên sáng lên khi mở */
+  .nav-link.is-active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--paper-shadow) 15%,
+      var(--paper-edge) 50%,
+      var(--paper-shadow) 85%,
+      transparent 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .nav-link.is-active .fold-main {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .nav-link.is-active .fold-sub {
+    max-height: 24px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .nav-link.is-active .fold-icon {
+    color: var(--vermilion);
+    transform: rotate(-4deg);
+  }
+  .nav-link.is-active .fold-num {
+    color: transparent; /* ẩn số, nhường chỗ seal */
+    transform: scale(0.8);
+  }
+  .nav-link.is-active .seal {
+    opacity: 1;
+    transform: translateY(-50%) rotate(-6deg) scale(1);
+  }
+
+  /* ink ripple khi active lần đầu */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    right: 26px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--vermilion);
+    opacity: 0;
+    transform: translateY(-50%) scale(0);
+    animation: inkRipple 0.9s var(--ease-out) 0.1s;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes inkRipple {
+    0%   { opacity: 0.5; transform: translateY(-50%) scale(0); }
+    100% { opacity: 0;   transform: translateY(-50%) scale(6); }
+  }
+
+  /* ============================================================
+     FOOTER — colophon
+     ============================================================ */
+  .sidebar-foot {
+    position: relative;
+    z-index: 2;
+    padding: 12px 22px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-serif);
+    font-size: 11px;
+    font-style: italic;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--paper-shadow);
+    background: linear-gradient(180deg, transparent, rgba(224, 212, 188, 0.3));
+  }
+  .sidebar-foot .dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .sidebar-foot .dot::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background: var(--vermilion);
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(217, 79, 43, 0.5);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 300px; }
+    .sidebar-head { padding: 18px 20px 16px; }
+    .head-title { font-size: 28px; }
+    .nav-link { padding: 14px 18px; gap: 12px; font-size: 13px; }
+    .nav-link.is-active { padding-top: 20px; padding-bottom: 20px; }
+    .fold-icon { width: 24px; height: 24px; }
+    .fold-main { font-size: 13px; }
+    .fold-sub { font-size: 11px; }
+    .seal { right: 16px; width: 26px; height: 26px; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    body {
+      padding: 16px 12px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+    }
+
+    .sidebar-head { padding: 16px 18px 14px; }
+    .head-title { font-size: 26px; }
+    .head-sub { font-size: 12px; }
+    .head-seal { width: 30px; height: 30px; }
+
+    /* nav horizontal */
+    .nav {
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 4px 8px;
+      gap: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      border-bottom: none;
+      border-right: 1px solid var(--paper-shadow);
+      scroll-snap-align: start;
+    }
+    .nav-item:last-child { border-right: none; }
+
+    /* ẩn đường gấp chéo trên mobile */
+    .nav-item::before { display: none; }
+
+    .nav-link {
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 12px 14px;
+      min-width: 76px;
+      grid-template-columns: 1fr;
+      font-size: 11px;
+    }
+    .nav-link.is-active {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      background: linear-gradient(180deg, transparent, rgba(217, 79, 43, 0.08));
+    }
+    .fold-icon { width: 22px; height: 22px; }
+    .fold-main { font-size: 11px; }
+    .fold-sub { display: none; }
+    .fold-num { display: none; }
+
+    /* seal nhỏ dưới item active */
+    .seal {
+      position: static;
+      transform: none;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      display: none; /* gọn trên mobile, chỉ giữ bar đỏ */
+    }
+    .nav-link.is-active .seal {
+      display: flex;
+      opacity: 1;
+      transform: none;
+    }
+    .seal svg { width: 10px; height: 10px; }
+
+    /* thanh đỏ dưới active */
+    .nav-link.is-active::after {
+      content: "";
+      position: static;
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--vermilion);
+      border-radius: 1px;
+      margin-top: 4px;
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .sidebar-foot { padding: 10px 16px; font-size: 10px; }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 68px; padding: 10px 10px; }
+    .fold-main { font-size: 10.5px; }
+    .head-title { font-size: 22px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: rotate(-0.3deg); }
+    .nav-link.is-active::after { display: none; }
+    .fold-sub {
+      max-height: 24px;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--vermilion);
+    outline-offset: -4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- SVG filter roughen (giả lập nét vẽ tay) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="roughen">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="3"/>
+        <feDisplacementMap in="SourceGraphic" scale="0.8"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- HEADER -->
+    <div class="sidebar-head">
+      <div class="head-text">
+        <span class="head-eyebrow">Paper Fold · Journal</span>
+        <h1 class="head-title">Mục lục</h1>
+        <span class="head-sub">Sổ tay điều hướng — vol. 08</span>
+      </div>
+      <span class="head-seal" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 4h16v16H4z" opacity="0.5"/>
+          <path d="M8 8h8M8 12h8M8 16h5"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- NAV -->
+    <ul class="nav" role="tablist">
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="fold-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 11 12 3l9 8"/>
+              <path d="M5 10v10h14V10"/>
+              <path d="M10 20v-6h4v6"/>
+            </svg>
+          </span>
+          <span class="fold-label">
+            <span class="fold-main">Trang chủ</span>
+            <span class="fold-sub">— trang đầu, nơi bắt đầu</span>
+          </span>
+          <span class="fold-num">i</span>
+          <span class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12 12 5l7 7-7 7z"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="fold-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/>
+            </svg>
+          </span>
+          <span class="fold-label">
+            <span class="fold-main">Khám phá</span>
+            <span class="fold-sub">— tìm điều mới lạ</span>
+          </span>
+          <span class="fold-num">ii</span>
+          <span class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12 12 5l7 7-7 7z"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="fold-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
+              <path d="M3 11h18"/>
+            </svg>
+          </span>
+          <span class="fold-label">
+            <span class="fold-main">Dự án</span>
+            <span class="fold-sub">— những việc đang ấp ủ</span>
+          </span>
+          <span class="fold-num">iii</span>
+          <span class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12 12 5l7 7-7 7z"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="fold-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z"/>
+              <path d="M10 21a2 2 0 0 0 4 0"/>
+            </svg>
+          </span>
+          <span class="fold-label">
+            <span class="fold-main">Thông báo</span>
+            <span class="fold-sub">— thư từ, tin nhắn mới</span>
+          </span>
+          <span class="fold-num">iv</span>
+          <span class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12 12 5l7 7-7 7z"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="fold-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+            </svg>
+          </span>
+          <span class="fold-label">
+            <span class="fold-main">Cài đặt</span>
+            <span class="fold-sub">— tùy chỉnh theo ý</span>
+          </span>
+          <span class="fold-num">v</span>
+          <span class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12 12 5l7 7-7 7z"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- FOOTER -->
+    <div class="sidebar-foot">
+      <span class="dot">Đang mở</span>
+      <span>— trang 1 / 5 —</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     PAPER FOLD — active state (unfold)
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+
+      // restart ink ripple (chỉ desktop)
+      if (!prefersReduced && !isMobile()) {
+        const ripple = link.querySelector("::after");
+        // để CSS tự chạy lại animation, ta ép reflow
+        link.style.animation = "none";
+        // eslint-disable-next-line no-unused-expressions
+        link.offsetHeight;
+        link.style.animation = "";
+      }
+
+      // mobile scroll
+      if (isMobile() && !prefersReduced) {
+        const nav = document.querySelector(".nav");
+        const navRect = nav.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+        nav.scrollBy({ left: delta, behavior: "smooth" });
+      }
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

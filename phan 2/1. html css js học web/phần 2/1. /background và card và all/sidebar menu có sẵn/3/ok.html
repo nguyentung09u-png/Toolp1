@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sumi Zen Scroll — Sidebar v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ROOT
+     ============================================================ */
+  :root {
+    --paper:        #f4efe6;
+    --paper-warm:   #ebe4d6;
+    --paper-shadow: #ddd3bf;
+    --sumi:         #1a1815;
+    --sumi-soft:    #3d362e;
+    --ink-muted:    #8a7f6d;
+    --son:          #b83a2e;
+    --son-deep:     #8f2a20;
+    --wood:         #4a3527;
+    --wood-light:   #6b4d38;
+    --wood-dark:    #2e1f15;
+
+    --ease-scroll:  cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-soft:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    --sidebar-w:    320px;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Noto Serif JP', Georgia, serif;
+    background: var(--paper-warm);
+    color: var(--sumi);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(184,58,46,0.03), transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(74,53,39,0.04), transparent 60%);
+  }
+
+  /* ============================================================
+     HAMBURGER — GÓC TRÁI (đã sửa)
+     ============================================================ */
+  .hamburger {
+    position: fixed;
+    top: 24px;
+    left: 24px;                  /* ← ĐÃ SỬA: trước là right: 24px */
+    z-index: 60;
+    width: 54px;
+    height: 54px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    background: var(--paper);
+    border: 1.5px solid var(--sumi);
+    border-radius: 4px 14px 4px 14px;
+    cursor: pointer;
+    transition:
+      background 0.4s var(--ease-soft),
+      border-color 0.4s var(--ease-soft),
+      box-shadow 0.5s var(--ease-soft),
+      transform 0.5s var(--ease-soft);
+    box-shadow:
+      0 2px 8px rgba(74, 53, 39, 0.12),
+      0 1px 2px rgba(74, 53, 39, 0.08);
+  }
+
+  .hamburger::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 0.5px solid rgba(184, 58, 46, 0);
+    border-radius: inherit;
+    transition: border-color 0.4s var(--ease-soft);
+    pointer-events: none;
+  }
+
+  .hamburger:hover {
+    background: var(--son);
+    border-color: var(--son-deep);
+    box-shadow:
+      0 4px 14px rgba(184, 58, 46, 0.28),
+      0 1px 3px rgba(143, 42, 32, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .hamburger:hover::after {
+    border-color: rgba(244, 239, 230, 0.4);
+  }
+
+  .hamburger:focus-visible {
+    outline: 2px solid var(--son);
+    outline-offset: 3px;
+  }
+
+  .hamburger__bar {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--sumi);
+    border-radius: 1px;
+    transition:
+      transform 0.5s var(--ease-scroll),
+      opacity 0.3s var(--ease-soft),
+      background 0.4s var(--ease-soft),
+      width 0.4s var(--ease-soft);
+    transform-origin: center;
+  }
+
+  .hamburger:hover .hamburger__bar {
+    background: var(--paper);
+  }
+
+  /* Morph 3 gạch → X — GIỮ NGUYÊN LOGIC */
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+    background: var(--paper);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+    background: var(--paper);
+  }
+
+  .hamburger[aria-expanded="true"] {
+    background: var(--son);
+    border-color: var(--son-deep);
+  }
+
+  /* ============================================================
+     BACKDROP
+     ============================================================ */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: radial-gradient(
+      circle at 20% 20%,
+      rgba(26, 24, 21, 0.55),
+      rgba(26, 24, 21, 0.72) 80%
+    );
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s var(--ease-soft), visibility 0s linear 0.5s;
+  }
+
+  .backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s var(--ease-soft), visibility 0s linear 0s;
+  }
+
+  /* ============================================================
+     SIDEBAR — vẫn floating PHẢI (không đổi theo yêu cầu)
+     ============================================================ */
+  .sidebar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 80;
+    width: var(--sidebar-w);
+    max-width: calc(100vw - 40px);
+    padding: 0;
+
+    background: var(--paper);
+    border-radius: 6px 6px 4px 4px;
+    background-image:
+      radial-gradient(ellipse at 40% 10%, rgba(235, 228, 214, 0.9), transparent 70%),
+      radial-gradient(ellipse at 60% 90%, rgba(221, 211, 191, 0.5), transparent 70%);
+    background-color: var(--paper);
+
+    box-shadow:
+      0 24px 48px -12px rgba(74, 53, 39, 0.22),
+      0 8px 24px -8px rgba(74, 53, 39, 0.15),
+      0 2px 6px rgba(74, 53, 39, 0.08),
+      inset 0 0 0 1px rgba(26, 24, 21, 0.04);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    transform-origin: top right;
+    transform: scaleY(0.05) translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.65s var(--ease-scroll),
+      opacity 0.4s var(--ease-soft);
+  }
+
+  .sidebar.is-open {
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Trục treo trên */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -10px;
+    right: -10px;
+    height: 10px;
+    background: linear-gradient(
+      180deg,
+      var(--wood-light) 0%,
+      var(--wood) 45%,
+      var(--wood-dark) 100%
+    );
+    border-radius: 5px;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+    z-index: 5;
+  }
+
+  /* Trục treo dưới */
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    right: -10px;
+    height: 8px;
+    background: linear-gradient(
+      180deg,
+      var(--wood-dark) 0%,
+      var(--wood) 55%,
+      var(--wood-light) 100%
+    );
+    border-radius: 4px;
+    box-shadow:
+      0 -2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+    z-index: 5;
+  }
+
+  .sidebar__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px 0 18px;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     CLOSE BUTTON
+     ============================================================ */
+  .close-btn {
+    position: absolute;
+    top: 22px;
+    left: 20px;
+    z-index: 6;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 1px solid rgba(26, 24, 21, 0.15);
+    border-radius: 50%;
+    color: var(--sumi-soft);
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.7) rotate(-45deg);
+    pointer-events: none;
+    transition:
+      opacity 0.4s var(--ease-soft),
+      transform 0.5s var(--ease-scroll),
+      color 0.3s var(--ease-soft),
+      border-color 0.3s var(--ease-soft),
+      background 0.3s var(--ease-soft);
+  }
+
+  .sidebar.is-open .close-btn {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    pointer-events: auto;
+    transition-delay: 0.35s;
+  }
+
+  .close-btn:hover {
+    color: var(--paper);
+    background: var(--son);
+    border-color: var(--son-deep);
+    transform: rotate(90deg);
+  }
+
+  .close-btn:focus-visible {
+    outline: 2px solid var(--son);
+    outline-offset: 2px;
+  }
+
+  .close-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  /* ============================================================
+     SEAL HEADER
+     ============================================================ */
+  .sidebar__seal {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 4px 20px 18px;
+    gap: 10px;
+  }
+
+  .sidebar__seal-mark {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: var(--son);
+    color: var(--paper);
+    font-family: 'Shippori Mincho', serif;
+    font-size: 22px;
+    font-weight: 500;
+    border-radius: 3px 10px 3px 10px;
+    box-shadow:
+      0 2px 6px rgba(184, 58, 46, 0.28),
+      inset 0 0 0 1.5px rgba(244, 239, 230, 0.2);
+    transform: rotate(-4deg);
+  }
+
+  .sidebar__seal-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .sidebar__rule {
+    position: relative;
+    z-index: 3;
+    margin: 0 20px 12px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(26, 24, 21, 0.25) 20%,
+      rgba(26, 24, 21, 0.25) 80%,
+      transparent
+    );
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav {
+    position: relative;
+    z-index: 3;
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+  }
+
+  .nav::-webkit-scrollbar { width: 4px; }
+  .nav::-webkit-scrollbar-track { background: transparent; }
+  .nav::-webkit-scrollbar-thumb {
+    background: rgba(26, 24, 21, 0.15);
+    border-radius: 2px;
+  }
+
+  .nav__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 16px;
+    color: var(--sumi-soft);
+    text-decoration: none;
+    font-family: 'Noto Serif JP', serif;
+    border-radius: 3px 12px 3px 12px;
+    transition:
+      background 0.4s var(--ease-soft),
+      color 0.3s var(--ease-soft),
+      padding-left 0.4s var(--ease-soft);
+  }
+
+  .nav__link:hover {
+    background: rgba(184, 58, 46, 0.05);
+    color: var(--sumi);
+    padding-left: 20px;
+  }
+
+  .nav__link:focus-visible {
+    outline: 1.5px solid var(--son);
+    outline-offset: -2px;
+  }
+
+  .nav__kanji {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--sumi);
+    background: rgba(26, 24, 21, 0.04);
+    border-radius: 2px 8px 2px 8px;
+    transition:
+      background 0.4s var(--ease-soft),
+      color 0.4s var(--ease-soft),
+      transform 0.5s var(--ease-scroll),
+      box-shadow 0.4s var(--ease-soft);
+    position: relative;
+  }
+
+  .nav__kanji::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    transition: border-color 0.4s var(--ease-soft);
+    pointer-events: none;
+  }
+
+  .nav__link:hover .nav__kanji::after {
+    border-color: rgba(184, 58, 46, 0.35);
+  }
+
+  .nav__link:hover .nav__kanji {
+    transform: rotate(-2deg);
+  }
+
+  .nav__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .nav__label {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav__sub {
+    font-size: 9.5px;
+    font-family: 'Shippori Mincho', serif;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    opacity: 0.65;
+    transition: color 0.3s var(--ease-soft), opacity 0.3s var(--ease-soft);
+  }
+
+  .nav__link:hover .nav__sub {
+    color: var(--son);
+    opacity: 0.9;
+  }
+
+  /* ACTIVE — Hanko */
+  .nav__link.is-active {
+    background: rgba(184, 58, 46, 0.06);
+    color: var(--sumi);
+  }
+
+  .nav__link.is-active .nav__kanji {
+    background: var(--son);
+    color: var(--paper);
+    box-shadow:
+      0 3px 8px rgba(184, 58, 46, 0.25),
+      inset 0 0 0 1.5px rgba(244, 239, 230, 0.15);
+    transform: rotate(-3deg);
+  }
+
+  .nav__link.is-active .nav__kanji::after {
+    border-color: transparent;
+  }
+
+  .nav__link.is-active .nav__label {
+    color: var(--son-deep);
+    font-weight: 600;
+  }
+
+  .nav__link.is-active .nav__sub {
+    color: var(--son);
+    opacity: 0.85;
+  }
+
+  .nav__link.is-active::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--son);
+    box-shadow: 0 0 6px rgba(184, 58, 46, 0.4);
+    transform: translateY(-50%);
+    animation: breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+    50%      { opacity: 0.5; transform: translateY(-50%) scale(0.7); }
+  }
+
+  /* FOOTER */
+  .sidebar__footer {
+    position: relative;
+    z-index: 3;
+    padding: 14px 24px 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    opacity: 0.6;
+  }
+
+  .sidebar__footer::before,
+  .sidebar__footer::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(26, 24, 21, 0.15);
+  }
+
+  /* BODY LOCK */
+  body.is-locked { overflow: hidden; }
+
+  /* ============================================================
+     RESPONSIVE — cập nhật hamburger sang trái
+     ============================================================ */
+  @media (max-width: 640px) {
+    :root { --sidebar-w: calc(100vw - 32px); }
+    .sidebar {
+      top: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+    .hamburger {
+      top: 16px;
+      left: 16px;                /* ← đã sửa */
+      width: 48px;
+      height: 48px;
+    }
+    .nav__link {
+      padding: 15px 14px;
+      gap: 16px;
+    }
+    .nav__link:hover { padding-left: 16px; }
+    .nav__kanji { width: 42px; height: 42px; font-size: 21px; }
+    .nav__label { font-size: 16px; }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    :root { --sidebar-w: 300px; }
+  }
+
+  /* REDUCED MOTION */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-delay: 0s !important;
+    }
+    .nav__link.is-active::after { animation: none; }
+    .sidebar { transform: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HAMBURGER — góc trái -->
+  <button
+    class="hamburger"
+    id="hamburgerBtn"
+    aria-label="Mở menu điều hướng"
+    aria-expanded="false"
+    aria-controls="sidebar"
+    type="button"
+  >
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+  </button>
+
+  <!-- BACKDROP -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- SIDEBAR — vẫn bên phải -->
+  <aside
+    class="sidebar"
+    id="sidebar"
+    aria-label="Điều hướng chính"
+    aria-hidden="true"
+  >
+    <div class="sidebar__inner">
+
+      <button
+        class="close-btn"
+        id="closeBtn"
+        aria-label="Đóng menu điều hướng"
+        type="button"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
+
+      <div class="sidebar__seal">
+        <div class="sidebar__seal-mark" aria-hidden="true">禅</div>
+        <div class="sidebar__seal-title">Navigation</div>
+      </div>
+
+      <div class="sidebar__rule" aria-hidden="true"></div>
+
+      <nav class="nav" role="navigation">
+        <ul class="nav__list" role="list">
+
+          <li class="nav__item">
+            <a href="#" class="nav__link is-active" data-nav="home" aria-current="page">
+              <span class="nav__kanji" aria-hidden="true">家</span>
+              <span class="nav__text">
+                <span class="nav__label">Trang chủ</span>
+                <span class="nav__sub">Home</span>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav__item">
+            <a href="#" class="nav__link" data-nav="explore">
+              <span class="nav__kanji" aria-hidden="true">探</span>
+              <span class="nav__text">
+                <span class="nav__label">Khám phá</span>
+                <span class="nav__sub">Explore</span>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav__item">
+            <a href="#" class="nav__link" data-nav="library">
+              <span class="nav__kanji" aria-hidden="true">書</span>
+              <span class="nav__text">
+                <span class="nav__label">Thư viện</span>
+                <span class="nav__sub">Library</span>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav__item">
+            <a href="#" class="nav__link" data-nav="settings">
+              <span class="nav__kanji" aria-hidden="true">設</span>
+              <span class="nav__text">
+                <span class="nav__label">Cài đặt</span>
+                <span class="nav__sub">Settings</span>
+              </span>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+
+      <div class="sidebar__footer">
+        <span>Sumi</span>
+      </div>
+
+    </div>
+  </aside>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const hamburger = document.getElementById('hamburgerBtn');
+      const sidebar   = document.getElementById('sidebar');
+      const backdrop  = document.getElementById('backdrop');
+      const closeBtn  = document.getElementById('closeBtn');
+      const navLinks  = sidebar.querySelectorAll('.nav__link');
+
+      const isMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+
+      function openSidebar() {
+        sidebar.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        sidebar.setAttribute('aria-hidden', 'false');
+        hamburger.setAttribute('aria-expanded', 'true');
+        hamburger.setAttribute('aria-label', 'Đóng menu điều hướng');
+        if (isMobile()) document.body.classList.add('is-locked');
+        setTimeout(() => closeBtn.focus({ preventScroll: true }), 300);
+      }
+
+      function closeSidebar(returnFocus = true) {
+        sidebar.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        sidebar.setAttribute('aria-hidden', 'true');
+        hamburger.setAttribute('aria-expanded', 'false');
+        hamburger.setAttribute('aria-label', 'Mở menu điều hướng');
+        document.body.classList.remove('is-locked');
+        if (returnFocus) hamburger.focus({ preventScroll: true });
+      }
+
+      function toggleSidebar() {
+        sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+      }
+
+      hamburger.addEventListener('click', toggleSidebar);
+      closeBtn.addEventListener('click', () => closeSidebar());
+      backdrop.addEventListener('click', () => closeSidebar());
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+          closeSidebar();
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach((l) => {
+            l.classList.remove('is-active');
+            l.removeAttribute('aria-current');
+          });
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'page');
+          if (isMobile()) closeSidebar(false);
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        if (!isMobile()) {
+          document.body.classList.remove('is-locked');
+        } else if (sidebar.classList.contains('is-open')) {
+          document.body.classList.add('is-locked');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

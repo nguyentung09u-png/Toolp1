@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --night:     #06050e;
+    --night-2:   #0c0a1a;
+    --chrome-1:  #e8e8f0;
+    --chrome-2:  #a8a8c0;
+    --chrome-3:  #6a6a88;
+    --chrome-4:  #3a3a52;
+    --hot:       #ff2e88;
+    --electric:  #3d8bff;
+    --neon:      #00ffe0;
+    --violet:    #a855f7;
+    --white:     #ffffff;
+    --ink:       #0a0a18;
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--night);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: Y2K GRID + AURORA SPOTS ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(168, 85, 247, 0.28), transparent 38%),
+      radial-gradient(circle at 85% 75%, rgba(255, 46, 136, 0.25), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(61, 139, 255, 0.20), transparent 45%),
+      linear-gradient(180deg, #06050e 0%, #0c0a1a 55%, #06050e 100%);
+  }
+  /* Y2K perspective grid — tĩnh */
+  .bg::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -50%;
+    right: -50%;
+    height: 55%;
+    background-image:
+      linear-gradient(rgba(0, 255, 224, 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 224, 0.35) 1px, transparent 1px);
+    background-size: 42px 42px;
+    transform: perspective(280px) rotateX(58deg);
+    transform-origin: bottom center;
+    mask-image: linear-gradient(to top, black 0%, transparent 85%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 85%);
+    opacity: 0.55;
+  }
+  /* Star dots */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 8%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 78% 15%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 42% 6%, rgba(0,255,224,0.9), transparent),
+      radial-gradient(1px 1px at 90% 45%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 8% 62%, rgba(255,46,136,0.8), transparent),
+      radial-gradient(1px 1px at 62% 88%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 32% 32%, rgba(255,255,255,0.7), transparent);
+    opacity: 0.7;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER (xoay nhẹ sticker vibe) ---------- */
+  .card-wrap {
+    position: relative;
+    width: min(340px, 88vw);
+    aspect-ratio: 9 / 16;
+    transform: rotate(-1.5deg);
+    opacity: 0;
+    animation: wrapIn 1000ms cubic-bezier(.16,1,.3,1) 120ms forwards;
+  }
+  @keyframes wrapIn {
+    from { opacity: 0; transform: rotate(-4deg) translateY(30px) scale(0.94); }
+    to   { opacity: 1; transform: rotate(-1.5deg) translateY(0) scale(1); }
+  }
+
+  /* Shadow sticker (đổ bóng lệch — vibe 2000s) */
+  .card-shadow {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--hot), var(--electric));
+    transform: translate(8px, 8px);
+    filter: blur(0.5px);
+    opacity: 0.85;
+    z-index: 0;
+  }
+
+  /* ---------- CARD CHÍNH — CHROME ---------- */
+  .card {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 28px;
+    padding: 2px;
+    background:
+      linear-gradient(155deg,
+        #f0f0f8 0%,
+        #b8b8d0 18%,
+        #f8f8ff 32%,
+        #8888a8 48%,
+        #e0e0ec 62%,
+        #6a6a88 78%,
+        #c8c8dc 92%,
+        #a8a8c0 100%);
+    /* Hard shadow kiểu sticker */
+    box-shadow:
+      0 20px 40px -12px rgba(255, 46, 136, 0.45),
+      0 10px 25px -8px rgba(61, 139, 255, 0.35),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+  }
+
+  /* Inner dark panel (chrome viền ngoài, tối bên trong) */
+  .card-inner {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 26px 30px;
+    border-radius: 26px;
+    background:
+      radial-gradient(circle at 75% 15%, rgba(168, 85, 247, 0.28), transparent 45%),
+      radial-gradient(circle at 20% 90%, rgba(0, 255, 224, 0.15), transparent 50%),
+      linear-gradient(175deg, #0c0a1a 0%, #06050e 60%, #0a0818 100%);
+    overflow: hidden;
+  }
+
+  /* Chrome sheen quét chéo trên card (tĩnh) */
+  .card-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.08) 45%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.08) 55%,
+      transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ===== TOP: chrome pill ===== */
+  .top-row {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 26px;
+    opacity: 0;
+    animation: fadeUp 700ms ease 500ms forwards;
+  }
+
+  .chrome-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 6px;
+    background: linear-gradient(180deg, #f0f0f8 0%, #a8a8c0 50%, #e8e8f0 100%);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+      0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  .pill-badge {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--neon), var(--electric));
+    box-shadow: 0 0 8px rgba(0, 255, 224, 0.8);
+  }
+
+  .year-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--neon);
+    text-shadow: 0 0 8px rgba(0, 255, 224, 0.6);
+  }
+
+  /* ===== MID: name chrome gradient ===== */
+  .mid {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .name-eyebrow {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--chrome-2);
+    opacity: 0;
+    animation: fadeUp 700ms ease 650ms forwards;
+  }
+
+  .name-main {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(38px, 10vw, 50px);
+    font-weight: 900;
+    letter-spacing: -2.5px;
+    line-height: 0.9;
+    /* Chrome gradient text — đặc trưng Y2K */
+    background: linear-gradient(180deg,
+      #ffffff 0%,
+      #d8d8f0 20%,
+      #6a6a88 42%,
+      #e8e8f8 55%,
+      #a8a8c0 72%,
+      #ffffff 88%,
+      #b8b8d0 100%);
+    background-size: 100% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3));
+    opacity: 0;
+    animation:
+      fadeUp 1000ms cubic-bezier(.16,1,.3,1) 800ms forwards,
+      chromeShine 4s ease-in-out infinite alternate 1.8s;
+  }
+  @keyframes chromeShine {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 0% 100%; }
+  }
+
+  /* Neon underline */
+  .neon-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 800ms ease 1100ms forwards;
+  }
+  .neon-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--hot), var(--violet), var(--neon));
+    box-shadow:
+      0 0 8px rgba(255, 46, 136, 0.6),
+      0 0 16px rgba(168, 85, 247, 0.4);
+    border-radius: 2px;
+  }
+  .neon-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--neon);
+    box-shadow: 0 0 10px var(--neon);
+  }
+
+  /* ===== BOTTOM: chrome meta rows ===== */
+  .meta-list {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) forwards;
+    transition: border-color 250ms ease;
+  }
+  .meta-row:nth-child(1) { animation-delay: 1200ms; }
+  .meta-row:nth-child(2) { animation-delay: 1320ms; }
+  .meta-row:hover { border-color: rgba(0, 255, 224, 0.35); }
+
+  .meta-key {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--chrome-2);
+  }
+  .meta-val {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    color: var(--white);
+  }
+
+  /* Pixel corner accents (Y2K style) */
+  .pixel {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon);
+    z-index: 3;
+  }
+  .pixel-tl { top: 18px; left: 18px; }
+  .pixel-tr { top: 18px; right: 18px; background: var(--hot); box-shadow: 0 0 8px var(--hot); }
+  .pixel-bl { bottom: 18px; left: 18px; background: var(--violet); box-shadow: 0 0 8px var(--violet); }
+  .pixel-br { bottom: 18px; right: 18px; background: var(--electric); box-shadow: 0 0 8px var(--electric); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrap, .top-row, .name-eyebrow, .name-main, .neon-rule, .meta-row {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .card-wrap { transform: rotate(-1.5deg) !important; }
+    .name-main { background-position: 50% 50% !important; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-wrap { width: min(300px, 84vw); }
+    .card-inner { padding: 32px 20px 26px; border-radius: 24px; }
+    .card { border-radius: 26px; }
+    .card-shadow { border-radius: 26px; }
+    .name-main { letter-spacing: -2px; }
+    .meta-val { font-size: 15px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card-wrap { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND Y2K GRID -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- CARD WRAP -->
+    <div class="card-wrap">
+
+      <!-- Sticker shadow -->
+      <div class="card-shadow" aria-hidden="true"></div>
+
+      <!-- CARD -->
+      <article class="card">
+        <div class="card-inner">
+
+          <!-- Pixel corners -->
+          <span class="pixel pixel-tl" aria-hidden="true"></span>
+          <span class="pixel pixel-tr" aria-hidden="true"></span>
+          <span class="pixel pixel-bl" aria-hidden="true"></span>
+          <span class="pixel pixel-br" aria-hidden="true"></span>
+
+          <!-- TOP -->
+          <div class="top-row">
+            <span class="chrome-pill">
+              <span class="pill-badge"></span>
+              Profile
+            </span>
+            <span class="year-tag">'07</span>
+          </div>
+
+          <!-- MID -->
+          <div class="mid">
+            <span class="name-eyebrow">Nguyễn Thanh</span>
+            <h1 class="name-main">Huy</h1>
+            <div class="neon-rule" aria-hidden="true">
+              <span class="neon-line"></span>
+              <span class="neon-dot"></span>
+            </div>
+          </div>
+
+          <!-- BOTTOM -->
+          <div class="meta-list">
+            <div class="meta-row">
+              <span class="meta-key">Năm sinh</span>
+              <span class="meta-val">2007</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Quê quán</span>
+              <span class="meta-val">Quảng Nam</span>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+</body>
+</html>

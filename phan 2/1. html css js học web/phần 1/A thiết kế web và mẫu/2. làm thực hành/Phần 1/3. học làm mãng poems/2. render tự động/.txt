@@ -1,0 +1,2 @@
+1. render là tự động tạo 
+Render động (Dynamic Rendering) — vòng lặp tự biến mỗi object trong mảng thành 1 card.

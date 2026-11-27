@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Vertex Orbit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #050a12;
+    --bg-1: #070f1a;
+    --bg-2: #0a1420;
+
+    --lime: #c6ff3d;
+    --lime-deep: #9ee015;
+    --lime-soft: rgba(198, 255, 61, 0.12);
+    --lime-line: rgba(198, 255, 61, 0.35);
+
+    --cyan-steel: #7ce8dc;
+    --cyan-soft: rgba(124, 232, 220, 0.14);
+
+    --text: #eaf5ee;
+    --text-mute: #708894;
+    --text-dim: #455865;
+
+    --glass: rgba(10, 20, 32, 0.65);
+    --glass-strong: rgba(7, 15, 26, 0.82);
+
+    --font-display: "Manrope", system-ui, sans-serif;
+    --font-mono: "DM Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  /* ============================================================
+     BACKGROUND — diagonal grid + spotlight + beam chéo
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(680px 520px at 18% 0%, rgba(198, 255, 61, 0.14), transparent 60%),
+      radial-gradient(720px 620px at 100% 80%, rgba(124, 232, 220, 0.12), transparent 60%),
+      linear-gradient(160deg, #050a12 0%, #08111c 55%, #050a12 100%);
+  }
+
+  /* diagonal line grid (nghiêng 45°) */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image:
+      repeating-linear-gradient(45deg,
+        rgba(198, 255, 61, 0.08) 0 1px,
+        transparent 1px 48px),
+      repeating-linear-gradient(-45deg,
+        rgba(124, 232, 220, 0.06) 0 1px,
+        transparent 1px 48px);
+    mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+  }
+
+  /* beam chéo */
+  .beam {
+    position: fixed;
+    top: -20%;
+    left: -10%;
+    width: 40vw;
+    height: 140vh;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(198, 255, 61, 0.06) 40%,
+      rgba(124, 232, 220, 0.08) 55%,
+      transparent 100%);
+    transform: rotate(18deg);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(30px);
+    animation: beamShift 18s ease-in-out infinite alternate;
+  }
+  @keyframes beamShift {
+    0%   { transform: rotate(18deg) translateX(0); opacity: 0.8; }
+    100% { transform: rotate(14deg) translateX(40px); opacity: 1; }
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — angular panel với rail nghiêng
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 320px;
+    flex: 0 0 auto;
+    padding: 28px 20px 28px 76px; /* chừa chỗ cho rail bên trái */
+
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+
+    /* góc cắt angular — không bo tròn đều */
+    clip-path: polygon(
+      0 22px,
+      22px 0,
+      calc(100% - 14px) 0,
+      100% 14px,
+      100% calc(100% - 30px),
+      calc(100% - 30px) 100%,
+      22px 100%,
+      0 calc(100% - 22px)
+    );
+
+    border: 1px solid rgba(198, 255, 61, 0.14);
+    box-shadow:
+      0 0 0 1px rgba(198, 255, 61, 0.04),
+      0 40px 90px -44px rgba(198, 255, 61, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    opacity: 0;
+    transform: translateX(-20px) skewX(-1.5deg);
+    animation: shellIn 0.85s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes shellIn {
+    to { opacity: 1; transform: translateX(0) skewX(0); }
+  }
+
+  /* corner accent lines */
+  .sidebar::before,
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    background: var(--lime);
+    box-shadow: 0 0 10px var(--lime);
+    opacity: 0.7;
+  }
+  .sidebar::before {
+    top: 28px;
+    left: 22px;
+    width: 24px;
+    height: 1.5px;
+  }
+  .sidebar::after {
+    bottom: 28px;
+    right: 34px;
+    width: 24px;
+    height: 1.5px;
+  }
+
+  /* ============================================================
+     RAIL — thanh dọc nghiêng bên trái + ruler ticks
+     ============================================================ */
+  .rail {
+    position: absolute;
+    left: 22px;
+    top: 32px;
+    bottom: 32px;
+    width: 36px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* đường chính của rail */
+  .rail-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-50%) skewX(-8deg);
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(198, 255, 61, 0.35) 15%,
+      rgba(198, 255, 61, 0.35) 85%,
+      transparent 100%);
+  }
+
+  /* ruler ticks dọc rail */
+  .rail-ticks {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-50%) skewX(-8deg);
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0 10px,
+      rgba(198, 255, 61, 0.55) 10px 11px,
+      transparent 11px 22px
+    );
+    mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+    opacity: 0.7;
+  }
+
+  /* slider — thanh phát sáng trượt dọc rail */
+  .rail-slider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 5px;
+    height: 48px;
+    transform: translateX(-50%) skewX(-8deg);
+    background: linear-gradient(180deg,
+      transparent 0%,
+      var(--lime) 25%,
+      #eaffa8 50%,
+      var(--lime) 75%,
+      transparent 100%);
+    border-radius: 4px;
+    box-shadow:
+      0 0 14px var(--lime),
+      0 0 30px rgba(198, 255, 61, 0.55);
+    transition: transform 0.55s var(--ease-spring);
+    will-change: transform;
+  }
+
+  /* index counter — số lớn hiển thị bên rail */
+  .rail-index {
+    position: absolute;
+    right: -44px;
+    top: 0;
+    width: 44px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--lime);
+    text-shadow: 0 0 14px rgba(198, 255, 61, 0.6);
+    transition: transform 0.55s var(--ease-spring);
+    will-change: transform;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .rail-index::before {
+    content: "/";
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+    text-shadow: none;
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .sidebar-head {
+    position: relative;
+    margin-bottom: 26px;
+    padding-left: 4px;
+  }
+  .sidebar-head .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .sidebar-head .eyebrow::before {
+    content: "";
+    width: 14px;
+    height: 1px;
+    background: var(--lime);
+    box-shadow: 0 0 6px var(--lime);
+  }
+  .sidebar-head .brand {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .sidebar-head .brand em {
+    font-style: normal;
+    color: var(--lime);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 4px;
+    letter-spacing: 0;
+  }
+
+  /* ============================================================
+     NAV — angular items
+     ============================================================ */
+  .nav {
+    position: relative;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px 14px 20px;
+    text-decoration: none;
+    color: var(--text-mute);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+
+    /* angular parallelogram với slash cut bên phải */
+    clip-path: polygon(
+      0 0,
+      calc(100% - 18px) 0,
+      100% 50%,
+      calc(100% - 18px) 100%,
+      0 100%
+    );
+
+    transition:
+      color 0.3s var(--ease-out),
+      padding-left 0.35s var(--ease-out),
+      background 0.3s var(--ease-out);
+  }
+
+  /* lớp nền */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(198, 255, 61, 0.02);
+    border: 1px solid rgba(198, 255, 61, 0.06);
+    clip-path: inherit;
+    transition:
+      background 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out);
+    z-index: -1;
+  }
+
+  /* Hover */
+  .nav-link:hover {
+    color: var(--text);
+    padding-left: 24px;
+  }
+  .nav-link:hover::before {
+    background: rgba(198, 255, 61, 0.06);
+    border-color: rgba(198, 255, 61, 0.22);
+    box-shadow: inset 0 0 16px rgba(198, 255, 61, 0.08);
+  }
+  .nav-link:hover .nav-icon {
+    color: var(--cyan-steel);
+    transform: scale(1.1) rotate(-4deg);
+  }
+  .nav-link:hover .nav-dot {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Icon */
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    transition:
+      color 0.3s var(--ease-out),
+      transform 0.35s var(--ease-spring);
+  }
+  .nav-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* duotone: 1 shape fill nhẹ */
+  .nav-icon svg .duo {
+    fill: currentColor;
+    opacity: 0.15;
+    stroke: none;
+  }
+
+  /* Label */
+  .nav-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+
+  /* dot indicator bên trái (hover only) */
+  .nav-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 0.3s var(--ease-out),
+      transform 0.35s var(--ease-spring);
+    flex: 0 0 auto;
+  }
+
+  /* ============================================================
+     ACTIVE STATE — solid lime block + slash cut + arrow
+     ============================================================ */
+  .nav-link.is-active {
+    color: #050a12;
+    font-weight: 700;
+    padding-left: 24px;
+  }
+  .nav-link.is-active::before {
+    background:
+      linear-gradient(100deg,
+        var(--lime) 0%,
+        var(--lime) 70%,
+        var(--lime-deep) 100%);
+    border-color: var(--lime);
+    box-shadow:
+      0 0 22px rgba(198, 255, 61, 0.4),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .nav-link.is-active .nav-icon {
+    color: #050a12;
+  }
+  .nav-link.is-active .nav-dot {
+    background: #050a12;
+    box-shadow: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* arrow ">" bên phải active item (nằm trong slash cut) */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid #050a12;
+    border-right: 2px solid #050a12;
+    transform: translateY(-50%) rotate(45deg);
+    animation: arrowShift 1.6s ease-in-out infinite;
+  }
+  @keyframes arrowShift {
+    0%, 100% { transform: translateY(-50%) rotate(45deg) translateX(0); }
+    50%      { transform: translateY(-50%) rotate(45deg) translateX(3px); }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar {
+      width: 280px;
+      padding: 24px 16px 24px 68px;
+    }
+    .sidebar-head .brand { font-size: 21px; }
+    .sidebar-head .brand em { font-size: 12px; }
+    .nav-link { padding: 12px 16px 12px 18px; font-size: 14px; }
+    .nav-icon { width: 20px; height: 20px; }
+    .rail { left: 18px; }
+    .rail-index { font-size: 24px; right: -36px; width: 36px; }
+  }
+
+  /* Mobile — horizontal angular bar trên đầu */
+  @media (max-width: 640px) {
+    body {
+      padding: 14px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 16px 14px 14px;
+      clip-path: polygon(
+        0 16px,
+        16px 0,
+        calc(100% - 10px) 0,
+        100% 10px,
+        100% calc(100% - 16px),
+        calc(100% - 16px) 100%,
+        16px 100%,
+        0 calc(100% - 16px)
+      );
+    }
+
+    .sidebar::before,
+    .sidebar::after { display: none; }
+
+    .sidebar-head {
+      margin-bottom: 12px;
+      padding-left: 0;
+      text-align: left;
+    }
+    .sidebar-head .brand { font-size: 19px; }
+    .sidebar-head .eyebrow { font-size: 9px; letter-spacing: 2px; }
+
+    /* Ẩn rail dọc */
+    .rail { display: none; }
+
+    /* Nav thành horizontal scroll */
+    .nav {
+      flex-direction: row;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 2px 6px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px 14px;
+      min-width: 74px;
+      font-size: 11px;
+      text-align: center;
+      clip-path: polygon(
+        10px 0,
+        100% 0,
+        100% calc(100% - 10px),
+        calc(100% - 10px) 100%,
+        0 100%,
+        0 10px
+      );
+    }
+    .nav-link.is-active {
+      padding-left: 14px;
+    }
+    .nav-link:hover {
+      padding-left: 14px;
+    }
+    .nav-link.is-active::after { display: none; }
+    .nav-icon { width: 20px; height: 20px; }
+    .nav-label { font-size: 11px; }
+    .nav-dot { display: none; }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 66px; padding: 9px 10px; }
+    .sidebar-head .brand { font-size: 17px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    .beam { animation: none; }
+    .rail-slider, .rail-index { transition: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="beam" aria-hidden="true"></div>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- Rail dọc + slider + index counter -->
+    <div class="rail" aria-hidden="true">
+      <span class="rail-line"></span>
+      <span class="rail-ticks"></span>
+      <span class="rail-slider"></span>
+      <span class="rail-index">01</span>
+    </div>
+
+    <!-- Header -->
+    <div class="sidebar-head">
+      <span class="eyebrow">Vertex Orbit</span>
+      <span class="brand">Điều hướng<em>/nav</em></span>
+    </div>
+
+    <!-- Nav -->
+    <ul class="nav" role="tablist">
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" data-index="01" role="tab" aria-selected="true">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path class="duo" d="M5 9.5V21h14V9.5z" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+          </span>
+          <span class="nav-label">Trang chủ</span>
+          <span class="nav-dot"></span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" data-index="02" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle class="duo" cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+          </span>
+          <span class="nav-label">Khám phá</span>
+          <span class="nav-dot"></span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" data-index="03" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path class="duo" d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+          </span>
+          <span class="nav-label">Dự án</span>
+          <span class="nav-dot"></span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" data-index="04" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path class="duo" d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+          </span>
+          <span class="nav-label">Thông báo</span>
+          <span class="nav-dot"></span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" data-index="05" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle class="duo" cx="12" cy="12" r="3" />
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="nav-label">Cài đặt</span>
+          <span class="nav-dot"></span>
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     VERTEX ORBIT — active state + rail slider + index counter
+     ============================================================ */
+  (function () {
+    const nav = document.querySelector(".nav");
+    const links = document.querySelectorAll(".nav-link");
+    const slider = document.querySelector(".rail-slider");
+    const indexEl = document.querySelector(".rail-index");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ----- di chuyển slider + index tới item ----- */
+    function moveIndicator(link) {
+      if (!slider || !indexEl || isMobile()) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const centerY = linkRect.top - navRect.top + linkRect.height / 2;
+
+      // slider: căn giữa theo item (height slider = 48px)
+      slider.style.transform = `translateX(-50%) skewX(-8deg) translateY(${centerY - 24}px)`;
+
+      // index: căn giữa theo item, trừ nửa line-height (28px ~ 14px half)
+      indexEl.style.transform = `translateY(${centerY - 14}px)`;
+
+      // đổi số index
+      indexEl.textContent = link.dataset.index;
+    }
+
+    /* ----- kích hoạt ----- */
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+      moveIndicator(link);
+    }
+
+    /* ----- click handler (chức năng thật) ----- */
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+
+    /* ----- khởi tạo ----- */
+    function init() {
+      const active = document.querySelector(".nav-link.is-active");
+      if (!active) return;
+
+      if (prefersReduced) {
+        slider.style.transition = "none";
+        indexEl.style.transition = "none";
+      }
+
+      // đợi shell animation (~0.85s) + layout ổn định
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => moveIndicator(active));
+      });
+    }
+    init();
+
+    /* ----- reposition ----- */
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const active = document.querySelector(".nav-link.is-active");
+        if (active && !isMobile()) moveIndicator(active);
+      }, 120);
+    });
+
+    /* ----- mobile: scroll active vào giữa khi click ----- */
+    nav.addEventListener("click", (e) => {
+      const link = e.target.closest(".nav-link");
+      if (!link || !isMobile()) return;
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+      nav.scrollBy({ left: delta, behavior: prefersReduced ? "auto" : "smooth" });
+    });
+  })();
+</script>
+</body>
+</html>

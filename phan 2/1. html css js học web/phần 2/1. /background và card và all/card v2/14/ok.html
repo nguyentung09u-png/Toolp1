@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --depth:    #04060e;
+    --depth-2:  #0a0e1e;
+    --depth-3:  #101630;
+    --aqua:     #4dffd4;
+    --aqua-2:   #2ed8b0;
+    --lilac:    #b48cff;
+    --coral:    #ff8c7a;
+    --cream:    #f0f4ff;
+    --muted:    #7a8aa8;
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--depth);
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: DEEP LIQUID ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 45% at 22% 30%, rgba(77, 255, 212, 0.15), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 75%, rgba(180, 140, 255, 0.14), transparent 60%),
+      radial-gradient(ellipse 45% 35% at 50% 100%, rgba(255, 140, 122, 0.10), transparent 55%),
+      linear-gradient(180deg, #04060e 0%, #0a0e1e 55%, #04060e 100%);
+  }
+  /* Soft blob ambient phía sau card (decor, blur) */
+  .bg::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 480px;
+    height: 480px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(77, 255, 212, 0.22), transparent 65%);
+    filter: blur(60px);
+    animation: ambientFloat 10s ease-in-out infinite alternate;
+  }
+  @keyframes ambientFloat {
+    0%   { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-46%, -54%) scale(1.1); }
+  }
+  /* Grain */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.28;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.6  0 0 0 0 1  0 0 0 0 0.9  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER ---------- */
+  .card-wrap {
+    position: relative;
+    width: min(340px, 88vw);
+    aspect-ratio: 3 / 4;
+    opacity: 0;
+    animation: wrapIn 1200ms cubic-bezier(.16,1,.3,1) 100ms forwards;
+  }
+  @keyframes wrapIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ---------- BLOB CARD ---------- */
+  .blob {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(145deg,
+        rgba(20, 30, 60, 0.95) 0%,
+        rgba(10, 16, 38, 0.98) 50%,
+        rgba(6, 10, 24, 1) 100%);
+    /* Blob shape morph animation */
+    border-radius: 58% 42% 62% 38% / 48% 58% 42% 52%;
+    border: 1px solid rgba(77, 255, 212, 0.20);
+    box-shadow:
+      0 40px 80px -30px rgba(0, 0, 0, 0.9),
+      0 0 100px -30px rgba(77, 255, 212, 0.35),
+      0 0 80px -40px rgba(180, 140, 255, 0.30),
+      inset 0 1px 0 rgba(240, 244, 255, 0.10);
+    animation: blobMorph 14s ease-in-out infinite;
+  }
+  @keyframes blobMorph {
+    0%, 100% {
+      border-radius: 58% 42% 62% 38% / 48% 58% 42% 52%;
+    }
+    33% {
+      border-radius: 42% 58% 38% 62% / 62% 42% 58% 38%;
+    }
+    66% {
+      border-radius: 62% 38% 48% 52% / 42% 62% 38% 58%;
+    }
+  }
+
+  /* Inner glow layer */
+  .blob::before {
+    content: "";
+    position: absolute;
+    inset: 4%;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(77, 255, 212, 0.10), transparent 50%),
+      radial-gradient(circle at 75% 80%, rgba(180, 140, 255, 0.10), transparent 55%);
+    pointer-events: none;
+    animation: blobMorph 14s ease-in-out infinite;
+  }
+
+  /* Floating accent dots bên ngoài blob */
+  .float-dot {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .float-dot.d1 {
+    top: -12px;
+    right: -8px;
+    width: 14px;
+    height: 14px;
+    background: var(--aqua);
+    box-shadow: 0 0 16px var(--aqua);
+    animation: float1 6s ease-in-out infinite alternate;
+  }
+  .float-dot.d2 {
+    bottom: 6%;
+    left: -14px;
+    width: 8px;
+    height: 8px;
+    background: var(--lilac);
+    box-shadow: 0 0 12px var(--lilac);
+    animation: float2 5s ease-in-out infinite alternate;
+  }
+  .float-dot.d3 {
+    top: 38%;
+    right: -18px;
+    width: 6px;
+    height: 6px;
+    background: var(--coral);
+    box-shadow: 0 0 10px var(--coral);
+    animation: float1 7s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes float1 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(-6px, 10px); }
+  }
+  @keyframes float2 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(8px, -8px); }
+  }
+
+  /* ---------- NỘI DUNG (bên trong blob) ---------- */
+  .content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 44px;
+  }
+
+  /* Top pill — liquid glass */
+  .pill {
+    position: absolute;
+    top: 68px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 6px 8px;
+    background: rgba(77, 255, 212, 0.10);
+    border: 1px solid rgba(77, 255, 212, 0.35);
+    border-radius: 999px;
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--aqua);
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+    opacity: 0;
+    animation: pillIn 800ms cubic-bezier(.16,1,.3,1) 600ms forwards;
+  }
+  @keyframes pillIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  .pill-liquid {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffffff, var(--aqua));
+    box-shadow: 0 0 12px var(--aqua);
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(0.75); opacity: 0.7; }
+  }
+
+  /* Name block */
+  .name-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .eyebrow {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 700ms ease 800ms forwards;
+  }
+
+  .name-main {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(32px, 8.5vw, 42px);
+    font-weight: 300;
+    letter-spacing: -1.2px;
+    line-height: 1.02;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 1100ms cubic-bezier(.16,1,.3,1) 900ms forwards;
+  }
+  .name-main strong {
+    display: block;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--aqua) 0%, var(--lilac) 50%, var(--coral) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 4px 20px rgba(77, 255, 212, 0.3));
+  }
+
+  /* Divider — 3 dots liquid */
+  .liquid-dots {
+    display: flex;
+    gap: 7px;
+    margin: 22px 0 24px;
+    opacity: 0;
+    animation: fadeUp 700ms ease 1100ms forwards;
+  }
+  .liquid-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--aqua);
+    box-shadow: 0 0 8px rgba(77, 255, 212, 0.6);
+  }
+  .liquid-dots span:nth-child(2) {
+    background: var(--lilac);
+    box-shadow: 0 0 8px rgba(180, 140, 255, 0.6);
+  }
+  .liquid-dots span:nth-child(3) {
+    background: var(--coral);
+    box-shadow: 0 0 8px rgba(255, 140, 122, 0.6);
+  }
+
+  /* Meta stack */
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  .meta-item {
+    display: grid;
+    gap: 4px;
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) forwards;
+  }
+  .meta-item:nth-child(1) { animation-delay: 1250ms; }
+  .meta-item:nth-child(2) { animation-delay: 1350ms; }
+
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--cream);
+  }
+
+  /* Bottom stamp */
+  .stamp {
+    position: absolute;
+    bottom: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeIn 800ms ease 1500ms forwards;
+    white-space: nowrap;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .blob, .blob::before, .bg::before, .float-dot,
+    .pill, .pill-liquid, .eyebrow, .name-main, .liquid-dots,
+    .meta-item, .stamp, .card-wrap {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .pill { transform: translateX(-50%) !important; }
+    .stamp { transform: translateX(-50%) !important; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-wrap { width: min(300px, 86vw); }
+    .content { padding: 50px 30px; }
+    .pill { top: 58px; }
+    .name-main { letter-spacing: -1px; }
+    .meta-val { font-size: 16px; }
+    .stamp { bottom: 52px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card-wrap { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <div class="card-wrap">
+
+      <!-- Floating accent dots -->
+      <span class="float-dot d1" aria-hidden="true"></span>
+      <span class="float-dot d2" aria-hidden="true"></span>
+      <span class="float-dot d3" aria-hidden="true"></span>
+
+      <!-- BLOB -->
+      <div class="blob">
+
+        <div class="content">
+
+          <!-- Pill -->
+          <span class="pill">
+            <span class="pill-liquid"></span>
+            Hồ sơ
+          </span>
+
+          <!-- Name block -->
+          <div class="name-block">
+            <span class="eyebrow">Nguyễn Thanh</span>
+            <h1 class="name-main">
+              <strong>Huy</strong>
+            </h1>
+          </div>
+
+          <!-- Liquid dots divider -->
+          <div class="liquid-dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+
+          <!-- Meta -->
+          <div class="meta">
+            <div class="meta-item">
+              <span class="meta-key">Năm sinh</span>
+              <span class="meta-val">2007</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">Quê quán</span>
+              <span class="meta-val">Quảng Nam</span>
+            </div>
+          </div>
+
+          <!-- Stamp -->
+          <span class="stamp">Liquid · Profile</span>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

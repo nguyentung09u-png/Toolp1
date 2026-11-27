@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DEV STUDIO — Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS v3
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #07060d;
+    --bg-1: #0b0814;
+    --bg-2: #100b1c;
+
+    --iris: #a78bfa;
+    --iris-deep: #7c5cf0;
+    --iris-soft: rgba(167, 139, 250, 0.14);
+    --iris-line: rgba(167, 139, 250, 0.35);
+
+    --pink: #ff6ec7;
+    --lime: #c6ff5e;
+
+    --text: #f1ecff;
+    --text-mute: #8a82a6;
+
+    --glass: rgba(16, 11, 28, 0.55);
+    --glass-strong: rgba(12, 8, 22, 0.8);
+
+    --notch: 22px;   /* cắt chéo góc */
+    --tab: 10px;     /* notch nhỏ cạnh trên */
+
+    --font-display: "Sora", system-ui, sans-serif;
+    --font-mono: "Fira Code", ui-monospace, monospace;
+  }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     BACKGROUND v3 — aurora blobs + halftone + conic sweep + beam
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(700px 500px at 15% 0%, rgba(167, 139, 250, 0.22), transparent 60%),
+      radial-gradient(600px 500px at 85% 15%, rgba(255, 110, 199, 0.14), transparent 60%),
+      radial-gradient(900px 700px at 50% 120%, rgba(124, 92, 240, 0.16), transparent 65%),
+      linear-gradient(180deg, #07060d 0%, #0a0812 60%, #07060d 100%);
+    animation: auroraDrift 22s ease-in-out infinite alternate;
+  }
+  @keyframes auroraDrift {
+    0%   { background-position: 0% 0%, 100% 0%, 50% 100%, 0 0; }
+    100% { background-position: 6% 4%, 94% 8%, 48% 96%, 0 0; }
+  }
+
+  /* halftone dots */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.12;
+    background-image: radial-gradient(circle, var(--iris) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse at 50% 40%, #000 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 0%, transparent 70%);
+  }
+
+  /* vertical light beam + conic sweep overlay (page-scoped) */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  .page::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100vh;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, transparent, rgba(167, 139, 250, 0.35), transparent);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* ============================================================
+     NAVBAR v3 — Split bar + underline slider
+     ============================================================ */
+  .navbar {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 26px;
+    padding: 12px 16px 12px 18px;
+
+    background: var(--glass);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    border-radius: 14px;
+
+    /* notch nhỏ 2 bên cạnh trên + cắt chéo góc dưới */
+    clip-path: polygon(
+      0 0,
+      calc(50% - 14px) 0,
+      calc(50% - 10px) var(--tab),
+      calc(50% + 10px) var(--tab),
+      calc(50% + 14px) 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%
+    );
+
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.05),
+      0 26px 50px -30px rgba(124, 92, 240, 0.55);
+
+    opacity: 0;
+    transform: translateY(-12px);
+    animation: navIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s forwards;
+  }
+  @keyframes navIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- Brand --- */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: linear-gradient(140deg, var(--iris) 0%, var(--pink) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 8px 20px -8px rgba(167, 139, 250, 0.6);
+    color: #120a26;
+  }
+  .brand-mark svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .brand-name b { font-weight: 800; letter-spacing: 0.6px; }
+  .brand-name .slash { color: var(--iris); margin: 0 3px; }
+  .brand-name .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--iris);
+    border: 1px solid var(--iris-line);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    letter-spacing: 1.4px;
+    background: var(--iris-soft);
+  }
+
+  /* --- Nav dạng icon trên / label dưới + underline slider --- */
+  .nav-wrap {
+    position: relative;
+    justify-self: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    list-style: none;
+    position: relative;
+    padding: 4px;
+    border-radius: 10px;
+    background: rgba(7, 6, 13, 0.55);
+    border: 1px solid rgba(167, 139, 250, 0.1);
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 14px 9px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.9px;
+    color: var(--text-mute);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: color 0.28s ease, background 0.28s ease;
+    white-space: nowrap;
+    z-index: 1;
+  }
+  .nav-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Hover */
+  .nav-link:hover {
+    color: var(--text);
+  }
+  .nav-link:hover svg { transform: translateY(-2px) scale(1.08); }
+
+  /* Active */
+  .nav-link.is-active { color: var(--text); }
+  .nav-link.is-active svg { color: var(--iris); }
+
+  /* Underline slider (được JS di chuyển) */
+  .nav-underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    width: 40px;
+    background: linear-gradient(90deg, var(--iris), var(--pink));
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--iris);
+    transition: transform 0.42s cubic-bezier(0.34, 1.3, 0.64, 1),
+                width 0.42s cubic-bezier(0.34, 1.3, 0.64, 1);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* --- Actions bên phải (thuộc Navbar — icon trang trí không chức năng thì KHÔNG thêm) ---
+     Ở đây chỉ thêm 1 chip "SIGNAL" — thuộc Navbar như một status indicator,
+     phản ánh thông tin navbar (giống v2). Không phải nội dung mới. */
+  .nav-signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 1.6px;
+    color: var(--text-mute);
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    background: rgba(167, 139, 250, 0.06);
+  }
+  .nav-signal .bar {
+    display: inline-flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 10px;
+  }
+  .nav-signal .bar i {
+    display: block;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--lime);
+    animation: signal 1.6s ease-in-out infinite;
+  }
+  .nav-signal .bar i:nth-child(1) { height: 4px; animation-delay: 0s; }
+  .nav-signal .bar i:nth-child(2) { height: 7px; animation-delay: 0.15s; }
+  .nav-signal .bar i:nth-child(3) { height: 10px; animation-delay: 0.3s; }
+  @keyframes signal {
+    0%, 100% { opacity: 0.4; transform: scaleY(0.7); }
+    50%      { opacity: 1;   transform: scaleY(1); }
+  }
+
+  /* ============================================================
+     CARDS v3 — Command-panel polygon + watermark icon + delta chip + ruler
+     ============================================================ */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    position: relative;
+    padding: 22px 20px 24px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+
+    /* command-panel polygon: cắt chéo 2 góc + notch nhỏ cạnh trên giữa */
+    --c: var(--notch);
+    clip-path: polygon(
+      0 0,
+      calc(50% - 10px) 0,
+      calc(50% - 6px) 8px,
+      calc(50% + 6px) 8px,
+      calc(50% + 10px) 0,
+      100% 0,
+      100% calc(100% - var(--c)),
+      calc(100% - var(--c)) 100%,
+      0 100%
+    );
+
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    overflow: hidden;
+    isolation: isolate;
+
+    /* reveal */
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    animation: cardIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.12s; }
+  .stat-card:nth-child(2) { animation-delay: 0.22s; }
+  .stat-card:nth-child(3) { animation-delay: 0.32s; }
+  .stat-card:nth-child(4) { animation-delay: 0.42s; }
+
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Viền kép inset (double-line frame) */
+  .stat-card .frame {
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(167, 139, 250, 0.14);
+    pointer-events: none;
+    clip-path: inherit;
+    z-index: 1;
+  }
+
+  /* Watermark icon lớn mờ */
+  .stat-card .watermark {
+    position: absolute;
+    right: -12px;
+    bottom: -20px;
+    width: 96px;
+    height: 96px;
+    color: var(--iris);
+    opacity: 0.08;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.5s ease;
+  }
+  .stat-card:hover .watermark { opacity: 0.16; transform: rotate(-6deg) scale(1.05); }
+  .stat-card .watermark svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Ruler ticks dưới cùng */
+  .stat-card .ruler {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 10px;
+    height: 8px;
+    z-index: 1;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(167, 139, 250, 0.35) 0 1px,
+      transparent 1px 8px
+    );
+    mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
+    opacity: 0.7;
+  }
+
+  /* Corner accent dot */
+  .stat-card .corner-dot {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+    z-index: 2;
+  }
+
+  /* Hover — tilt handled by JS; CSS only adds glow border */
+  .stat-card:hover {
+    border-color: rgba(167, 139, 250, 0.4);
+    box-shadow:
+      inset 0 0 24px rgba(167, 139, 250, 0.08),
+      0 22px 44px -22px rgba(124, 92, 240, 0.6);
+  }
+
+  .stat-card > *:not(.frame):not(.watermark):not(.ruler):not(.corner-dot) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* header */
+  .stat-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 16px;
+  }
+  .stat-label::before {
+    content: "// ";
+    color: var(--iris);
+  }
+
+  /* value — số lớn ở giữa */
+  .stat-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--text);
+    text-shadow: 0 0 26px rgba(167, 139, 250, 0.4);
+  }
+  .stat-value .unit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--iris);
+    letter-spacing: 1px;
+  }
+
+  /* delta chip */
+  .stat-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(198, 255, 94, 0.1);
+    color: var(--lime);
+    border: 1px solid rgba(198, 255, 94, 0.28);
+  }
+  .stat-delta svg {
+    width: 10px;
+    height: 10px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Activity card text */
+  .stat-value.is-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0;
+    text-shadow: 0 0 14px rgba(167, 139, 250, 0.28);
+    margin-top: 2px;
+  }
+  .live-pulse {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 0 3px rgba(255, 110, 199, 0.18), 0 0 12px var(--pink);
+    animation: livePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(255, 110, 199, 0.18), 0 0 12px var(--pink); }
+    50%      { box-shadow: 0 0 0 7px rgba(255, 110, 199, 0.05), 0 0 18px var(--pink); }
+  }
+  .stat-value.is-text .stat-delta {
+    background: rgba(255, 110, 199, 0.1);
+    color: var(--pink);
+    border-color: rgba(255, 110, 199, 0.28);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1080px) {
+    .navbar {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "brand signal"
+        "nav nav";
+      row-gap: 12px;
+    }
+    .brand { grid-area: brand; }
+    .nav-signal { grid-area: signal; }
+    .nav-wrap { grid-area: nav; justify-self: stretch; justify-content: center; }
+  }
+
+  @media (max-width: 980px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 14px; }
+    .page { gap: 28px; }
+    .navbar { padding: 12px 12px 14px; border-radius: 12px; }
+    .brand-name .tag { display: none; }
+    .nav-link { padding: 7px 11px 8px; font-size: 10px; }
+    .nav-link svg { width: 15px; height: 15px; }
+    .stat-value { font-size: 32px; }
+    .stat-value.is-text { font-size: 15px; }
+  }
+
+  @media (max-width: 460px) {
+    .cards { grid-template-columns: 1fr; }
+    .nav-menu { flex-wrap: wrap; justify-content: center; gap: 2px; }
+    .nav-link { flex: 1 1 44%; }
+    .nav-signal { display: none; }
+    .nav-underline { display: none; } /* tránh sai vị trí khi wrap */
+  }
+
+  @media (hover: none) {
+    /* Tắt tilt trên thiết bị cảm ứng */
+    .stat-card { transition: none; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    body::before { animation: none; }
+    .stat-card { opacity: 1; transform: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--iris);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- ================= NAVBAR v3 ================= -->
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="#" class="brand" aria-label="DEV STUDIO home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 6 3 12l5 6" />
+            <path d="M16 6l5 6-5 6" />
+            <path d="M14 4l-4 16" />
+          </svg>
+        </span>
+        <span class="brand-name">
+          <b>DEV</b><span class="slash">/</span><b>STUDIO</b>
+          <span class="tag">v3</span>
+        </span>
+      </a>
+
+      <div class="nav-wrap">
+        <ul class="nav-menu" role="tablist">
+          <li>
+            <a href="#home" class="nav-link is-active" data-nav="home" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10.5 12 3l9 7.5" />
+                <path d="M5 9.5V21h14V9.5" />
+              </svg>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="#projects" class="nav-link" data-nav="projects" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 9v11" />
+              </svg>
+              <span>Projects</span>
+            </a>
+          </li>
+          <li>
+            <a href="#tools" class="nav-link" data-nav="tools" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.6 2.6-2.9-2.9 2.5-2.7Z" />
+              </svg>
+              <span>Tools</span>
+            </a>
+          </li>
+          <li>
+            <a href="#about" class="nav-link" data-nav="about" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 10v6" />
+                <circle cx="12" cy="7.5" r="0.6" fill="currentColor" stroke="none" />
+              </svg>
+              <span>About</span>
+            </a>
+          </li>
+        </ul>
+        <span class="nav-underline" aria-hidden="true"></span>
+      </div>
+
+      <span class="nav-signal" aria-label="Signal status">
+        <span class="bar" aria-hidden="true"><i></i><i></i><i></i></span>
+        SIGNAL
+      </span>
+
+    </nav>
+
+    <!-- ================= CARDS v3 ================= -->
+    <section class="cards" aria-label="Developer statistics">
+
+      <!-- Total Projects -->
+      <article class="stat-card">
+        <span class="frame" aria-hidden="true"></span>
+        <span class="corner-dot" aria-hidden="true"></span>
+        <span class="watermark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+          </svg>
+        </span>
+        <span class="ruler" aria-hidden="true"></span>
+
+        <span class="stat-label">Total Projects</span>
+        <div class="stat-value"><span data-count="128">0</span><span class="unit">PRJ</span></div>
+        <span class="stat-delta">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+          +12.4%
+        </span>
+      </article>
+
+      <!-- Completed Tasks -->
+      <article class="stat-card">
+        <span class="frame" aria-hidden="true"></span>
+        <span class="corner-dot" aria-hidden="true"></span>
+        <span class="watermark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12.5 10 17.5 19 6.5" />
+          </svg>
+        </span>
+        <span class="ruler" aria-hidden="true"></span>
+
+        <span class="stat-label">Completed Tasks</span>
+        <div class="stat-value"><span data-count="1248">0</span><span class="unit">TSK</span></div>
+        <span class="stat-delta">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+          +8.7%
+        </span>
+      </article>
+
+      <!-- Active Projects -->
+      <article class="stat-card">
+        <span class="frame" aria-hidden="true"></span>
+        <span class="corner-dot" aria-hidden="true"></span>
+        <span class="watermark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </span>
+        <span class="ruler" aria-hidden="true"></span>
+
+        <span class="stat-label">Active Projects</span>
+        <div class="stat-value"><span data-count="17">0</span><span class="unit">RUN</span></div>
+        <span class="stat-delta">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+          +3
+        </span>
+      </article>
+
+      <!-- Recent Activity -->
+      <article class="stat-card">
+        <span class="frame" aria-hidden="true"></span>
+        <span class="corner-dot" aria-hidden="true"></span>
+        <span class="watermark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 12h4l3-7 4 14 3-7h4" />
+          </svg>
+        </span>
+        <span class="ruler" aria-hidden="true"></span>
+
+        <span class="stat-label">Recent Activity</span>
+        <div class="stat-value is-text">
+          <span class="live-pulse" aria-hidden="true"></span>
+          <span>System active</span>
+        </div>
+        <span class="stat-delta">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+          LIVE
+        </span>
+      </article>
+
+    </section>
+
+  </div>
+
+<script>
+  /* ============================================================
+     1) NAV — underline slider + active state
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const underline = document.querySelector(".nav-underline");
+    const menu = document.querySelector(".nav-menu");
+
+    function moveUnderline(target) {
+      if (!underline || !menu || !target) return;
+      const menuRect = menu.getBoundingClientRect();
+      const rect = target.getBoundingClientRect();
+      const left = rect.left - menuRect.left + (rect.width - Math.min(rect.width - 16, 42)) / 2;
+      underline.style.width = Math.min(rect.width - 16, 42) + "px";
+      underline.style.transform = `translateX(${left}px)`;
+    }
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+      moveUnderline(link);
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        // Cho phép anchor mặc định (#home...) nhưng KHÔNG cuộn (đây là nav demo)
+        e.preventDefault();
+        activate(this);
+      });
+    });
+
+    // khởi tạo vị trí underline
+    const initial = document.querySelector(".nav-link.is-active");
+    requestAnimationFrame(() => moveUnderline(initial));
+
+    // reposition on resize
+    window.addEventListener("resize", () => {
+      const active = document.querySelector(".nav-link.is-active");
+      if (active) moveUnderline(active);
+    });
+
+    // ẩn underline nếu menu wrap (mobile nhỏ)
+    const checkWrap = () => {
+      if (!menu) return;
+      const wrapped = menu.getBoundingClientRect().height > 46;
+      if (underline) underline.style.opacity = wrapped ? "0" : "1";
+    };
+    checkWrap();
+    window.addEventListener("resize", checkWrap);
+  })();
+
+  /* ============================================================
+     2) COUNTER odometer (số chạy)
+     ============================================================ */
+  (function () {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fmt = (n) => n.toLocaleString("en-US");
+
+    document.querySelectorAll(".stat-value [data-count]").forEach((el) => {
+      const target = Number(el.dataset.count);
+      if (prefersReduced) { el.textContent = fmt(target); return; }
+
+      const duration = 1200;
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = fmt(target);
+      })(start);
+    });
+  })();
+
+  /* ============================================================
+     3) 3D tilt nhẹ theo chuột (chỉ desktop có hover)
+     ============================================================ */
+  (function () {
+    if (window.matchMedia("(hover: none)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const cards = document.querySelectorAll(".stat-card");
+    cards.forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = `translateY(-3px) perspective(600px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 4).toFixed(2)}deg)`;
+      });
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = "";
+      });
+    });
+  })();
+</script>
+</body>
+</html>

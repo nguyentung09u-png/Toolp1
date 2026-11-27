@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Nebula Flow — DOM/SVG Motion</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #05060d;
+    --dur-fast: .45s;
+    --dur-base: .9s;
+    --dur-slow: 1.6s;
+    --ease-out: cubic-bezier(.16,1,.3,1);
+    --ease-spring: cubic-bezier(.34,1.56,.64,1);
+    --ease-soft: cubic-bezier(.25,.46,.45,.94);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  /* ============================================================
+     STAGE — nơi mọi layer được xếp chồng
+     ============================================================ */
+  #stage {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+    cursor: crosshair;
+    background: var(--bg);
+  }
+
+  /* ---- Layer nebula (radial gradient clouds) ---- */
+  .nebula-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+
+  .blob {
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    filter: blur(60px);
+    opacity: .55;
+    will-change: transform, opacity;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+
+  /* ============================================================
+     TRAIL CANVAS → chuyển thành SVG (mỗi hạt = 1 line element
+     được cập nhật bởi JS, xếp lớp liên tục trên SVG)
+     ============================================================ */
+  #trail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: screen;
+  }
+
+  #trail line,
+  #trail polyline {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* ---- Cursor halo ---- */
+  .halo {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    left: 0;
+    top: 0;
+    margin: -170px 0 0 -170px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(
+      circle,
+      hsla(195, 100%, 72%, .12) 0%,
+      hsla(265, 100%, 68%, .06) 45%,
+      transparent 72%
+    );
+    filter: blur(6px);
+    opacity: 0;
+    transition: opacity .6s var(--ease-out);
+    z-index: 3;
+    will-change: transform, opacity;
+  }
+  .halo.on { opacity: 1; }
+
+  /* ---- Sparks (click burst) — DOM dots ---- */
+  .spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate3d(-50%, -50%, 0);
+    z-index: 4;
+    will-change: transform, opacity;
+    animation: sparkFade var(--dur-base) ease-out forwards;
+  }
+  @keyframes sparkFade {
+    to { opacity: 0; }
+  }
+
+  /* ---- Hint text ---- */
+  .hint {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    font: 500 11px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.38);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 1s ease;
+    text-shadow: 0 0 18px rgba(120,200,255,.35);
+    z-index: 10;
+    animation: hintIn 1.6s var(--ease-out) both;
+  }
+  @keyframes hintIn {
+    from { opacity: 0; letter-spacing: .4em; }
+    to   { opacity: 1; letter-spacing: .22em; }
+  }
+
+  /* ---- Reduced motion ---- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+    .blob { opacity: .35; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <!-- Nebula background clouds -->
+  <div class="nebula-layer" id="nebula"></div>
+
+  <!-- SVG trail (thay thế canvas) -->
+  <svg id="trail" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+  <!-- Cursor halo -->
+  <div class="halo" id="halo"></div>
+</div>
+
+<div class="hint" id="hint">Di chuyển chuột để khuấy động · Nhấn để bùng nổ</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ============================================================
+     MOTION CONTROL SYSTEM
+     - State machine rAF duy nhất
+     - Reduced-motion aware
+     - Toàn bộ chuyển động GPU-friendly
+     ============================================================ */
+
+  const stage   = document.getElementById("stage");
+  const nebula  = document.getElementById("nebula");
+  const trail   = document.getElementById("trail");
+  const halo    = document.getElementById("halo");
+  const hintEl  = document.getElementById("hint");
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let W = 0, H = 0;
+  const TAU = Math.PI * 2;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  /* ---- Pointer state (interpolated) ---- */
+  const pointer = {
+    x: -9999, y: -9999,
+    tx: -9999, ty: -9999,
+    active: false,
+    hasMoved: false
+  };
+
+  /* ---- Flow field ---- */
+  function field(x, y, t) {
+    return (
+      Math.sin(x * 0.0032 + t * 1.7) +
+      Math.cos(y * 0.0038 - t * 1.3) +
+      Math.sin((x + y) * 0.0021 + t * 0.9)
+    ) * 1.05;
+  }
+
+  /* ---- Particles (mỗi hạt = 1 line SVG) ---- */
+  const particles = [];
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  function makeParticle() {
+    const line = document.createElementNS(SVG_NS, "line");
+    line.setAttribute("stroke", "transparent");
+    line.setAttribute("stroke-width", "1");
+    trail.appendChild(line);
+
+    const p = {
+      el: line,
+      x: Math.random() * W,
+      y: Math.random() * H,
+      px: 0, py: 0,
+      speed: rnd(0.45, 1.8),
+      hue: rnd(170, 320),
+      width: rnd(0.5, 1.7),
+      alpha: rnd(0.22, 0.72)
+    };
+    p.px = p.x;
+    p.py = p.y;
+    return p;
+  }
+
+  function rebuildParticles() {
+    // Xoá cũ
+    while (trail.firstChild) trail.removeChild(trail.firstChild);
+    particles.length = 0;
+
+    if (reducedMotion) return; // Không tạo hạt khi reduced motion
+
+    const target = Math.round(Math.min(700, Math.max(160, (W * H) / 3600)));
+    for (let i = 0; i < target; i++) particles.push(makeParticle());
+  }
+
+  /* ---- Nebula blobs (DOM + CSS animation) ---- */
+  const blobPalette = [190, 215, 265, 300, 340];
+  let blobEls = [];
+
+  function buildBlobs() {
+    nebula.innerHTML = "";
+    blobEls = blobPalette.map((hue, i) => {
+      const el = document.createElement("div");
+      el.className = "blob";
+
+      const rx  = rnd(0.16, 0.40);
+      const ry  = rnd(0.14, 0.36);
+      const dur = rnd(18, 32);
+      const delay = -rnd(0, 20);
+      const size = rnd(0.9, 1.5);
+
+      /* Vị trí ban đầu */
+      el.style.left = (50 + (Math.random() - 0.5) * 20) + "%";
+      el.style.top  = (50 + (Math.random() - 0.5) * 20) + "%";
+      el.style.transform = `scale(${size})`;
+
+      /* Gradient màu riêng */
+      el.style.background = `radial-gradient(circle,
+        hsla(${hue}, 95%, 62%, .22) 0%,
+        hsla(${hue}, 95%, 55%, .08) 45%,
+        transparent 70%)`;
+
+      /* Keyframe di chuyển riêng (drift quỹ đạo elip) */
+      const animName = "blobDrift" + i;
+      const keyframes = `
+        @keyframes ${animName} {
+          0%   { transform: translate(-50%,-50%) translate(${ 0 }px, ${ 0 }px) scale(${size}); }
+          25%  { transform: translate(-50%,-50%) translate(${ rx * W * 0.5 }px, ${ -ry * H * 0.4 }px) scale(${size * 1.05}); }
+          50%  { transform: translate(-50%,-50%) translate(${ rx * W * 0.6 }px, ${ ry * H * 0.3 }px) scale(${size * 0.95}); }
+          75%  { transform: translate(-50%,-50%) translate(${ -rx * W * 0.3 }px, ${ ry * H * 0.4 }px) scale(${size * 1.08}); }
+          100% { transform: translate(-50%,-50%) translate(${ 0 }px, ${ 0 }px) scale(${size}); }
+        }
+      `;
+      const style = document.createElement("style");
+      style.textContent = keyframes;
+      document.head.appendChild(style);
+
+      el.style.animation = `${animName} ${dur}s var(--ease-soft) ${delay}s infinite alternate`;
+
+      nebula.appendChild(el);
+      return el;
+    });
+  }
+
+  /* ---- Sparks (DOM dots cho burst) ---- */
+  const sparks = [];
+  const MAX_SPARKS = 500;
+
+  function burst(x, y) {
+    if (reducedMotion) {
+      // Vẫn có phản hồi thị giác nhẹ
+      const ring = document.createElement("div");
+      ring.style.cssText = `
+        position:absolute;left:${x}px;top:${y}px;
+        width:20px;height:20px;margin:-10px 0 0 -10px;
+        border-radius:50%;border:2px solid hsla(200,100%,72%,.6);
+        pointer-events:none;z-index:4;
+        animation: sparkFade .8s ease-out forwards;
+      `;
+      stage.appendChild(ring);
+      setTimeout(() => ring.remove(), 900);
+      return;
+    }
+
+    const n = 55;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * TAU;
+      const s = rnd(1.2, 6.5);
+      const el = document.createElement("div");
+      el.className = "spark";
+      const hue = rnd(170, 330);
+      el.style.left = x + "px";
+      el.style.top  = y + "px";
+      el.style.width  = rnd(2, 4) + "px";
+      el.style.height = el.style.width;
+      el.style.background = `hsla(${hue}, 100%, 70%, .95)`;
+      el.style.boxShadow = `0 0 8px hsla(${hue}, 100%, 65%, .8)`;
+      stage.appendChild(el);
+
+      sparks.push({
+        el,
+        x, y,
+        vx: Math.cos(a) * s,
+        vy: Math.sin(a) * s,
+        life: 1,
+        decay: rnd(0.008, 0.022),
+        hue
+      });
+    }
+
+    // Giới hạn
+    while (sparks.length > MAX_SPARKS) {
+      const old = sparks.shift();
+      old.el.remove();
+    }
+  }
+
+  /* ---- Pointer tracking với lerp cho halo ---- */
+  function onPointer(x, y) {
+    pointer.tx = x;
+    pointer.ty = y;
+    pointer.active = true;
+    pointer.hasMoved = true;
+    halo.classList.add("on");
+  }
+
+  function onLeave() {
+    pointer.active = false;
+    pointer.tx = -9999;
+    pointer.ty = -9999;
+    halo.classList.remove("on");
+  }
+
+  /* ---- Main rAF loop ---- */
+  let lastNow = 0;
+  let rafId = null;
+
+  function frame(now) {
+    if (!lastNow) lastNow = now;
+    const dt = Math.min(50, now - lastNow);
+    lastNow = now;
+
+    const ft = now * 0.00018;
+
+    /* --- Halo follow với lerp (mượt, không giật) --- */
+    if (pointer.active) {
+      const k = 0.18;
+      if (pointer.x < -1000) { pointer.x = pointer.tx; pointer.y = pointer.ty; }
+      pointer.x += (pointer.tx - pointer.x) * k;
+      pointer.y += (pointer.ty - pointer.y) * k;
+      halo.style.transform =
+        `translate3d(${pointer.x}px, ${pointer.y}px, 0)`;
+    }
+
+    /* --- Particles --- */
+    if (!reducedMotion && particles.length) {
+      const R = 170, R2 = R * R;
+      const mx = pointer.x, my = pointer.y;
+      const active = pointer.active;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const a = field(p.x, p.y, ft);
+        let vx = Math.cos(a) * p.speed;
+        let vy = Math.sin(a) * p.speed;
+
+        if (active) {
+          const dx = p.x - mx;
+          const dy = p.y - my;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < R2 && d2 > 0.0001) {
+            const d = Math.sqrt(d2);
+            const f = (1 - d / R) * 7;
+            vx += (dx / d) * f;
+            vy += (dy / d) * f;
+          }
+        }
+
+        p.px = p.x;
+        p.py = p.y;
+        p.x += vx;
+        p.y += vy;
+
+        // Wrap
+        if (p.x < -4 || p.x > W + 4 || p.y < -4 || p.y > H + 4) {
+          p.x = Math.random() * W;
+          p.y = Math.random() * H;
+          p.px = p.x;
+          p.py = p.y;
+          // Ẩn segment của frame trước
+          p.el.setAttribute("x1", p.x);
+          p.el.setAttribute("y1", p.y);
+          p.el.setAttribute("x2", p.x);
+          p.el.setAttribute("y2", p.y);
+          continue;
+        }
+
+        p.el.setAttribute("x1", p.px.toFixed(1));
+        p.el.setAttribute("y1", p.py.toFixed(1));
+        p.el.setAttribute("x2", p.x.toFixed(1));
+        p.el.setAttribute("y2", p.y.toFixed(1));
+        p.el.setAttribute("stroke", `hsla(${p.hue}, 100%, 66%, ${p.alpha})`);
+        p.el.setAttribute("stroke-width", p.width);
+      }
+    }
+
+    /* --- Sparks update --- */
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx * (dt / 16.67);
+      s.y += s.vy * (dt / 16.67);
+      s.vx *= 0.96;
+      s.vy *= 0.96;
+      s.life -= s.decay * (dt / 16.67);
+
+      if (s.life <= 0.01) {
+        s.el.remove();
+        sparks.splice(i, 1);
+        continue;
+      }
+
+      s.el.style.transform =
+        `translate3d(${s.x}px, ${s.y}px, 0) translate(-50%,-50%) scale(${s.life})`;
+      s.el.style.opacity = s.life;
+    }
+
+    rafId = requestAnimationFrame(frame);
+  }
+
+  /* ---- Resize ---- */
+  let resizeTimer = null;
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    // SVG viewBox theo pixel thực (dùng preserveAspectRatio none)
+    trail.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    trail.setAttribute("width", W);
+    trail.setAttribute("height", H);
+
+    // debounce rebuild particles + blobs
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      rebuildParticles();
+      buildBlobs();
+    }, 180);
+  }
+
+  /* ---- Events ---- */
+  window.addEventListener("resize", resize);
+  window.addEventListener("orientationchange", () => setTimeout(resize, 150));
+
+  window.addEventListener("pointermove", (e) => {
+    onPointer(e.clientX, e.clientY);
+  }, { passive: true });
+
+  window.addEventListener("pointerdown", (e) => {
+    onPointer(e.clientX, e.clientY);
+    // Hiệu ứng "nảy" nhẹ cho halo khi click (click feedback)
+    halo.animate(
+      [
+        { filter: "blur(6px)", transform: halo.style.transform || "translate3d(0,0,0)" },
+        { filter: "blur(2px)" },
+        { filter: "blur(6px)" }
+      ],
+      { duration: 400, easing: "cubic-bezier(.34,1.56,.64,1)" }
+    );
+    burst(e.clientX, e.clientY);
+  }, { passive: true });
+
+  window.addEventListener("pointerleave", onLeave);
+  window.addEventListener("pointercancel", onLeave);
+  window.addEventListener("blur", onLeave);
+
+  /* Ẩn hint sau 7s với fade */
+  setTimeout(() => { hintEl.style.opacity = "0"; }, 7000);
+
+  /* ---- Init ---- */
+  resize();
+  rafId = requestAnimationFrame(frame);
+
+  /* Tạm dừng khi tab ẩn (performance) */
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    } else {
+      lastNow = 0;
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    }
+  });
+})();
+</script>
+</body>
+</html>

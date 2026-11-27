@@ -1,0 +1,42 @@
+Cách làm tổng quan gồm ba phần:
+ * HTML: Tạo thẻ liên kết <a> với href trỏ tới link liên hệ và target="_blank", lồng sẵn thẻ <img src="[https://static.freepnglogo.com/images/all_img/zalo-icon-4635.png](https://static.freepnglogo.com/images/all_img/zalo-icon-4635.png)" alt="Zalo"> và <span>Liên hệ Zalo</span>.
+ * CSS: Dùng position: fixed để neo nút ở góc màn hình, flexbox căn hàng ngang, bo góc, đổ bóng và z-index để nằm nổi phía trên.
+ * JavaScript: Dùng để tạo hoặc chèn nút vào trang động, hoặc gán sự kiện/hành vi khi người dùng tương tác (nếu cần). Tôi không chắc link ảnh ngoài có hoạt động ổn định mọi lúc hay không.
+Code mẫu chung:
+
+<a href="https://zalo.me/0367411225" target="_blank" class="fab-zalo" id="fabZalo">
+  <img src="https://static.freepnglogo.com/images/all_img/zalo-icon-4635.png" alt="Zalo">
+  <span>Liên hệ Zalo</span>
+</a>
+
+.fab-zalo {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #0068ff;
+  color: #ffffff;
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 104, 255, 0.35);
+  z-index: 100;
+}
+
+.fab-zalo img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+const fabZalo = document.getElementById("fabZalo");
+
+if (fabZalo) {
+  fabZalo.addEventListener("click", () => {
+    // Có thể thêm xử lý bổ sung tại đây nếu cần
+  });
+}
+

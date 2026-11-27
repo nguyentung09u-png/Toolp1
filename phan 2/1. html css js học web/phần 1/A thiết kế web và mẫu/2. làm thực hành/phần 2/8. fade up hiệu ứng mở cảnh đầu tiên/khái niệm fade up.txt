@@ -1,0 +1,15 @@
+1.Fade up là hiệu ứng "mờ dần hiện ra + trượt từ dưới lên" — một trong những animation phổ biến nhất khi tải trang.
+
+
+
+
+
+
+--- các hiệu ứng mở cảnh khác. ---
+Tên Hướng trượt transform
+Fade up Từ dưới lên ↑ translateY(20px) → 0
+Fade down Từ trên xuống ↓ translateY(-20px) → 0
+Fade left Từ trái sang → translateX(-20px) → 0
+Fade right Từ phải sang ← translateX(20px) → 0
+Fade in Chỉ mờ, không trượt chỉ opacity
+Zoom in Phóng to dần scale(0.9) → 1

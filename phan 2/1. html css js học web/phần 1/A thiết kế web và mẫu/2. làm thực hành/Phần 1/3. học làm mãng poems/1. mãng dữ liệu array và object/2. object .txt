@@ -1,0 +1,17 @@
+1.object là 1 dòng dữ liệu mình đã thêm vào
+
+
+{ ten: "Áo thun", moTa: "Áo cotton thoáng mát", gia: 150 }
+   └─────────────────────────────────────────────────────┘
+                    ĐÂY LÀ 1 OBJECT
+                    
+                    
+                    
+
+
+ví dụ :                    
+            const products = [                    ← MẢNG (array), bọc bởi [ ]
+  { ten: "Áo",  gia: 150 },          ← OBJECT 1, bọc bởi { }
+  { ten: "Jean", gia: 350 },         ← OBJECT 2
+  { ten: "Giày", gia: 500 }          ← OBJECT 3
+];        

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Kinetic Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #08090d;
+    --bg-1: #0d1017;
+    --bg-2: #12161f;
+
+    --blue: #2f7bff;
+    --blue-deep: #1a56d4;
+    --blue-soft: rgba(47, 123, 255, 0.14);
+    --blue-line: rgba(47, 123, 255, 0.32);
+
+    --lime: #d4ff4a;
+    --lime-deep: #a8d42e;
+    --lime-soft: rgba(212, 255, 74, 0.14);
+
+    --white: #ffffff;
+
+    --text: #e8ecf5;
+    --text-mute: #6b7894;
+    --text-dim: #3d4759;
+
+    --grid-line: rgba(47, 123, 255, 0.14);
+
+    --font-display: "Archivo Black", impact, sans-serif;
+    --font-ui: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-kinetic: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 32px 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — near-black + kinetic beam + grid
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 700px at 12% 15%, rgba(47, 123, 255, 0.18), transparent 60%),
+      radial-gradient(700px 600px at 90% 85%, rgba(212, 255, 74, 0.08), transparent 60%),
+      linear-gradient(160deg, #08090d 0%, #0d1017 55%, #08090d 100%);
+  }
+
+  /* kinetic beam chạy ngang */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: -50%;
+    width: 60%;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(47, 123, 255, 0.04) 30%,
+      rgba(212, 255, 74, 0.06) 50%,
+      rgba(47, 123, 255, 0.04) 70%,
+      transparent 100%
+    );
+    transform: skewX(-18deg);
+    animation: beamSweep 14s linear infinite;
+  }
+  @keyframes beamSweep {
+    0%   { left: -60%; }
+    100% { left: 160%; }
+  }
+
+  /* ============================================================
+     SIDEBAR — kinetic control panel
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    flex: 0 0 auto;
+    padding: 20px 18px;
+    background: var(--bg-1);
+    border: 1px solid var(--blue-line);
+    border-radius: 4px;
+
+    /* góc cắt nhỏ 4 góc */
+    clip-path: polygon(
+      0 8px, 8px 0,
+      calc(100% - 8px) 0, 100% 8px,
+      100% calc(100% - 8px), calc(100% - 8px) 100%,
+      8px 100%, 0 calc(100% - 8px)
+    );
+
+    box-shadow:
+      0 0 0 1px rgba(47, 123, 255, 0.06),
+      0 30px 70px -30px rgba(47, 123, 255, 0.55),
+      0 0 60px rgba(47, 123, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    opacity: 0;
+    transform: translateY(14px);
+    animation: panelIn 0.7s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes panelIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* corner accents */
+  .sidebar::before,
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    width: 22px;
+    height: 1px;
+    background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+  }
+  .sidebar::before { top: 8px; left: 8px; }
+  .sidebar::after { bottom: 8px; right: 8px; }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .sidebar-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 4px 14px;
+    border-bottom: 1px solid var(--grid-line);
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .head-mark {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    background: var(--lime);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-0);
+    box-shadow: 0 0 16px rgba(212, 255, 74, 0.35);
+    position: relative;
+  }
+  .head-mark svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .head-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .head-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1.05;
+  }
+  .head-title em {
+    font-style: normal;
+    color: var(--lime);
+  }
+
+  .head-live {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    padding: 3px 6px;
+    border: 1px solid var(--blue-line);
+    border-radius: 2px;
+    color: var(--blue);
+    background: var(--blue-soft);
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .head-live::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: var(--lime);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--lime);
+    animation: liveBlink 1.6s steps(2, end) infinite;
+  }
+  @keyframes liveBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+  }
+
+  /* ============================================================
+     NAV — kinetic masonry grid (2 cols)
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    position: relative;
+    padding: 0;
+  }
+
+  /* mỗi item là ô grid, sẽ di chuyển vị trí khi active */
+  .nav-item {
+    position: relative;
+    transition: transform 0.55s var(--ease-kinetic);
+    will-change: transform;
+  }
+
+  /* item active span 2 cột */
+  .nav-item.is-first {
+    grid-column: span 2;
+    order: -1;
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: 100px;
+    padding: 14px;
+    text-decoration: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    background: var(--bg-2);
+    border: 1px solid rgba(47, 123, 255, 0.12);
+    border-radius: 3px;
+    text-align: left;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      background 0.35s var(--ease-out),
+      border-color 0.3s var(--ease-out),
+      color 0.3s var(--ease-out),
+      min-height 0.5s var(--ease-kinetic),
+      transform 0.35s var(--ease-out);
+  }
+
+  /* grid lines micro bên trong ô */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* số index khổng lồ góc */
+  .k-num {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text-dim);
+    letter-spacing: -0.5px;
+    z-index: 1;
+    transition: color 0.3s ease, transform 0.4s var(--ease-spring), font-size 0.4s var(--ease-kinetic);
+    opacity: 0.5;
+  }
+
+  /* icon */
+  .k-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-mute);
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease, transform 0.4s var(--ease-spring);
+  }
+  .k-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* label block */
+  .k-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: auto;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    width: 100%;
+  }
+  .k-label {
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    color: var(--text-mute);
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease, font-size 0.4s var(--ease-kinetic);
+  }
+  .k-sub {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+  }
+
+  /* ---- Hover ---- */
+  .nav-link:hover {
+    background: #161b26;
+    border-color: var(--blue-line);
+    transform: translateY(-2px);
+    color: var(--text);
+  }
+  .nav-link:hover::before { opacity: 0.5; }
+  .nav-link:hover .k-icon {
+    color: var(--blue);
+    transform: scale(1.08);
+  }
+  .nav-link:hover .k-num { color: var(--blue); opacity: 0.8; }
+  .nav-link:hover .k-label { color: var(--text); }
+
+  /* ---- ACTIVE: acid-lime block + kinetic trail + span 2 ---- */
+  .nav-link.is-active {
+    background: var(--lime);
+    color: var(--bg-0);
+    border-color: var(--lime);
+    min-height: 132px;
+    padding: 18px 18px 16px;
+    box-shadow:
+      0 0 0 1px var(--lime),
+      0 0 30px rgba(212, 255, 74, 0.35),
+      0 10px 40px -10px rgba(212, 255, 74, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .nav-link.is-active::before {
+    opacity: 0.4;
+    background-image:
+      linear-gradient(rgba(8, 9, 13, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(8, 9, 13, 0.12) 1px, transparent 1px);
+  }
+
+  .nav-link.is-active .k-icon {
+    color: var(--bg-0);
+    transform: scale(1.15);
+  }
+  .nav-link.is-active .k-num {
+    color: var(--bg-0);
+    font-size: 42px;
+    opacity: 1;
+    transform: translateY(-2px);
+    letter-spacing: -2px;
+  }
+  .nav-link.is-active .k-label {
+    color: var(--bg-0);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .nav-link.is-active .k-sub {
+    color: rgba(8, 9, 13, 0.65);
+    font-size: 9px;
+    margin-top: 3px;
+  }
+
+  /* kinetic trail — tia phía trên ô active */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--lime), transparent);
+    box-shadow: 0 0 20px var(--lime), 0 0 40px rgba(212, 255, 74, 0.6);
+    animation: trailPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes trailPulse {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+  }
+
+  /* arrow góc phải active */
+  .k-arrow {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-0);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.35s var(--ease-out) 0.2s, transform 0.4s var(--ease-spring) 0.2s;
+    z-index: 2;
+  }
+  .k-arrow svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-link.is-active .k-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .sidebar-foot {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--grid-line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.2px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .sidebar-foot .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--lime);
+  }
+  .sidebar-foot .status::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background: var(--lime);
+    box-shadow: 0 0 6px var(--lime);
+    border-radius: 50%;
+  }
+  .sidebar-foot .ver { color: var(--text-dim); }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 300px; padding: 18px 16px; }
+    .nav { gap: 6px; }
+    .nav-link { min-height: 92px; padding: 12px; }
+    .nav-link.is-active { min-height: 120px; padding: 16px 16px 14px; }
+    .nav-link.is-active .k-label { font-size: 20px; }
+    .nav-link.is-active .k-num { font-size: 36px; }
+    .k-label { font-size: 12px; }
+    .head-title { font-size: 14px; }
+  }
+
+  /* Mobile — 1 cột, active span 1 nhưng full-width */
+  @media (max-width: 640px) {
+    body {
+      padding: 16px 12px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 16px 14px;
+    }
+
+    .sidebar-head { padding: 4px 2px 12px; }
+    .head-title { font-size: 14px; }
+
+    .nav {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .nav-item.is-first {
+      grid-column: span 1;
+    }
+
+    .nav-link {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      min-height: 60px;
+      padding: 12px 14px;
+    }
+
+    .k-icon {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+    }
+
+    .k-body {
+      margin-top: 0;
+      flex: 1 1 auto;
+    }
+
+    .k-num {
+      position: static;
+      font-size: 16px;
+      opacity: 1;
+      color: var(--text-dim);
+      order: 3;
+      margin-left: auto;
+      flex: 0 0 auto;
+    }
+
+    .k-label { font-size: 13px; }
+    .k-sub { font-size: 9px; }
+
+    /* active mobile */
+    .nav-link.is-active {
+      min-height: 76px;
+      padding: 14px;
+      flex-wrap: nowrap;
+    }
+    .nav-link.is-active .k-label {
+      font-size: 17px;
+      letter-spacing: -0.2px;
+    }
+    .nav-link.is-active .k-num {
+      font-size: 22px;
+      color: var(--bg-0);
+      transform: none;
+    }
+    .nav-link.is-active .k-arrow {
+      position: static;
+      margin-left: 8px;
+      transform: none;
+    }
+
+    .sidebar-foot {
+      margin-top: 12px;
+      padding-top: 10px;
+      font-size: 9px;
+    }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 420px) {
+    .nav-link { min-height: 56px; padding: 10px 12px; }
+    .nav-link.is-active { min-height: 68px; padding: 12px; }
+    .nav-link.is-active .k-label { font-size: 15px; }
+    .k-label { font-size: 12px; }
+    .k-sub { display: none; }
+    .k-icon { width: 20px; height: 20px; }
+    .head-title { font-size: 13px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    body::after { animation: none; display: none; }
+    .nav-item { transition: none; }
+    .nav-link.is-active::after { animation: none; }
+    .head-live::before { animation: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- HEADER -->
+    <div class="sidebar-head">
+      <span class="head-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>
+        </svg>
+      </span>
+      <div class="head-text">
+        <span class="head-eyebrow">Kinetic · Grid</span>
+        <span class="head-title">Control <em>Panel</em></span>
+      </div>
+      <span class="head-live">LIVE</span>
+    </div>
+
+    <!-- NAV — Kinetic Masonry -->
+    <ul class="nav" role="tablist" id="kineticNav">
+
+      <!-- 1. Trang chủ — ACTIVE (nhảy lên đầu, span 2) -->
+      <li class="nav-item is-first" data-id="home">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="k-num">01</span>
+          <span class="k-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+          </span>
+          <span class="k-body">
+            <span class="k-label">Trang chủ</span>
+            <span class="k-sub">Home / landing</span>
+          </span>
+          <span class="k-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item" data-id="explore">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="k-num">02</span>
+          <span class="k-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+          </span>
+          <span class="k-body">
+            <span class="k-label">Khám phá</span>
+            <span class="k-sub">Explore</span>
+          </span>
+          <span class="k-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item" data-id="projects">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="k-num">03</span>
+          <span class="k-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+          </span>
+          <span class="k-body">
+            <span class="k-label">Dự án</span>
+            <span class="k-sub">Projects</span>
+          </span>
+          <span class="k-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item" data-id="notifications">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="k-num">04</span>
+          <span class="k-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+          </span>
+          <span class="k-body">
+            <span class="k-label">Thông báo</span>
+            <span class="k-sub">Notify</span>
+          </span>
+          <span class="k-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item" data-id="settings">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="k-num">05</span>
+          <span class="k-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="k-body">
+            <span class="k-label">Cài đặt</span>
+            <span class="k-sub">Settings</span>
+          </span>
+          <span class="k-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- FOOTER -->
+    <div class="sidebar-foot">
+      <span class="status">Shifted</span>
+      <span class="ver">kinetic · v11</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     KINETIC GRID — active state (masonry reorder thật)
+     ============================================================ */
+  (function () {
+    const nav = document.getElementById("kineticNav");
+    const items = Array.from(nav.querySelectorAll(".nav-item"));
+    const links = Array.from(nav.querySelectorAll(".nav-link"));
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* --- reorder: đưa item active lên ĐẦU grid --- */
+    function reorder(activeItem) {
+      if (!nav || !activeItem) return;
+
+      // gỡ class cũ
+      items.forEach((it) => it.classList.remove("is-first"));
+
+      // chèn activeItem lên đầu
+      if (nav.firstElementChild !== activeItem) {
+        nav.insertBefore(activeItem, nav.firstElementChild);
+      }
+
+      // thêm class span
+      activeItem.classList.add("is-first");
+    }
+
+    /* --- activate --- */
+    function activate(link) {
+      // remove active
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+
+      // reorder masonry
+      const item = link.closest(".nav-item");
+      reorder(item);
+
+      // mobile: scroll lên đầu nav (grid 1 col)
+      if (isMobile() && !prefersReduced) {
+        const navRect = nav.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const offset = linkRect.top - navRect.top;
+        if (offset < 0 || offset > navRect.height / 2) {
+          nav.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+    }
+
+    /* --- click handler --- */
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

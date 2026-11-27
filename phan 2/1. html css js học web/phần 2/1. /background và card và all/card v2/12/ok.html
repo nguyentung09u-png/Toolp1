@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --space:   #04020a;
+    --space-2: #0a0616;
+    --white:   #fafaff;
+    --muted:   #8a82a8;
+    --line:    rgba(255, 255, 255, 0.14);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--space);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: DEEP SPACE + soft aurora ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(130, 80, 255, 0.20), transparent 45%),
+      radial-gradient(circle at 75% 80%, rgba(0, 200, 255, 0.15), transparent 45%),
+      radial-gradient(circle at 60% 40%, rgba(255, 80, 180, 0.10), transparent 50%),
+      linear-gradient(180deg, #04020a 0%, #0a0616 55%, #04020a 100%);
+  }
+  /* Starfield */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1.2px 1.2px at 15% 18%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 82% 22%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 45% 8%, rgba(200,220,255,0.85), transparent),
+      radial-gradient(1px 1px at 92% 55%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.2px 1.2px at 8% 72%, rgba(255,180,240,0.75), transparent),
+      radial-gradient(1px 1px at 68% 88%, rgba(255,255,255,0.55), transparent),
+      radial-gradient(1.4px 1.4px at 28% 45%, rgba(180,240,255,0.7), transparent),
+      radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.5), transparent);
+    opacity: 0.8;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD: HOLO-FOIL ---------- */
+  .card {
+    --mx: 50%;
+    --my: 50%;
+    --rx: 0deg;
+    --ry: 0deg;
+
+    position: relative;
+    width: min(340px, 88vw);
+    aspect-ratio: 9 / 16;
+    border-radius: 32px;
+    padding: 2px;
+    overflow: hidden;
+
+    /* Lớp 1: conic-gradient holo — xoay theo chuột */
+    background:
+      conic-gradient(from calc(var(--mx) * 1.8),
+        #ff2e88 0deg,
+        #ffb84d 60deg,
+        #e6ff4d 120deg,
+        #4dffa8 180deg,
+        #4dd4ff 240deg,
+        #a84dff 300deg,
+        #ff2e88 360deg);
+
+    box-shadow:
+      0 30px 60px -20px rgba(130, 80, 255, 0.5),
+      0 15px 40px -12px rgba(255, 80, 180, 0.35);
+
+    transform:
+      perspective(1000px)
+      rotateX(var(--rx))
+      rotateY(var(--ry));
+    transition: transform 400ms cubic-bezier(.2,.7,.2,1);
+    will-change: transform;
+
+    opacity: 0;
+    animation: cardIn 1100ms cubic-bezier(.16,1,.3,1) 100ms forwards;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: perspective(1000px) translateY(30px) scale(0.94); }
+    to   { opacity: 1; }
+  }
+
+  /* Inner dark card — che phần lớn holo, chỉ lộ viền */
+  .card-inner {
+    position: relative;
+    height: 100%;
+    border-radius: 30px;
+    padding: 38px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(circle at var(--mx) var(--my), rgba(40, 20, 80, 0.55), transparent 55%),
+      linear-gradient(175deg, #0e0820 0%, #06040f 55%, #0a0620 100%);
+    overflow: hidden;
+  }
+
+  /* Holo sheen — overlay chéo chạy theo chuột */
+  .card-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at var(--mx) var(--my),
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.04) 22%,
+        transparent 45%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    transition: background 180ms ease-out;
+  }
+  /* Iridescent film — conic gradient mờ trên nền tối */
+  .card-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      conic-gradient(from calc(var(--mx) * 2.4) at var(--mx) var(--my),
+        rgba(255, 46, 136, 0.10) 0deg,
+        rgba(255, 184, 77, 0.08) 60deg,
+        rgba(230, 255, 77, 0.06) 120deg,
+        rgba(77, 255, 168, 0.08) 180deg,
+        rgba(77, 212, 255, 0.10) 240deg,
+        rgba(168, 77, 255, 0.10) 300deg,
+        rgba(255, 46, 136, 0.10) 360deg);
+    pointer-events: none;
+    opacity: 0.9;
+    transition: background 180ms ease-out;
+  }
+
+  /* ===== NỘI DUNG ===== */
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 20px;
+  }
+
+  /* Top: holo pill */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0;
+    animation: fadeUp 700ms ease 450ms forwards;
+  }
+  .holo-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .holo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #ff2e88, #ffb84d, #4dffa8, #4dd4ff, #a84dff, #ff2e88);
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .id-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  /* Mid: name iridescent text */
+  .mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 700ms ease 600ms forwards;
+  }
+  .name {
+    font-size: clamp(40px, 11vw, 56px);
+    font-weight: 900;
+    letter-spacing: -3px;
+    line-height: 0.88;
+    /* Holo gradient text */
+    background:
+      conic-gradient(from calc(var(--mx) * 2) at var(--mx) var(--my),
+        #ff2e88 0deg,
+        #ffb84d 60deg,
+        #e6ff4d 120deg,
+        #4dffa8 180deg,
+        #4dd4ff 240deg,
+        #a84dff 300deg,
+        #ff2e88 360deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 20px rgba(168, 77, 255, 0.3));
+    transition: background 180ms ease-out;
+    opacity: 0;
+    animation: fadeUp 1100ms cubic-bezier(.16,1,.3,1) 750ms forwards;
+  }
+  .name-sub {
+    font-size: clamp(14px, 3.8vw, 16px);
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 900ms ease 950ms forwards;
+  }
+
+  /* Bottom: meta */
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) forwards;
+    transition: border-color 250ms ease, background 250ms ease;
+  }
+  .meta-row:nth-child(1) { animation-delay: 1100ms; }
+  .meta-row:nth-child(2) { animation-delay: 1220ms; }
+  .meta-row:hover {
+    border-color: rgba(168, 77, 255, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .meta-key {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* Corner marks */
+  .corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: rgba(255, 255, 255, 0.3);
+    border-style: solid;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .corner.tl { top: 14px; left: 14px; border-width: 1px 0 0 1px; }
+  .corner.tr { top: 14px; right: 14px; border-width: 1px 1px 0 0; }
+  .corner.bl { bottom: 14px; left: 14px; border-width: 0 0 1px 1px; }
+  .corner.br { bottom: 14px; right: 14px; border-width: 0 1px 1px 0; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .top, .eyebrow, .name, .name-sub, .meta-row, .holo-dot {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .card { transition: none; }
+    .holo-dot { animation: none; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card { width: min(300px, 84vw); border-radius: 28px; }
+    .card-inner { padding: 32px 20px 26px; border-radius: 26px; }
+    .name { letter-spacing: -2px; }
+    .meta-val { font-size: 14px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND SPACE -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- HOLO-FOIL CARD -->
+    <article class="card" id="holoCard">
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+
+      <div class="card-inner">
+        <div class="content">
+
+          <!-- Top -->
+          <div class="top">
+            <span class="holo-pill">
+              <span class="holo-dot"></span>
+              Profile
+            </span>
+            <span class="id-tag">#07</span>
+          </div>
+
+          <!-- Mid -->
+          <div class="mid">
+            <span class="eyebrow">Nguyễn Thanh</span>
+            <h1 class="name">Huy</h1>
+            <span class="name-sub">Hồ sơ cá nhân</span>
+          </div>
+
+          <!-- Bottom -->
+          <div class="meta">
+            <div class="meta-row">
+              <span class="meta-key">Năm sinh</span>
+              <span class="meta-val">2007</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Quê quán</span>
+              <span class="meta-val">Quảng Nam</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <script>
+    (function () {
+      const card = document.getElementById('holoCard');
+      if (!card) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let rafId = null;
+
+      function updateFromPoint(clientX, clientY) {
+        const rect = card.getBoundingClientRect();
+        const x = (clientX - rect.left) / rect.width;
+        const y = (clientY - rect.top) / rect.height;
+
+        // Clamp 0..1
+        const cx = Math.max(0, Math.min(1, x));
+        const cy = Math.max(0, Math.min(1, y));
+
+        // CSS vars
+        card.style.setProperty('--mx', (cx * 100).toFixed(2) + '%');
+        card.style.setProperty('--my', (cy * 100).toFixed(2) + '%');
+
+        // Tilt nhẹ (±6deg)
+        if (!reduceMotion.matches) {
+          const rx = ((0.5 - cy) * 12).toFixed(2); // -6..+6
+          const ry = ((cx - 0.5) * 12).toFixed(2);
+          card.style.setProperty('--rx', rx + 'deg');
+          card.style.setProperty('--ry', ry + 'deg');
+        }
+      }
+
+      // Pointer move (mouse + pen + touch khi kéo)
+      card.addEventListener('pointermove', (e) => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => updateFromPoint(e.clientX, e.clientY));
+      });
+
+      // Reset khi rời chuột
+      card.addEventListener('pointerleave', () => {
+        card.style.setProperty('--mx', '50%');
+        card.style.setProperty('--my', '50%');
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+
+      // Touch: lấy điểm chạm đầu tiên (không cuộn trang)
+      card.addEventListener('touchmove', (e) => {
+        if (!e.touches[0]) return;
+        updateFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+    })();
+  </script>
+
+</body>
+</html>

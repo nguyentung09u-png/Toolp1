@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello World — Premium Card 16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --card-w: min(500px, 92vw);
+    --card-h: min(300px, 64vw);
+
+    /* Plaque kích thước vừa phải — inset nhẹ, không cắt lớn */
+    --plaque-w: 62%;
+    --plaque-h: 42%;
+    --plaque-inset: 22px;
+    --radius: 16px;
+
+    --graphite-1: #232a33;
+    --graphite-2: #2f3742;
+    --graphite-3: #171c22;
+    --copper: #b8875a;
+    --copper-soft: rgba(184, 135, 90, 0.20);
+    --copper-line: rgba(184, 135, 90, 0.55);
+    --chalk: #ebe5da;
+    --chalk-dim: #a39c8e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #10141a;
+    color: var(--chalk);
+    font-family: 'Tenor Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: 44px 20px;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Ambient — graphite với copper bloom góc dưới-trái */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(600px 460px at 18% 82%, rgba(184, 135, 90, 0.10), transparent 55%),
+      radial-gradient(800px 640px at 85% 20%, rgba(47, 55, 66, 0.9), transparent 65%),
+      linear-gradient(180deg, #10141a 0%, #181e26 55%, #080b10 100%);
+    z-index: -2;
+  }
+
+  /* Fine grain ngoài */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.30 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ============ CARD STAGE ============ */
+  .card-stage {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    isolation: isolate;
+  }
+
+  /* Copper aura nhẹ góc dưới-trái */
+  .card-aura {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      50% 55% at 22% 78%,
+      var(--copper-soft),
+      transparent 65%
+    );
+    filter: blur(28px);
+    opacity: 0.55;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+    z-index: 0;
+    animation: auraEnter 1.4s 0.2s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Card — rounded rect + inset plaque góc BL */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border-radius: var(--radius);
+    overflow: hidden;
+    /* Satin lacquer surface */
+    background:
+      radial-gradient(120% 90% at 20% 0%, rgba(235, 229, 218, 0.10), transparent 45%),
+      radial-gradient(110% 90% at 80% 100%, rgba(184, 135, 90, 0.12), transparent 55%),
+      linear-gradient(165deg, var(--graphite-2) 0%, var(--graphite-1) 55%, var(--graphite-3) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(235, 229, 218, 0.08),
+      inset 0 0 0 1px rgba(184, 135, 90, 0.10),
+      0 26px 50px -22px rgba(4, 6, 10, 0.9),
+      0 10px 22px -10px rgba(4, 6, 10, 0.65);
+    transition: transform 0.7s cubic-bezier(.2,.7,.2,1),
+                box-shadow 0.7s ease;
+    animation: cardEnter 1.15s cubic-bezier(.2,.7,.2,1) both;
+    will-change: transform;
+  }
+
+  /* Grain lacquer mịn */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.42 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Satin sheen — dải sáng mờ chạy chéo */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      118deg,
+      transparent 30%,
+      rgba(235, 229, 218, 0.05) 44%,
+      rgba(184, 135, 90, 0.14) 50%,
+      rgba(235, 229, 218, 0.05) 56%,
+      transparent 70%
+    );
+    pointer-events: none;
+    transform: translateX(-20%);
+    transition: transform 1.3s cubic-bezier(.2,.7,.2,1);
+    z-index: 2;
+  }
+
+  /* ============ INSET PLAQUE (góc BL) ============ */
+  .card-plaque {
+    position: absolute;
+    bottom: var(--plaque-inset);
+    left: var(--plaque-inset);
+    width: var(--plaque-w);
+    height: var(--plaque-h);
+    border-radius: 10px;
+    /* Lõm — nền tối hơn card */
+    background:
+      linear-gradient(160deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.20) 60%, rgba(0, 0, 0, 0.26) 100%),
+      linear-gradient(170deg, var(--graphite-3) 0%, #10151a 100%);
+    /* Bevel: inset shadow trên-trái đậm, dưới-phải sáng */
+    box-shadow:
+      inset 0 1px 0 rgba(0, 0, 0, 0.55),
+      inset 1px 0 0 rgba(0, 0, 0, 0.55),
+      inset 0 -1px 0 rgba(235, 229, 218, 0.12),
+      inset -1px 0 0 rgba(235, 229, 218, 0.12),
+      0 1px 0 rgba(235, 229, 218, 0.10),
+      0 -1px 0 rgba(0, 0, 0, 0.55);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 clamp(16px, 4%, 26px);
+    transition: box-shadow 0.6s ease;
+  }
+
+  /* Copper hairline ở cạnh trên plaque */
+  .card-plaque::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 10%;
+    width: 26%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--copper), transparent);
+    opacity: 0.7;
+    transition: width 0.7s cubic-bezier(.2,.7,.2,1), opacity 0.5s ease;
+  }
+
+  /* Text nằm trong plaque */
+  .card-text {
+    font-family: 'Tenor Sans', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: clamp(20px, 4.4vw, 32px);
+    line-height: 1.02;
+    letter-spacing: 0.005em;
+    background: linear-gradient(
+      172deg,
+      #f2ece2 0%,
+      #d4cbb8 45%,
+      #b8875a 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
+    transition: transform 0.7s cubic-bezier(.2,.7,.2,1),
+                letter-spacing 0.7s ease;
+    animation: textEnter 1.2s 0.4s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* ============ NEGATIVE SPACE DETAIL ============ */
+  /* Copper dot marker nhỏ ở góc TR — điểm cân bằng thị giác cho plaque BL */
+  .card-marker {
+    position: absolute;
+    top: var(--plaque-inset);
+    right: var(--plaque-inset);
+    width: 6px;
+    height: 6px;
+    background: var(--copper);
+    transform: rotate(45deg);
+    opacity: 0.7;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(.2,.7,.2,1);
+    animation: markerEnter 1.2s 0.55s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* --- Hover --- */
+  .card-stage:hover .card {
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 1px 0 rgba(235, 229, 218, 0.12),
+      inset 0 0 0 1px rgba(184, 135, 90, 0.22),
+      0 34px 62px -24px rgba(4, 6, 10, 0.95),
+      0 14px 28px -12px rgba(4, 6, 10, 0.75);
+  }
+  .card-stage:hover .card::after {
+    transform: translateX(20%);
+  }
+  .card-stage:hover .card-plaque::before {
+    width: 42%;
+    opacity: 1;
+  }
+  .card-stage:hover .card-marker {
+    opacity: 1;
+    transform: rotate(225deg) scale(1.15);
+  }
+  .card-stage:hover .card-aura {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+  .card-stage:hover .card-text {
+    transform: translateX(2px);
+    letter-spacing: 0.012em;
+  }
+
+  @media (hover: none) {
+    .card:active { transform: translateY(-2px); }
+  }
+
+  /* --- Entrance --- */
+  @keyframes cardEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+      filter: blur(10px) brightness(1.25);
+    }
+    60% { filter: blur(0.5px) brightness(1.05); }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0) brightness(1);
+    }
+  }
+  @keyframes textEnter {
+    0% { opacity: 0; transform: translateY(6px); filter: blur(5px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes auraEnter {
+    0% { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 0.55; transform: scale(1); }
+  }
+  @keyframes markerEnter {
+    0% { opacity: 0; transform: rotate(45deg) scale(0.2); }
+    100% { opacity: 0.7; transform: rotate(45deg) scale(1); }
+  }
+
+  /* --- Reduced motion --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .card-stage:hover .card,
+    .card-stage:hover .card-text,
+    .card-stage:hover .card-aura { transform: none; }
+    .card-stage:hover .card::after { transform: translateX(-20%); }
+    .card-stage:hover .card-marker { transform: rotate(45deg); }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+    :root {
+      --card-h: min(250px, 70vw);
+      --plaque-w: 66%;
+      --plaque-h: 44%;
+      --plaque-inset: 16px;
+    }
+    .card-marker { width: 5px; height: 5px; }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --card-w: 540px;
+      --card-h: 320px;
+      --plaque-inset: 26px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-stage">
+    <div class="card-aura" aria-hidden="true"></div>
+    <div class="card" role="group" aria-label="Hello World card">
+      <div class="card-plaque">
+        <span class="card-text">Hello World</span>
+      </div>
+      <span class="card-marker" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = 'true';
+      }
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello World Card — 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --card-w: min(460px, 90vw);
+    --card-h: min(300px, 66vw);
+
+    --teal-deep: #0d2b2b;
+    --teal-mid: #13393a;
+    --teal-light: #1c4c4d;
+    --mint: #7ee6c4;
+    --mint-soft: rgba(126, 230, 196, 0.18);
+    --sand: #e8dcc3;
+
+    --facet-a: rgba(126, 230, 196, 0.10);
+    --facet-b: rgba(255, 255, 255, 0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #061a1a;
+    color: var(--sand);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: 32px 20px;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Ambient stage — teal atmosphere với grid mờ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(700px 500px at 20% 15%, rgba(126, 230, 196, 0.08), transparent 60%),
+      radial-gradient(800px 600px at 85% 90%, rgba(19, 57, 58, 0.9), transparent 70%),
+      linear-gradient(180deg, #061a1a 0%, #08211f 55%, #041412 100%);
+    z-index: -2;
+  }
+
+  /* Grid lines mờ — gợi technical, không neon */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(126, 230, 196, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(126, 230, 196, 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ============ CARD STAGE ============ */
+  .card-stage {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+  }
+
+  /* Card — faceted polygon shape */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(
+      18px 0,
+      calc(100% - 40px) 0,
+      100% 40px,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      40px 100%,
+      0 calc(100% - 40px),
+      0 18px
+    );
+    background:
+      linear-gradient(160deg, var(--teal-mid) 0%, var(--teal-deep) 55%, #08201f 100%);
+    overflow: hidden;
+    transition: transform 0.55s cubic-bezier(.2,.7,.2,1),
+                filter 0.5s ease;
+    animation: facetEnter 1.05s cubic-bezier(.2,.7,.2,1) both;
+    will-change: transform;
+  }
+
+  /* Facet gradients — nhiều tầng ánh sáng */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, var(--facet-a) 0%, transparent 45%),
+      linear-gradient(215deg, var(--facet-b) 0%, transparent 50%),
+      linear-gradient(320deg, rgba(126, 230, 196, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Đường viền mảnh + specular highlight */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(
+      18px 0,
+      calc(100% - 40px) 0,
+      100% 40px,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      40px 100%,
+      0 calc(100% - 40px),
+      0 18px
+    );
+    box-shadow: inset 0 0 0 1px rgba(126, 230, 196, 0.22);
+    pointer-events: none;
+    transition: box-shadow 0.5s ease;
+  }
+
+  /* Diagonal accent band — nét nghiêng chạy qua */
+  .card-accent {
+    position: absolute;
+    top: -20%;
+    left: 55%;
+    width: 1px;
+    height: 140%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(126, 230, 196, 0.55) 30%,
+      rgba(126, 230, 196, 0.55) 70%,
+      transparent
+    );
+    transform: rotate(28deg);
+    transform-origin: center;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.5s ease, transform 0.6s ease;
+    z-index: 2;
+  }
+
+  /* Badge góc phải dưới — chỉ là hình học, không phải icon/button */
+  .card-corner {
+    position: absolute;
+    right: 28px;
+    bottom: 26px;
+    width: 10px;
+    height: 10px;
+    background: var(--mint);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    opacity: 0.85;
+    transition: transform 0.6s cubic-bezier(.2,.7,.2,1), opacity 0.5s ease;
+    z-index: 3;
+    animation: cornerEnter 1.2s 0.35s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Nội dung — lệch trái */
+  .card-content {
+    position: relative;
+    z-index: 3;
+    padding: clamp(22px, 6%, 40px) clamp(26px, 7%, 46px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
+  }
+
+  .card-text {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: clamp(28px, 6.8vw, 50px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--sand);
+    background: linear-gradient(170deg, #f1e7cf 0%, #cdbf9f 60%, #7ee6c4 130%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 0.55s cubic-bezier(.2,.7,.2,1),
+                letter-spacing 0.5s ease;
+    animation: textEnter 1.15s 0.22s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* --- Hover --- */
+  .card-stage:hover .card {
+    transform: translateY(-4px);
+  }
+  .card-stage:hover .card::before {
+    opacity: 1.1;
+  }
+  .card-stage:hover .card::after {
+    box-shadow: inset 0 0 0 1px rgba(126, 230, 196, 0.45);
+  }
+  .card-stage:hover .card-accent {
+    opacity: 1;
+    transform: rotate(28deg) translateX(6px);
+  }
+  .card-stage:hover .card-corner {
+    transform: rotate(45deg) scale(1.15);
+    opacity: 1;
+  }
+  .card-stage:hover .card-text {
+    transform: translateX(2px);
+    letter-spacing: -0.018em;
+  }
+
+  @media (hover: none) {
+    .card:active { transform: translateY(-2px); }
+  }
+
+  /* --- Entrance --- */
+  @keyframes facetEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+      filter: blur(8px) brightness(1.4);
+    }
+    55% {
+      filter: blur(0.4px) brightness(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0) brightness(1);
+    }
+  }
+
+  @keyframes textEnter {
+    0% { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  @keyframes cornerEnter {
+    0% { opacity: 0; transform: scale(0.2) rotate(-90deg); }
+    100% { opacity: 0.85; transform: scale(1) rotate(0); }
+  }
+
+  /* --- Reduced motion --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .card-stage:hover .card { transform: none; }
+    .card-stage:hover .card-text { transform: none; }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+    :root { --card-h: min(260px, 70vw); }
+    .card-corner { right: 20px; bottom: 20px; }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --card-w: 500px;
+      --card-h: 320px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-stage">
+    <div class="card" role="group" aria-label="Hello World card">
+      <span class="card-accent" aria-hidden="true"></span>
+      <span class="card-corner" aria-hidden="true"></span>
+      <div class="card-content">
+        <span class="card-text">Hello World</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = 'true';
+      }
+    })();
+  </script>
+
+</body>
+</html>

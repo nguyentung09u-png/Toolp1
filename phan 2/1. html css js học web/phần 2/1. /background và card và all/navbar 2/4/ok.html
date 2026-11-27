@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Morphic Float Island</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-warm: #fef4ec;
+    --bg-soft: #f7e9e0;
+    --bg-cream: #fffaf5;
+
+    --peach: #ffd6b8;
+    --peach-deep: #ff9d6b;
+    --coral: #ff8a80;
+    --mint: #a8e6cf;
+    --mint-deep: #6ec9a8;
+    --lavender: #c9b6ff;
+    --lavender-deep: #a78bff;
+
+    --ink: #2a1f1a;
+    --ink-soft: #6b5548;
+    --ink-mute: #a08b7d;
+    --line: rgba(42, 31, 26, 0.08);
+
+    --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* geometry */
+    --chip-size: 56px;
+    --chip-gap: 14px;
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — warm pastel blobs + floating bubbles + haze
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(700px 500px at 8% 10%, rgba(255, 157, 107, 0.28), transparent 60%),
+      radial-gradient(600px 500px at 95% 20%, rgba(201, 182, 255, 0.28), transparent 60%),
+      radial-gradient(800px 700px at 30% 110%, rgba(168, 230, 207, 0.24), transparent 65%),
+      linear-gradient(160deg, #fffaf5 0%, #fef4ec 55%, #fef4ec 100%);
+  }
+
+  /* floating bubbles */
+  .bubbles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bubbles i {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.35;
+    filter: blur(1px);
+  }
+  .bubbles i:nth-child(1) {
+    left: 8%; top: 22%; width: 14px; height: 14px;
+    background: var(--peach-deep);
+    animation: float1 9s ease-in-out infinite;
+  }
+  .bubbles i:nth-child(2) {
+    left: 18%; top: 65%; width: 9px; height: 9px;
+    background: var(--lavender-deep);
+    animation: float2 11s ease-in-out infinite;
+  }
+  .bubbles i:nth-child(3) {
+    left: 30%; top: 12%; width: 7px; height: 7px;
+    background: var(--mint-deep);
+    animation: float3 13s ease-in-out infinite;
+  }
+  .bubbles i:nth-child(4) {
+    left: 6%; top: 82%; width: 11px; height: 11px;
+    background: var(--coral);
+    animation: float1 10s ease-in-out infinite reverse;
+  }
+  .bubbles i:nth-child(5) {
+    left: 24%; top: 45%; width: 6px; height: 6px;
+    background: var(--peach-deep);
+    animation: float2 12s ease-in-out infinite reverse;
+  }
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(20px, -30px); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(-16px, 24px); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(12px, 20px) scale(1.3); }
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — floating island (không khung liền mạch)
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 300px;
+    flex: 0 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    /* "island" — nền mờ rất nhẹ, không phải khung đậm */
+    background: rgba(255, 250, 245, 0.55);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    box-shadow:
+      0 20px 60px -24px rgba(255, 157, 107, 0.3),
+      0 8px 24px -8px rgba(201, 182, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+    /* load animation */
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+    animation: islandIn 0.9s var(--ease-spring) 0.1s forwards;
+  }
+  @keyframes islandIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ============================================================
+     HEADER — soft brand block
+     ============================================================ */
+  .sidebar-head {
+    padding: 8px 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 6px;
+  }
+
+  .head-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--peach-deep) 0%, var(--coral) 50%, var(--lavender-deep) 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 6px 16px -6px rgba(255, 138, 128, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    animation: markBob 5s ease-in-out infinite;
+  }
+  @keyframes markBob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-3px) rotate(3deg); }
+  }
+  .head-mark svg {
+    width: 18px;
+    height: 18px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .head-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .head-brand {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .head-brand em {
+    font-style: normal;
+    background: linear-gradient(110deg, var(--peach-deep) 0%, var(--coral) 50%, var(--lavender-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ============================================================
+     NAV — các chip tách rời, trôi nổi
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--chip-gap);
+    padding: 6px 4px 8px;
+    position: relative;
+  }
+
+  .nav-item {
+    position: relative;
+    /* mỗi chip có bob riêng */
+    animation: chipBob 6s ease-in-out infinite;
+  }
+  .nav-item:nth-child(1) { animation-delay: 0s;    }
+  .nav-item:nth-child(2) { animation-delay: 0.8s;  }
+  .nav-item:nth-child(3) { animation-delay: 1.6s;  }
+  .nav-item:nth-child(4) { animation-delay: 2.4s;  }
+  .nav-item:nth-child(5) { animation-delay: 3.2s;  }
+
+  @keyframes chipBob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    text-decoration: none;
+    color: var(--ink);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+    isolation: isolate;
+    /* cho phép transition mượt */
+    transition: gap 0.4s var(--ease-out);
+  }
+
+  /* ---- CHIP BASE (icon container) ---- */
+  .chip {
+    position: relative;
+    width: var(--chip-size);
+    height: var(--chip-size);
+    flex: 0 0 auto;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #ffffff 0%, #fdf3eb 100%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 4px 12px -4px rgba(255, 157, 107, 0.35),
+      0 2px 4px -2px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -2px 6px rgba(255, 214, 184, 0.2);
+    transition:
+      transform 0.45s var(--ease-spring),
+      box-shadow 0.4s var(--ease-out),
+      border-radius 0.4s var(--ease-out),
+      background 0.4s var(--ease-out);
+    z-index: 2;
+  }
+
+  /* mỗi chip có hình hơi khác nhau — organic */
+  .nav-item:nth-child(1) .chip { border-radius: 20px 20px 20px 20px; }
+  .nav-item:nth-child(2) .chip { border-radius: 22px 18px 22px 18px; }
+  .nav-item:nth-child(3) .chip { border-radius: 18px 22px 18px 22px; }
+  .nav-item:nth-child(4) .chip { border-radius: 20px 20px 24px 16px; }
+  .nav-item:nth-child(5) .chip { border-radius: 16px 24px 20px 20px; }
+
+  .chip svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--ink-soft);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.35s ease, transform 0.4s var(--ease-spring);
+  }
+
+  /* ---- LABEL (ẩn mặc định, hiện khi hover/active) ---- */
+  .label-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-left: 12px;
+    opacity: 0;
+    transform: translateX(-10px);
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition:
+      opacity 0.4s var(--ease-out),
+      transform 0.45s var(--ease-out),
+      max-width 0.45s var(--ease-out),
+      margin-left 0.4s var(--ease-out);
+    z-index: 1;
+  }
+  .label-main {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .label-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+
+  /* ---- ORBIT DOT (chỉ quanh chip active) ---- */
+  .orbit-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 10px var(--coral);
+    opacity: 0;
+    pointer-events: none;
+    transform-origin: 0 0;
+    z-index: 3;
+    transition: opacity 0.3s ease;
+  }
+
+  /* ============================================================
+     HOVER — chip lift nhẹ + label peek
+     ============================================================ */
+  .nav-link:hover .chip {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow:
+      0 10px 24px -8px rgba(255, 157, 107, 0.5),
+      0 4px 8px -4px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .nav-link:hover .chip svg {
+    stroke: var(--peach-deep);
+  }
+  .nav-link:hover .label-wrap {
+    opacity: 1;
+    transform: translateX(0);
+    max-width: 200px;
+  }
+
+  /* ============================================================
+     ACTIVE — chip LIFT mạnh + gradient pastel + orbit dot + label show
+     ============================================================ */
+  .nav-link.is-active .chip {
+    transform: translateY(-6px) scale(1.1);
+    background: linear-gradient(145deg, var(--peach) 0%, var(--coral) 60%, var(--lavender) 130%);
+    border-color: rgba(255, 255, 255, 0.9);
+    border-radius: 22px;
+    box-shadow:
+      0 18px 36px -12px rgba(255, 138, 128, 0.65),
+      0 10px 20px -8px rgba(201, 182, 255, 0.4),
+      0 4px 8px -2px rgba(0, 0, 0, 0.08),
+      inset 0 2px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -3px 8px rgba(167, 139, 255, 0.3);
+  }
+  .nav-link.is-active .chip svg {
+    stroke: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(122, 60, 30, 0.35));
+    transform: scale(1.05);
+  }
+  .nav-link.is-active .label-wrap {
+    opacity: 1;
+    transform: translateX(0);
+    max-width: 200px;
+  }
+  .nav-link.is-active .label-main {
+    color: var(--ink);
+    font-weight: 800;
+  }
+  .nav-link.is-active .orbit-dot {
+    opacity: 1;
+    animation: orbitDot 3s linear infinite;
+  }
+  @keyframes orbitDot {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg) translateY(-42px) translateX(0);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(360deg) translateY(-42px) translateX(0);
+    }
+  }
+
+  /* micro dot phụ (thứ hai) xoay ngược */
+  .orbit-dot.dot-2 {
+    background: var(--mint-deep);
+    box-shadow: 0 0 8px var(--mint-deep);
+    width: 5px;
+    height: 5px;
+    animation: orbitDot2 4s linear infinite;
+  }
+  @keyframes orbitDot2 {
+    from {
+      transform: translate(-50%, -50%) rotate(180deg) translateY(-50px) translateX(0);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(540deg) translateY(-50px) translateX(0);
+    }
+  }
+
+  /* ============================================================
+     FOOTER STRIP
+     ============================================================ */
+  .sidebar-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px 2px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    border-top: 1px dashed var(--line);
+    margin-top: 4px;
+  }
+  .sidebar-foot .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-soft);
+  }
+  .sidebar-foot .status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint-deep);
+    box-shadow: 0 0 6px var(--mint-deep);
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(0.85); }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 260px; padding: 14px; gap: 4px; }
+    :root { --chip-size: 50px; --chip-gap: 12px; }
+    .head-brand { font-size: 15px; }
+    .head-mark { width: 30px; height: 30px; border-radius: 10px; }
+    .head-mark svg { width: 16px; height: 16px; }
+    .chip svg { width: 22px; height: 22px; }
+    .label-main { font-size: 13px; }
+    .label-sub { font-size: 8.5px; }
+  }
+
+  /* Mobile — horizontal chip bar */
+  @media (max-width: 640px) {
+    body {
+      padding: 14px;
+      display: block;
+    }
+
+    :root { --chip-size: 50px; }
+
+    .sidebar {
+      width: 100%;
+      padding: 12px;
+      border-radius: 26px;
+      gap: 0;
+    }
+
+    .sidebar-head {
+      padding: 4px 8px 10px;
+      margin-bottom: 4px;
+    }
+
+    /* nav thành horizontal scroll */
+    .nav {
+      flex-direction: row;
+      gap: 8px;
+      padding: 6px 2px 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      animation: none; /* tắt bob trên mobile (gọn) */
+    }
+
+    .nav-link {
+      flex-direction: column;
+      gap: 6px;
+      min-width: 62px;
+    }
+
+    /* label dưới icon trên mobile */
+    .label-wrap {
+      opacity: 1;
+      transform: none;
+      max-width: none;
+      margin-left: 0;
+      text-align: center;
+      order: 2;
+    }
+    .label-sub { display: none; }
+    .label-main { font-size: 10.5px; font-weight: 700; }
+
+    /* chip lift nhẹ hơn trên mobile */
+    .nav-link.is-active .chip {
+      transform: translateY(-4px) scale(1.05);
+    }
+
+    /* orbit dot ẩn trên mobile để gọn */
+    .orbit-dot { display: none; }
+
+    .sidebar-foot { padding: 8px 8px 0; font-size: 8.5px; }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    :root { --chip-size: 46px; }
+    .head-brand { font-size: 14px; }
+    .label-main { font-size: 10px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    .nav-item { animation: none; }
+    .head-mark { animation: none; }
+    .bubbles { display: none; }
+    .orbit-dot { animation: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--peach-deep);
+    outline-offset: 4px;
+    border-radius: 22px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- floating bubbles -->
+  <div class="bubbles" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- HEADER -->
+    <div class="sidebar-head">
+      <span class="head-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="12" cy="12" r="9" opacity="0.5" />
+        </svg>
+      </span>
+      <div class="head-text">
+        <span class="head-eyebrow">Morphic Float</span>
+        <span class="head-brand">Menu <em>island</em></span>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <ul class="nav" role="tablist">
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+            <span class="orbit-dot dot-1" aria-hidden="true"></span>
+            <span class="orbit-dot dot-2" aria-hidden="true"></span>
+          </span>
+          <span class="label-wrap">
+            <span class="label-main">Trang chủ</span>
+            <span class="label-sub">Home</span>
+          </span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+            <span class="orbit-dot dot-1" aria-hidden="true"></span>
+            <span class="orbit-dot dot-2" aria-hidden="true"></span>
+          </span>
+          <span class="label-wrap">
+            <span class="label-main">Khám phá</span>
+            <span class="label-sub">Explore</span>
+          </span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+            <span class="orbit-dot dot-1" aria-hidden="true"></span>
+            <span class="orbit-dot dot-2" aria-hidden="true"></span>
+          </span>
+          <span class="label-wrap">
+            <span class="label-main">Dự án</span>
+            <span class="label-sub">Projects</span>
+          </span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+            <span class="orbit-dot dot-1" aria-hidden="true"></span>
+            <span class="orbit-dot dot-2" aria-hidden="true"></span>
+          </span>
+          <span class="label-wrap">
+            <span class="label-main">Thông báo</span>
+            <span class="label-sub">Notify</span>
+          </span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+            <span class="orbit-dot dot-1" aria-hidden="true"></span>
+            <span class="orbit-dot dot-2" aria-hidden="true"></span>
+          </span>
+          <span class="label-wrap">
+            <span class="label-main">Cài đặt</span>
+            <span class="label-sub">Settings</span>
+          </span>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- FOOTER -->
+    <div class="sidebar-foot">
+      <span class="status">Online</span>
+      <span>v6.0</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     MORPHIC FLOAT — active state
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+
+        // mobile: scroll active vào giữa
+        if (isMobile() && !prefersReduced) {
+          const nav = document.querySelector(".nav");
+          const navRect = nav.getBoundingClientRect();
+          const linkRect = link.getBoundingClientRect();
+          const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+          nav.scrollBy({ left: delta, behavior: "smooth" });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

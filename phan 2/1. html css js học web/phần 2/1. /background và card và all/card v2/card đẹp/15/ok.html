@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --paper:    #f7f2e8;
+    --paper-2:  #ede6d5;
+    --ink:      #1a1a1a;
+    --ink-2:    #2a2a2a;
+    --accent:   #b8312e;
+    --accent-2: #8f2422;
+    --muted:    #6b6458;
+    --line:     rgba(26, 26, 26, 0.20);
+    --line-2:   rgba(26, 26, 26, 0.10);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--paper-2);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: EDITORIAL DESK ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 30%, rgba(237, 230, 213, 0.9), transparent 70%),
+      linear-gradient(180deg, #ede6d5 0%, #e4dbc4 100%);
+  }
+  /* Grain paper */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.38  0 0 0 0 0.3  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER ---------- */
+  .card-wrap {
+    position: relative;
+    width: min(360px, 88vw);
+    aspect-ratio: 3 / 4;
+    opacity: 0;
+    animation: cardIn 1000ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px) rotate(-0.5deg); }
+    to   { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+
+  /* Shadow layer (paper offset) */
+  .card-shadow {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 26, 26, 0.08);
+    transform: translate(6px, 8px);
+    z-index: 0;
+  }
+
+  /* ---------- CARD (PAPER) ---------- */
+  .card {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow:
+      0 30px 60px -20px rgba(26, 26, 26, 0.20),
+      inset 0 0 60px rgba(237, 230, 213, 0.4);
+  }
+
+  /* ===== MASTHEAD ===== */
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 22px 10px;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .mast-title {
+    font-family: 'Georgia', serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .mast-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+  }
+
+  /* ===== ISSUE LINE ===== */
+  .issue-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 22px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 7.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ===== HERO TITLE ===== */
+  .hero {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .kicker {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding: 3px 8px;
+    background: var(--accent);
+    color: var(--paper);
+    opacity: 0;
+    animation: fadeUp 600ms ease 400ms forwards;
+  }
+
+  .title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(38px, 10vw, 54px);
+    font-weight: 700;
+    line-height: 0.88;
+    letter-spacing: -2.5px;
+    color: var(--ink);
+    opacity: 0;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 500ms forwards;
+  }
+  .title em {
+    font-style: italic;
+    color: var(--accent);
+    display: block;
+  }
+
+  /* Subtitle */
+  .subtitle {
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--muted);
+    margin-top: 14px;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+    opacity: 0;
+    animation: fadeUp 700ms ease 700ms forwards;
+  }
+
+  /* ===== BODY (2 columns) ===== */
+  .body-section {
+    flex: 1;
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .col-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .col-item:nth-child(1) { animation-delay: 900ms; }
+  .col-item:nth-child(2) { animation-delay: 1000ms; }
+
+  .col-label {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--accent);
+  }
+  .col-value {
+    font-family: 'Georgia', serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .col-value small {
+    display: block;
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ===== PULL QUOTE ===== */
+  .pullquote {
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 700ms ease 1150ms forwards;
+  }
+  .pullquote p {
+    font-family: 'Georgia', serif;
+    font-size: 11.5px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+  .pullquote p::before {
+    content: "— ";
+    color: var(--accent);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 22px;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    animation: fadeIn 700ms ease 1300ms forwards;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .page-num {
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .page-num::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 1px;
+    background: var(--accent);
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .barcode {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 16px;
+  }
+  .barcode span {
+    background: var(--ink);
+    width: 2px;
+    height: 100%;
+  }
+  .barcode span:nth-child(2) { width: 1px; height: 70%; }
+  .barcode span:nth-child(3) { width: 3px; }
+  .barcode span:nth-child(4) { width: 1px; height: 80%; }
+  .barcode span:nth-child(5) { width: 2px; height: 60%; }
+  .barcode span:nth-child(6) { width: 1px; }
+  .barcode span:nth-child(7) { width: 2px; height: 75%; }
+  .barcode span:nth-child(8) { width: 3px; height: 90%; }
+
+  .issue-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrap, .kicker, .title, .subtitle,
+    .col-item, .pullquote, .footer {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-wrap { width: min(310px, 86vw); }
+    .masthead { padding: 16px 18px 8px; }
+    .issue-line { padding: 5px 18px 0; }
+    .hero { padding: 16px 18px 12px; }
+    .body-section { padding: 14px 18px; gap: 14px; }
+    .pullquote { padding: 12px 18px; }
+    .footer { padding: 8px 18px; }
+    .title { letter-spacing: -2px; }
+    .col-value { font-size: 18px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card-wrap { width: min(400px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND EDITORIAL DESK -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <div class="card-wrap">
+
+      <!-- Paper shadow -->
+      <div class="card-shadow" aria-hidden="true"></div>
+
+      <!-- CARD -->
+      <article class="card">
+
+        <!-- MASTHEAD -->
+        <header class="masthead">
+          <span class="mast-title">The Profile</span>
+          <span class="mast-meta">N° 07 · MMXXVI</span>
+        </header>
+
+        <div class="issue-line">
+          <span>Volume I</span>
+          <span>Portrait Series</span>
+        </div>
+
+        <!-- HERO -->
+        <section class="hero">
+          <span class="kicker">Hồ sơ</span>
+          <h1 class="title">
+            Nguyễn
+            <em>Thanh Huy</em>
+          </h1>
+          <p class="subtitle">A portrait in copper &amp; paper, from Quảng Nam.</p>
+        </section>
+
+        <!-- BODY (2 columns) -->
+        <section class="body-section">
+          <div class="col-item">
+            <span class="col-label">Năm sinh</span>
+            <span class="col-value">2007<small>Year of birth</small></span>
+          </div>
+          <div class="col-item">
+            <span class="col-label">Quê quán</span>
+            <span class="col-value">Quảng Nam<small>Hometown</small></span>
+          </div>
+        </section>
+
+        <!-- PULL QUOTE -->
+        <section class="pullquote">
+          <p>A quiet portrait from the central coast.</p>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+          <span class="page-num">07</span>
+          <div class="barcode" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span class="issue-tag">Issued 2026</span>
+        </footer>
+
+      </article>
+
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+Tổng quan cách làm fade up
+
+Cơ chế: Đặt phần tử ở trạng thái ẩn (mờ + dịch xuống), sau đó kích hoạt chuyển sang trạng thái hiện (rõ + về vị trí gốc) thông qua class hoặc keyframes.
+
+3 bước chung:
+
+1. Khai báo trạng thái ban đầu: opacity: 0 + translateY(20px) + transition
+2. Khai báo trạng thái kết thúc: opacity: 1 + translateY(0) (gắn class .show)
+3. Kích hoạt: JS thêm .show khi tải trang/cuộn tới, hoặc dùng @keyframes
+
+---
+
+Code chung chung
+
+Cách 1 — Dùng class + JS (linh hoạt nhất)
+
+```html
+<style>
+  .element {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+  .element.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<div class="element">Nội dung</div>
+
+<script>
+  setTimeout(() => {
+    document.querySelector('.element').classList.add('show');
+  }, 100);
+</script>
+```
+
+Cách 2 — Thuần CSS bằng @keyframes (không cần JS)
+
+```html
+<style>
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .element {
+    animation: fadeUp 0.6s ease forwards;
+  }
+</style>
+
+<div class="element">Nội dung</div>
+```
+
+Cách 3 — Kích hoạt khi cuộn tới (IntersectionObserver)
+
+```html
+<style>
+  .element {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+  }
+  .element.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<div class="element">Nội dung</div>
+
+<script>
+  const el = document.querySelector('.element');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('show');
+        io.unobserve(e.target);
+      }
+    });
+  });
+  io.observe(el);
+</script>
+```
+
+---
+
+Lưu ý: Cách 2 chạy ngay khi tải trang, không cần điều kiện. Cách 1 và 3 cho phép kiểm soát thời điểm hiển thị. forwards ở cách 2 giữ trạng thái cuối sau khi animation kết thúc.

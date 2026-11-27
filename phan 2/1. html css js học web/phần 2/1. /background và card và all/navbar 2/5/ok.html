@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Glass Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0a0e0a;
+    --bg-1: #0f1410;
+    --bg-2: #131a14;
+
+    --green: #7ce85c;
+    --green-bright: #a8ff7a;
+    --green-dim: #4a8a38;
+    --green-soft: rgba(124, 232, 92, 0.12);
+    --green-line: rgba(124, 232, 92, 0.35);
+
+    --amber: #ffb347;
+    --amber-soft: rgba(255, 179, 71, 0.14);
+
+    --red-dot: #ff5f56;
+    --yellow-dot: #ffbd2e;
+    --green-dot: #27c93f;
+
+    --text: #c8e6c0;
+    --text-bright: #e8ffdd;
+    --text-mute: #5a7a52;
+    --text-dim: #344a30;
+
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --font-label: "IBM Plex Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-mono);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — deep charcoal + phosphor glow + terminal grid
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(700px 500px at 15% 20%, rgba(124, 232, 92, 0.14), transparent 60%),
+      radial-gradient(600px 500px at 85% 80%, rgba(255, 179, 71, 0.08), transparent 60%),
+      linear-gradient(160deg, #0a0e0a 0%, #0f1410 55%, #0a0e0a 100%);
+  }
+
+  /* terminal grid */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+      linear-gradient(rgba(124, 232, 92, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124, 232, 92, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — terminal window
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    flex: 0 0 auto;
+    background: var(--bg-1);
+    border: 1px solid var(--green-line);
+    border-radius: 10px;
+    overflow: hidden;
+
+    box-shadow:
+      0 0 0 1px rgba(124, 232, 92, 0.06),
+      0 30px 70px -30px rgba(124, 232, 92, 0.35),
+      0 0 40px rgba(124, 232, 92, 0.08),
+      inset 0 1px 0 rgba(124, 232, 92, 0.06);
+
+    /* load animation */
+    opacity: 0;
+    transform: translateY(12px);
+    animation: windowIn 0.65s var(--ease-out) 0.05s forwards;
+  }
+  @keyframes windowIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CRT scanlines overlay */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18) 0px,
+      rgba(0, 0, 0, 0.18) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    opacity: 0.55;
+  }
+
+  /* subtle phosphor sweep */
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 19;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(124, 232, 92, 0.06) 50%,
+      transparent 100%
+    );
+    height: 100px;
+    animation: phosphorSweep 6s linear infinite;
+  }
+  @keyframes phosphorSweep {
+    0%   { transform: translateY(-100px); }
+    100% { transform: translateY(600px); }
+  }
+
+  /* ============================================================
+     TITLE BAR — macOS-style 3 dots + path
+     ============================================================ */
+  .title-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid var(--green-line);
+    position: relative;
+    z-index: 10;
+  }
+
+  .title-dots {
+    display: inline-flex;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+  .title-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .title-dots .d-red    { background: var(--red-dot);    box-shadow: 0 0 6px rgba(255, 95, 86, 0.6); }
+  .title-dots .d-yellow { background: var(--yellow-dot); box-shadow: 0 0 6px rgba(255, 189, 46, 0.6); }
+  .title-dots .d-green  { background: var(--green-dot);  box-shadow: 0 0 6px rgba(39, 201, 63, 0.6); }
+
+  .title-path {
+    flex: 1 1 auto;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: var(--text-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .title-path .at { color: var(--green); }
+  .title-path .sep { color: var(--text-dim); margin: 0 3px; }
+
+  .title-status {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    padding: 2px 6px;
+    border: 1px solid var(--green-line);
+    border-radius: 3px;
+    color: var(--green);
+    background: var(--green-soft);
+    flex: 0 0 auto;
+  }
+
+  /* ============================================================
+     BODY — command list
+     ============================================================ */
+  .terminal-body {
+    padding: 14px 0 0;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* prompt header của terminal (giả lập) */
+  .term-header {
+    padding: 0 16px 12px;
+    border-bottom: 1px dashed var(--green-line);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--text-mute);
+    line-height: 1.6;
+  }
+  .term-header .line-1 { color: var(--green); }
+  .term-header .line-1 .dollar { color: var(--amber); margin-right: 6px; }
+  .term-header .line-2 {
+    color: var(--text-dim);
+    font-size: 10.5px;
+    margin-top: 2px;
+  }
+  .term-header .line-2 .ok { color: var(--green); }
+
+  /* ============================================================
+     NAV — command lines
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    text-decoration: none;
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+    isolation: isolate;
+  }
+
+  /* prompt `>` (đổi thành `▶` khi active) */
+  .prompt {
+    flex: 0 0 auto;
+    width: 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: center;
+    transition: color 0.2s ease, transform 0.3s var(--ease-spring);
+  }
+
+  /* label */
+  .cmd {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.2px;
+  }
+  .cmd .arg {
+    color: var(--text-dim);
+    font-size: 11.5px;
+    margin-left: 6px;
+    transition: color 0.2s ease;
+  }
+
+  /* icon-ascii micro bên phải */
+  .ascii-icon {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0;
+    transition: color 0.2s ease;
+  }
+
+  /* block cursor — chỉ hiện ở active */
+  .cursor {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 14px;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+    opacity: 0;
+    margin-left: 2px;
+    animation: cursorBlink 1s steps(2, end) infinite;
+  }
+  @keyframes cursorBlink {
+    0%, 49%   { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  /* hover */
+  .nav-link:hover {
+    background: rgba(124, 232, 92, 0.04);
+    color: var(--text);
+  }
+  .nav-link:hover .prompt {
+    color: var(--green);
+    transform: translateX(2px);
+  }
+  .nav-link:hover .cmd .arg { color: var(--text-mute); }
+  .nav-link:hover .ascii-icon { color: var(--text-mute); }
+
+  /* ACTIVE */
+  .nav-link.is-active {
+    background: linear-gradient(90deg, rgba(124, 232, 92, 0.12) 0%, rgba(124, 232, 92, 0.04) 60%, transparent 100%);
+    color: var(--green-bright);
+    font-weight: 600;
+  }
+  .nav-link.is-active .prompt {
+    color: var(--green);
+    transform: translateX(2px);
+    text-shadow: 0 0 8px var(--green);
+  }
+  .nav-link.is-active .prompt::before {
+    content: "▶";
+  }
+  .nav-link.is-active .prompt { font-size: 11px; }
+  .nav-link.is-active .prompt > span { display: none; }
+  .nav-link.is-active .cmd {
+    color: var(--green-bright);
+    text-shadow: 0 0 8px rgba(124, 232, 92, 0.5);
+  }
+  .nav-link.is-active .cmd .arg { color: var(--green-dim); }
+  .nav-link.is-active .ascii-icon {
+    color: var(--green);
+    text-shadow: 0 0 6px var(--green);
+  }
+  .nav-link.is-active .cursor {
+    opacity: 1;
+  }
+
+  /* thanh bar bên trái active */
+  .nav-link.is-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green), 0 0 24px rgba(124, 232, 92, 0.6);
+  }
+
+  /* [ACTIVE] badge dòng active */
+  .nav-link.is-active::after {
+    content: "[ACTIVE]";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    color: var(--green);
+    background: var(--green-soft);
+    padding: 2px 6px;
+    border-radius: 2px;
+    border: 1px solid var(--green-line);
+    opacity: 0;
+    animation: badgeIn 0.4s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes badgeIn {
+    to { opacity: 1; }
+  }
+
+  /* ẩn cursor + ascii khi có badge để không chồng */
+  .nav-link.is-active .cursor { display: none; }
+  .nav-link.is-active .ascii-icon { margin-right: 78px; }
+
+  /* ============================================================
+     FOOTER — status bar
+     ============================================================ */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--green-line);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.4px;
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+  }
+  .status-bar .left::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: dotBlink 2s steps(2, end) infinite;
+  }
+  @keyframes dotBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+  }
+  .status-bar .right { color: var(--text-dim); }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 300px; }
+    .title-bar { padding: 9px 12px; }
+    .title-path { font-size: 10px; }
+    .nav-link { padding: 10px 14px; font-size: 12px; }
+    .cmd .arg { font-size: 10.5px; }
+    .term-header { padding: 0 14px 10px; font-size: 10.5px; }
+    .nav-link.is-active .ascii-icon { margin-right: 66px; }
+    .nav-link.is-active::after { font-size: 8px; padding: 1px 4px; right: 10px; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    body {
+      padding: 12px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+    }
+
+    .title-bar { padding: 8px 12px; }
+    .title-path { font-size: 9.5px; }
+
+    .term-header {
+      padding: 0 12px 10px;
+      font-size: 10.5px;
+    }
+    .term-header .line-2 { font-size: 9.5px; }
+
+    /* nav horizontal */
+    .nav {
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 8px 4px;
+      gap: 2px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      padding: 9px 12px;
+      min-width: 92px;
+      font-size: 11px;
+      border-right: 1px solid var(--green-line);
+    }
+    .nav-item:last-child .nav-link { border-right: none; }
+
+    .prompt {
+      width: auto;
+      font-size: 12px;
+      align-self: flex-start;
+    }
+    .cmd {
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .cmd .arg {
+      display: block;
+      font-size: 9.5px;
+      margin-left: 0;
+      margin-top: 1px;
+    }
+    .ascii-icon { display: none; }
+    .cursor { display: none; }
+
+    .nav-link.is-active::before {
+      top: auto;
+      bottom: 0;
+      left: 6px;
+      right: 6px;
+      width: auto;
+      height: 2px;
+    }
+    .nav-link.is-active::after {
+      /* ẩn badge trên mobile */
+      display: none;
+    }
+    .nav-link.is-active .ascii-icon { margin-right: 0; }
+
+    .status-bar { padding: 7px 12px; font-size: 9.5px; }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 80px; padding: 8px 10px; }
+    .cmd { font-size: 10.5px; }
+    .term-header { font-size: 10px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    .sidebar::after { display: none; }
+    .cursor { animation: none; opacity: 1; }
+    .status-bar .left::before { animation: none; }
+    .nav-link.is-active::after { animation: none; opacity: 1; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: -2px;
+    background: rgba(124, 232, 92, 0.08);
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- TITLE BAR -->
+    <div class="title-bar">
+      <span class="title-dots" aria-hidden="true">
+        <span class="d-red"></span>
+        <span class="d-yellow"></span>
+        <span class="d-green"></span>
+      </span>
+      <span class="title-path">
+        dev@studio<span class="sep">:</span><span class="at">~/nav</span>
+      </span>
+      <span class="title-status">MONO</span>
+    </div>
+
+    <!-- TERMINAL BODY -->
+    <div class="terminal-body">
+
+      <!-- prompt header -->
+      <div class="term-header">
+        <div class="line-1"><span class="dollar">$</span>ls -la ./navigation</div>
+        <div class="line-2"><span class="ok">✓</span> 5 items ready · shell: mono</div>
+      </div>
+
+      <!-- NAV -->
+      <ul class="nav" role="tablist">
+
+        <!-- 1. Trang chủ -->
+        <li class="nav-item">
+          <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+            <span class="prompt"><span>&gt;</span></span>
+            <span class="cmd">home<span class="arg">--start</span></span>
+            <span class="ascii-icon" aria-hidden="true">~</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <!-- 2. Khám phá -->
+        <li class="nav-item">
+          <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+            <span class="prompt"><span>&gt;</span></span>
+            <span class="cmd">explore<span class="arg">--discover</span></span>
+            <span class="ascii-icon" aria-hidden="true">~</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <!-- 3. Dự án -->
+        <li class="nav-item">
+          <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+            <span class="prompt"><span>&gt;</span></span>
+            <span class="cmd">projects<span class="arg">--all</span></span>
+            <span class="ascii-icon" aria-hidden="true">#</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <!-- 4. Thông báo -->
+        <li class="nav-item">
+          <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+            <span class="prompt"><span>&gt;</span></span>
+            <span class="cmd">notify<span class="arg">--inbox</span></span>
+            <span class="ascii-icon" aria-hidden="true">!</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <!-- 5. Cài đặt -->
+        <li class="nav-item">
+          <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+            <span class="prompt"><span>&gt;</span></span>
+            <span class="cmd">settings<span class="arg">--config</span></span>
+            <span class="ascii-icon" aria-hidden="true">@</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <span class="left">READY</span>
+      <span class="right">bash · 80×24 · v7</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     GLASS TERMINAL — active state (block cursor follow)
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+
+        // mobile: scroll active vào giữa
+        if (isMobile() && !prefersReduced) {
+          const nav = document.querySelector(".nav");
+          const navRect = nav.getBoundingClientRect();
+          const linkRect = link.getBoundingClientRect();
+          const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+          nav.scrollBy({ left: delta, behavior: "smooth" });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello World — Premium Card 12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --card-w: min(500px, 92vw);
+    --card-h: min(320px, 68vw);
+
+    /* Palette đất nung + đá phiến */
+    --slate-1: #2a2d3a;
+    --slate-2: #353a4a;
+    --slate-3: #1e2130;
+    --terracotta: #b86847;
+    --terracotta-soft: rgba(184, 104, 71, 0.22);
+    --terracotta-line: rgba(184, 104, 71, 0.55);
+    --bone: #ece2d0;
+    --bone-dim: #a8a094;
+
+    /* Bevel tones — điêu khắc */
+    --bevel-hi: rgba(255, 245, 230, 0.14);
+    --bevel-lo: rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #131521;
+    color: var(--bone);
+    font-family: system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: 44px 20px;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Ambient — slate với terracotta bloom nhẹ góc dưới-trái */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(600px 460px at 15% 82%, rgba(184, 104, 71, 0.12), transparent 55%),
+      radial-gradient(800px 640px at 85% 20%, rgba(53, 58, 74, 0.85), transparent 65%),
+      linear-gradient(180deg, #131521 0%, #1a1d2a 55%, #0d0f18 100%);
+    z-index: -2;
+  }
+
+  /* Stone grain */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ============ CARD STAGE ============ */
+  .card-stage {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    isolation: isolate;
+  }
+
+  /* Terracotta aura góc dưới-trái */
+  .card-aura {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      55% 60% at 22% 82%,
+      var(--terracotta-soft),
+      transparent 65%
+    );
+    filter: blur(30px);
+    opacity: 0.55;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+    z-index: 0;
+    animation: auraEnter 1.4s 0.2s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Card — pentagon bất đối xứng (sculpted slab) */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    /* Pentagon bất đối xứng: cạnh nghiêng lớn góc dưới-trái + vát nhỏ góc trên-phải */
+    clip-path: polygon(
+      0 0,
+      calc(100% - 22px) 0,
+      100% 22px,
+      100% 100%,
+      38% 100%,
+      0 74%
+    );
+    background:
+      radial-gradient(120% 80% at 20% 0%, rgba(236, 226, 208, 0.08), transparent 45%),
+      radial-gradient(110% 90% at 90% 100%, rgba(184, 104, 71, 0.12), transparent 55%),
+      linear-gradient(160deg, var(--slate-2) 0%, var(--slate-1) 55%, var(--slate-3) 100%);
+    transition: transform 0.7s cubic-bezier(.2,.7,.2,1),
+                filter 0.6s ease;
+    animation: cardEnter 1.15s cubic-bezier(.2,.7,.2,1) both;
+    will-change: transform;
+  }
+
+  /* Stone grain bên trong card */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ============ SCULPTED INSET PANEL ============ */
+  /* Panel lõm — bevel 2 chiều: top-left shadow (lõm), bottom-right highlight (nổi) */
+  .card-panel {
+    position: absolute;
+    inset: 22px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    /* Nền panel tối hơn card để tạo cảm giác "khoét vào" */
+    background:
+      linear-gradient(160deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.18) 60%, rgba(0, 0, 0, 0.24) 100%),
+      linear-gradient(170deg, var(--slate-3) 0%, #161827 100%);
+    /* Bevel: inset shadow trên-trái đậm, dưới-phải sáng */
+    box-shadow:
+      inset 0 1px 0 var(--bevel-lo),
+      inset 1px 0 0 var(--bevel-lo),
+      inset 0 -1px 0 var(--bevel-hi),
+      inset -1px 0 0 var(--bevel-hi),
+      0 1px 0 var(--bevel-hi),
+      1px 0 0 var(--bevel-hi),
+      0 -1px 0 var(--bevel-lo),
+      -1px 0 0 var(--bevel-lo);
+    transition: box-shadow 0.6s ease;
+  }
+
+  /* Terracotta hairline trên góc dưới-trái pentagon — điểm nhấn điêu khắc */
+  .card-panel::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: -8px;
+    width: 26%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--terracotta), transparent);
+    opacity: 0.6;
+    transition: opacity 0.5s ease, width 0.7s cubic-bezier(.2,.7,.2,1);
+  }
+
+  /* ============ CONTENT — ENGRAVED TEXT ============ */
+  .card-content {
+    position: relative;
+    z-index: 4;
+    padding: 40px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-text {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-weight: 700;
+    font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1;
+    font-size: clamp(32px, 7.6vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.022em;
+    color: #cfc4ae;
+    /* Engraved effect: chữ chìm vào đá — shadow lõm phía trên, highlight phía dưới */
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.85),
+      0 2px 2px rgba(0, 0, 0, 0.4),
+      0 -1px 0 rgba(236, 226, 208, 0.14);
+    transition: color 0.6s ease, text-shadow 0.6s ease,
+                transform 0.7s cubic-bezier(.2,.7,.2,1),
+                letter-spacing 0.7s ease;
+    animation: textEnter 1.2s 0.35s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* ============ HOVER ============ */
+  .card-stage:hover .card {
+    transform: translateY(-3px);
+  }
+  .card-stage:hover .card-panel {
+    box-shadow:
+      inset 0 1px 0 rgba(0, 0, 0, 0.65),
+      inset 1px 0 0 rgba(0, 0, 0, 0.65),
+      inset 0 -1px 0 rgba(255, 245, 230, 0.20),
+      inset -1px 0 0 rgba(255, 245, 230, 0.20),
+      0 1px 0 rgba(255, 245, 230, 0.20),
+      1px 0 0 rgba(255, 245, 230, 0.20),
+      0 -1px 0 rgba(0, 0, 0, 0.65),
+      -1px 0 0 rgba(0, 0, 0, 0.65);
+  }
+  .card-stage:hover .card-panel::after {
+    opacity: 1;
+    width: 42%;
+  }
+  .card-stage:hover .card-aura {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+  .card-stage:hover .card-text {
+    color: #e0d4bd;
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.9),
+      0 2px 3px rgba(0, 0, 0, 0.45),
+      0 -1px 0 rgba(236, 226, 208, 0.22);
+    transform: translateY(-1px);
+    letter-spacing: -0.014em;
+  }
+
+  @media (hover: none) {
+    .card:active { transform: translateY(-2px); }
+  }
+
+  /* --- Entrance --- */
+  @keyframes cardEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+      filter: blur(10px) brightness(1.25);
+    }
+    60% { filter: blur(0.5px) brightness(1.05); }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0) brightness(1);
+    }
+  }
+  @keyframes textEnter {
+    0% { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes auraEnter {
+    0% { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 0.55; transform: scale(1); }
+  }
+
+  /* --- Reduced motion --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .card-stage:hover .card,
+    .card-stage:hover .card-text,
+    .card-stage:hover .card-aura { transform: none; }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+    :root { --card-h: min(280px, 74vw); }
+    .card-panel { inset: 16px; }
+    .card-content { padding: 28px 26px; }
+    .card { clip-path: polygon(
+      0 0,
+      calc(100% - 18px) 0,
+      100% 18px,
+      100% 100%,
+      40% 100%,
+      0 76%
+    );}
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --card-w: 540px;
+      --card-h: 340px;
+    }
+    .card-content { padding: 46px 52px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-stage">
+    <div class="card-aura" aria-hidden="true"></div>
+    <div class="card" role="group" aria-label="Hello World card">
+      <div class="card-panel" aria-hidden="true"></div>
+      <div class="card-content">
+        <span class="card-text">Hello World</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = 'true';
+      }
+    })();
+  </script>
+
+</body>
+</html>

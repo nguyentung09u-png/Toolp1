@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dawn-0:   #0a0e1a;
+    --dawn-1:   #121a2e;
+    --dawn-2:   #1e2a42;
+    --dawn-3:   #2a3856;
+    --ice:      #a8d4f0;
+    --ice-2:    #6fa8d4;
+    --frost:    #e8f2fc;
+    --warm:     #ffb88a;
+    --muted:    #6a7a94;
+    --line:     rgba(232, 242, 252, 0.18);
+    --line-2:   rgba(232, 242, 252, 0.10);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--dawn-0);
+    color: var(--frost);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND: COLD DAWN ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 25% 20%, rgba(168, 212, 240, 0.18), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 80% 80%, rgba(255, 184, 138, 0.12), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 50% 100%, rgba(111, 168, 212, 0.15), transparent 55%),
+      linear-gradient(180deg, #0a0e1a 0%, #121a2e 45%, #0a0e1a 100%);
+  }
+  /* Sương mờ tĩnh — soft blur spot */
+  .bg::before {
+    content: "";
+    position: absolute;
+    top: 15%;
+    left: 10%;
+    width: 45%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(232, 242, 252, 0.06), transparent 70%);
+    filter: blur(40px);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.28;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.9  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER ---------- */
+  .card-wrap {
+    width: min(360px, 90vw);
+    aspect-ratio: 3 / 4;
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+    animation: cardIn 1100ms cubic-bezier(.16,1,.3,1) 100ms forwards;
+  }
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ---------- CARD — 4 GÓC BO TRÒN ---------- */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;          /* ← 4 góc bo tròn */
+    overflow: hidden;
+    background:
+      linear-gradient(160deg,
+        rgba(42, 56, 86, 0.55) 0%,
+        rgba(30, 42, 66, 0.65) 45%,
+        rgba(18, 26, 46, 0.85) 100%);
+    /* Frosted glass sâu */
+    backdrop-filter: blur(28px) saturate(1.3);
+    -webkit-backdrop-filter: blur(28px) saturate(1.3);
+    border: 1px solid var(--line);
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(232, 242, 252, 0.05),
+      0 0 80px -30px rgba(168, 212, 240, 0.25),
+      inset 0 1px 0 rgba(232, 242, 252, 0.16),
+      inset 0 0 60px rgba(168, 212, 240, 0.04);
+  }
+
+  /* Frosted texture overlay */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.97  0 0 0 0 1  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+    pointer-events: none;
+    opacity: 0.7;
+    border-radius: inherit;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+
+  /* Top edge cold highlight */
+  .card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(232, 242, 252, 0.55),
+      transparent);
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* ---------- CONDENSATION DROPS ---------- */
+  .drops {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+  .drop {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%,
+      rgba(255, 255, 255, 0.55),
+      rgba(232, 242, 252, 0.18) 40%,
+      rgba(168, 212, 240, 0.06) 70%,
+      transparent 100%);
+    box-shadow:
+      inset 0 -1px 2px rgba(168, 212, 240, 0.35),
+      inset 0 1px 1px rgba(255, 255, 255, 0.7),
+      0 1px 3px rgba(10, 14, 26, 0.4);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  /* Kích thước + vị trí ngẫu nhiên nhưng cố định */
+  .drop.d1  { top: 12%; left: 8%;   width: 14px; height: 14px; }
+  .drop.d2  { top: 6%;  right: 18%; width: 10px; height: 10px; }
+  .drop.d3  { top: 22%; right: 6%;  width: 18px; height: 18px; }
+  .drop.d4  { top: 38%; left: 5%;   width: 8px;  height: 8px; }
+  .drop.d5  { top: 48%; right: 9%;  width: 12px; height: 12px; }
+  .drop.d6  { top: 62%; left: 12%;  width: 20px; height: 20px; }
+  .drop.d7  { top: 72%; right: 15%; width: 9px;  height: 9px; }
+  .drop.d8  { top: 84%; left: 6%;   width: 14px; height: 14px; }
+  .drop.d9  { top: 88%; right: 8%;  width: 11px; height: 11px; }
+  .drop.d10 { top: 34%; left: 48%;  width: 6px;  height: 6px; opacity: 0.7; }
+
+  /* Vệt nước chảy dọc nhẹ (2 đường) */
+  .trail {
+    position: absolute;
+    width: 1.5px;
+    background: linear-gradient(180deg,
+      rgba(232, 242, 252, 0.35),
+      rgba(168, 212, 240, 0.15) 60%,
+      transparent);
+    pointer-events: none;
+    border-radius: 1px;
+  }
+  .trail.t1 { top: 22%; left: 8%;  height: 90px; }
+  .trail.t2 { top: 12%; right: 18%; height: 60px; }
+
+  /* ---------- NỘI DUNG ---------- */
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 44px 32px 34px;
+  }
+
+  /* Top */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0;
+    animation: fadeUp 700ms ease 450ms forwards;
+  }
+  .top-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ice);
+  }
+  .temp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(232, 242, 252, 0.08);
+    border: 1px solid rgba(232, 242, 252, 0.18);
+    border-radius: 999px;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--frost);
+  }
+  .temp-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ice);
+    box-shadow: 0 0 8px var(--ice);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Mid: name */
+  .mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px 0;
+  }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 700ms ease 600ms forwards;
+  }
+
+  .name {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(34px, 9vw, 46px);
+    font-weight: 300;
+    letter-spacing: -1.5px;
+    line-height: 0.95;
+    color: var(--frost);
+    opacity: 0;
+    animation: fadeUp 1000ms cubic-bezier(.16,1,.3,1) 750ms forwards;
+    text-shadow:
+      0 2px 20px rgba(168, 212, 240, 0.25),
+      0 0 40px rgba(232, 242, 252, 0.10);
+  }
+  .name strong {
+    display: block;
+    font-weight: 800;
+    /* Gradient băng giá */
+    background: linear-gradient(180deg,
+      #ffffff 0%,
+      #e8f2fc 30%,
+      #a8d4f0 60%,
+      #6fa8d4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 2px 10px rgba(168, 212, 240, 0.4));
+  }
+
+  /* Frost line */
+  .frost-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 700ms ease 950ms forwards;
+  }
+  .frost-line .ln {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+      rgba(232, 242, 252, 0.45),
+      rgba(168, 212, 240, 0.15),
+      transparent);
+  }
+  .frost-line .glyph {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--warm);
+    text-transform: uppercase;
+  }
+
+  /* Bottom meta */
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 14px;
+    background: rgba(232, 242, 252, 0.04);
+    border: 1px solid rgba(232, 242, 252, 0.10);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) forwards;
+    transition: background 250ms ease, border-color 250ms ease;
+  }
+  .meta-item:hover {
+    background: rgba(168, 212, 240, 0.10);
+    border-color: rgba(168, 212, 240, 0.35);
+  }
+  .meta-item:nth-child(1) { animation-delay: 1100ms; }
+  .meta-item:nth-child(2) { animation-delay: 1220ms; }
+
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--frost);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrap, .top, .temp-dot, .eyebrow, .name,
+    .frost-line, .meta-item {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-wrap { width: min(310px, 88vw); }
+    .card { border-radius: 24px; }
+    .content { padding: 36px 24px 28px; }
+    .name { letter-spacing: -1px; }
+    .meta-val { font-size: 14px; }
+    .meta-item { padding: 10px 12px; border-radius: 12px; }
+    .drop.d6 { width: 16px; height: 16px; }
+    .drop.d3 { width: 14px; height: 14px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card-wrap { width: min(400px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <div class="card-wrap">
+
+      <article class="card">
+
+        <!-- CONDENSATION LAYER -->
+        <div class="drops" aria-hidden="true">
+          <span class="drop d1"></span>
+          <span class="drop d2"></span>
+          <span class="drop d3"></span>
+          <span class="drop d4"></span>
+          <span class="drop d5"></span>
+          <span class="drop d6"></span>
+          <span class="drop d7"></span>
+          <span class="drop d8"></span>
+          <span class="drop d9"></span>
+          <span class="drop d10"></span>
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </div>
+
+        <div class="content">
+
+          <!-- Top -->
+          <div class="top">
+            <span class="top-label">Hồ sơ</span>
+            <span class="temp-badge">
+              <span class="temp-dot"></span>
+              07°
+            </span>
+          </div>
+
+          <!-- Mid -->
+          <div class="mid">
+            <span class="eyebrow">Nguyễn Thanh</span>
+            <h1 class="name">
+              <strong>Huy</strong>
+            </h1>
+            <div class="frost-line" aria-hidden="true">
+              <span class="ln"></span>
+              <span class="glyph">Frosted</span>
+            </div>
+          </div>
+
+          <!-- Bottom -->
+          <div class="meta">
+            <div class="meta-item">
+              <span class="meta-key">Năm sinh</span>
+              <span class="meta-val">2007</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">Quê quán</span>
+              <span class="meta-val">Quảng Nam</span>
+            </div>
+          </div>
+
+        </div>
+
+      </article>
+
+    </div>
+  </main>
+
+</body>
+</html>

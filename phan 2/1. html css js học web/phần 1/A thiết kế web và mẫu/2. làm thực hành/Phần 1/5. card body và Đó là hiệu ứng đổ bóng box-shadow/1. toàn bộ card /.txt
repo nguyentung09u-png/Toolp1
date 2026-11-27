@@ -1,0 +1,10 @@
+1. card body
+chứa khoảng trống trắng chứa mô tả này nọ 
+nút button
+
+vậy phải tô màu card
+
+
+
+/* --- phần thân và ảnh card (Phần thân chứa chữ) --- */
+  background-color: #fff8e1; /* Nền vàng nhạt cho phần thân card */

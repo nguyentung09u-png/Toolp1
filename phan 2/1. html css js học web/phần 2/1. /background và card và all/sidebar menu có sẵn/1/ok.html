@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsidian Prism — Sidebar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ROOT & RESET
+     ============================================================ */
+  :root {
+    --obsidian:        #0a0b0f;
+    --graphite:        #14161c;
+    --graphite-soft:   #1c1f27;
+    --gold:            #d4b483;
+    --gold-glow:       rgba(212, 180, 131, 0.35);
+    --jade:            #7dd3c0;
+    --text-primary:    #e8e4dc;
+    --text-muted:      #8a8578;
+    --hairline:        rgba(212, 180, 131, 0.18);
+
+    --ease-out-expo:   cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out:     cubic-bezier(0.65, 0, 0.35, 1);
+
+    --sidebar-w:       320px;
+    --radius-lg:       28px;
+    --radius-sm:       6px;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(212,180,131,0.06), transparent 55%),
+      radial-gradient(ellipse at 85% 90%, rgba(125,211,192,0.05), transparent 55%),
+      var(--obsidian);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     HAMBURGER — Floating top-left
+     ============================================================ */
+  .hamburger {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 60;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(145deg, var(--graphite), var(--obsidian));
+    border: 1px solid var(--hairline);
+    border-radius: 16px 6px 16px 6px; /* asymmetric echo of sidebar */
+    cursor: pointer;
+    transition:
+      transform 0.5s var(--ease-out-expo),
+      border-color 0.4s ease,
+      box-shadow 0.5s ease;
+    box-shadow:
+      0 10px 30px -12px rgba(0,0,0,0.8),
+      inset 0 1px 0 rgba(212,180,131,0.08);
+  }
+
+  .hamburger:hover {
+    border-color: rgba(212,180,131,0.4);
+    box-shadow:
+      0 14px 40px -12px rgba(0,0,0,0.9),
+      0 0 24px -6px var(--gold-glow),
+      inset 0 1px 0 rgba(212,180,131,0.15);
+    transform: translateY(-2px);
+  }
+
+  .hamburger:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .hamburger__bar {
+    display: block;
+    width: 24px;
+    height: 1.5px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition:
+      transform 0.5s var(--ease-out-expo),
+      opacity 0.3s ease,
+      background 0.4s ease;
+    transform-origin: center;
+  }
+
+  .hamburger:hover .hamburger__bar {
+    background: var(--gold);
+  }
+
+  /* Morph bars to X when open */
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+  }
+
+  /* ============================================================
+     BACKDROP — click outside to close
+     ============================================================ */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(5, 6, 9, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s var(--ease-out-expo), visibility 0s linear 0.5s;
+  }
+
+  .backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s var(--ease-out-expo), visibility 0s linear 0s;
+  }
+
+  /* ============================================================
+     SIDEBAR — Obsidian Prism panel
+     ============================================================ */
+  .sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    z-index: 80;
+    width: var(--sidebar-w);
+    max-width: calc(100vw - 40px);
+    padding: 32px 0 24px;
+
+    /* Asymmetric cut-stone shape */
+    border-radius: var(--radius-lg) var(--radius-sm) var(--radius-lg) var(--radius-sm);
+
+    background:
+      linear-gradient(160deg, rgba(212,180,131,0.06) 0%, transparent 35%),
+      linear-gradient(180deg, var(--graphite-soft) 0%, var(--graphite) 55%, var(--obsidian) 100%);
+
+    border: 1px solid var(--hairline);
+
+    box-shadow:
+      0 30px 80px -20px rgba(0,0,0,0.9),
+      0 10px 30px -10px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(212,180,131,0.1),
+      inset 0 -1px 0 rgba(0,0,0,0.4);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    transform: translateX(calc(-100% - 40px));
+    transition: transform 0.65s var(--ease-out-expo);
+  }
+
+  /* Inner top light-beam (thin gold line at top edge) */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.55;
+  }
+
+  /* Soft ambient glow inside top-left */
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    top: -60px;
+    left: -60px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(212,180,131,0.12), transparent 65%);
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* ============================================================
+     CLOSE BUTTON — visible only when open
+     ============================================================ */
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    background: rgba(20,22,28,0.7);
+    border: 1px solid var(--hairline);
+    border-radius: 10px 3px 10px 3px;
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.85) rotate(-30deg);
+    pointer-events: none;
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s var(--ease-out-expo),
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .sidebar.is-open .close-btn {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    pointer-events: auto;
+    transition-delay: 0.2s;
+  }
+
+  .close-btn:hover {
+    color: var(--gold);
+    border-color: rgba(212,180,131,0.45);
+    box-shadow: 0 0 20px -6px var(--gold-glow);
+    transform: rotate(90deg) scale(1.05);
+  }
+
+  .close-btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .close-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  /* ============================================================
+     NAV AREA
+     ============================================================ */
+  .sidebar__brand {
+    padding: 0 32px 8px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 0 12px;
+    position: relative;
+  }
+
+  .nav::-webkit-scrollbar { width: 3px; }
+  .nav::-webkit-scrollbar-track { background: transparent; }
+  .nav::-webkit-scrollbar-thumb {
+    background: rgba(212,180,131,0.2);
+    border-radius: 3px;
+  }
+
+  .nav__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 16px;
+  }
+
+  /* ============================================================
+     NAV ITEM
+     ============================================================ */
+  .nav__item {
+    position: relative;
+  }
+
+  .nav__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px 14px 20px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-radius: 4px 12px 4px 12px;
+    transition:
+      color 0.4s var(--ease-out-expo),
+      background 0.4s var(--ease-out-expo),
+      padding-left 0.4s var(--ease-out-expo);
+  }
+
+  /* Hairline indicator — hidden by default */
+  .nav__link::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: var(--gold);
+    border-radius: 2px;
+    transform: translateY(-50%);
+    box-shadow: 0 0 12px var(--gold-glow);
+    transition:
+      height 0.45s var(--ease-out-expo),
+      box-shadow 0.45s ease;
+  }
+
+  /* Gradient sweep on hover */
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      rgba(212,180,131,0.10) 0%,
+      rgba(212,180,131,0.02) 40%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out-expo);
+    pointer-events: none;
+  }
+
+  .nav__link:hover {
+    color: var(--text-primary);
+    padding-left: 24px;
+  }
+
+  .nav__link:hover::before {
+    height: 55%;
+  }
+
+  .nav__link:hover::after {
+    opacity: 1;
+  }
+
+  .nav__link:focus-visible {
+    outline: 1px solid var(--gold);
+    outline-offset: -1px;
+  }
+
+  /* ACTIVE STATE */
+  .nav__link.is-active {
+    color: var(--gold);
+    padding-left: 24px;
+  }
+
+  .nav__link.is-active::before {
+    height: 70%;
+    box-shadow: 0 0 16px var(--gold-glow), 0 0 4px var(--gold);
+  }
+
+  .nav__link.is-active::after {
+    opacity: 1;
+    background: linear-gradient(
+      90deg,
+      rgba(212,180,131,0.14) 0%,
+      rgba(212,180,131,0.03) 50%,
+      transparent 100%
+    );
+  }
+
+  /* ICON */
+  .nav__icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    color: currentColor;
+    transition: transform 0.45s var(--ease-out-expo), filter 0.45s ease;
+  }
+
+  .nav__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nav__link:hover .nav__icon,
+  .nav__link.is-active .nav__icon {
+    transform: scale(1.08);
+  }
+
+  .nav__link.is-active .nav__icon {
+    color: var(--gold);
+    filter: drop-shadow(0 0 6px var(--gold-glow));
+  }
+
+  /* LABEL */
+  .nav__label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ============================================================
+     FOOTER SPACER (ambient)
+     ============================================================ */
+  .sidebar__footer {
+    padding: 16px 32px 4px;
+    font-family: system-ui, sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.4;
+    text-align: center;
+  }
+
+  /* ============================================================
+     BODY SCROLL LOCK (mobile only)
+     ============================================================ */
+  body.is-locked {
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 640px) {
+    :root {
+      --sidebar-w: calc(100vw - 32px);
+    }
+    .sidebar {
+      top: 16px;
+      left: 16px;
+      bottom: 16px;
+    }
+    .hamburger {
+      top: 16px;
+      left: 16px;
+      width: 50px;
+      height: 50px;
+    }
+    .nav__link {
+      font-size: 20px;
+      padding: 16px 16px 16px 20px;
+    }
+    .nav__link:hover,
+    .nav__link.is-active {
+      padding-left: 24px;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    :root { --sidebar-w: 300px; }
+  }
+
+  /* ============================================================
+     REDUCED MOTION
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      transition-delay: 0s !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HAMBURGER BUTTON
+       ============================================================ -->
+  <button
+    class="hamburger"
+    id="hamburgerBtn"
+    aria-label="Mở menu điều hướng"
+    aria-expanded="false"
+    aria-controls="sidebar"
+    type="button"
+  >
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+    <span class="hamburger__bar"></span>
+  </button>
+
+  <!-- ============================================================
+       BACKDROP
+       ============================================================ -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       SIDEBAR
+       ============================================================ -->
+  <aside
+    class="sidebar"
+    id="sidebar"
+    aria-label="Điều hướng chính"
+    aria-hidden="true"
+  >
+    <!-- Close button -->
+    <button
+      class="close-btn"
+      id="closeBtn"
+      aria-label="Đóng menu điều hướng"
+      type="button"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="18" y1="6" x2="6" y2="18" />
+      </svg>
+    </button>
+
+    <!-- Brand (label only, không phải Nav Item) -->
+    <div class="sidebar__brand">Navigation</div>
+
+    <!-- Navigation -->
+    <nav class="nav" role="navigation">
+      <ul class="nav__list" role="list">
+
+        <li class="nav__item">
+          <a href="#" class="nav__link is-active" data-nav="home" aria-current="page">
+            <span class="nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M3 11.5 12 4l9 7.5" />
+                <path d="M5 10v9h14v-9" />
+                <path d="M10 19v-5h4v5" />
+              </svg>
+            </span>
+            <span class="nav__label">Trang chủ</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="explore">
+            <span class="nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+              </svg>
+            </span>
+            <span class="nav__label">Khám phá</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="library">
+            <span class="nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 5v14" />
+                <path d="M9 5v14" />
+                <path d="M14 6l5 13" />
+              </svg>
+            </span>
+            <span class="nav__label">Thư viện</span>
+          </a>
+        </li>
+
+        <li class="nav__item">
+          <a href="#" class="nav__link" data-nav="settings">
+            <span class="nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+              </svg>
+            </span>
+            <span class="nav__label">Cài đặt</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <div class="sidebar__footer">Obsidian Prism</div>
+  </aside>
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      const hamburger = document.getElementById('hamburgerBtn');
+      const sidebar   = document.getElementById('sidebar');
+      const backdrop  = document.getElementById('backdrop');
+      const closeBtn  = document.getElementById('closeBtn');
+      const navLinks  = sidebar.querySelectorAll('.nav__link');
+
+      const isMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+
+      /* ---------- OPEN ---------- */
+      function openSidebar() {
+        sidebar.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        sidebar.setAttribute('aria-hidden', 'false');
+        hamburger.setAttribute('aria-expanded', 'true');
+        hamburger.setAttribute('aria-label', 'Đóng menu điều hướng');
+
+        if (isMobile()) {
+          document.body.classList.add('is-locked');
+        }
+
+        // Focus first interactive element for a11y
+        closeBtn.focus({ preventScroll: true });
+      }
+
+      /* ---------- CLOSE ---------- */
+      function closeSidebar(returnFocus = true) {
+        sidebar.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        sidebar.setAttribute('aria-hidden', 'true');
+        hamburger.setAttribute('aria-expanded', 'false');
+        hamburger.setAttribute('aria-label', 'Mở menu điều hướng');
+        document.body.classList.remove('is-locked');
+
+        if (returnFocus) hamburger.focus({ preventScroll: true });
+      }
+
+      function toggleSidebar() {
+        sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+      }
+
+      /* ---------- EVENTS ---------- */
+      hamburger.addEventListener('click', toggleSidebar);
+      closeBtn.addEventListener('click', () => closeSidebar());
+      backdrop.addEventListener('click', () => closeSidebar());
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+          closeSidebar();
+        }
+      });
+
+      /* ---------- ACTIVE STATE (real, not fake) ---------- */
+      navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach((l) => {
+            l.classList.remove('is-active');
+            l.removeAttribute('aria-current');
+          });
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'page');
+          // Đóng sidebar sau khi chọn (mobile-friendly)
+          if (isMobile()) closeSidebar(false);
+        });
+      });
+
+      /* ---------- Keep body-lock correct on resize ---------- */
+      window.addEventListener('resize', () => {
+        if (!isMobile()) {
+          document.body.classList.remove('is-locked');
+        } else if (sidebar.classList.contains('is-open')) {
+          document.body.classList.add('is-locked');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

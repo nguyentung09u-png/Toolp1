@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Brutalist Mono</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS — brutalist (không gradient, không blur, không màu mềm)
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --red: #ff2b2b;
+    --gray-line: #2a2a2a;
+    --gray-mid: #6b6b6b;
+    --gray-text: #b4b4b4;
+
+    --font-display: "Anton", impact, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --font-sans: "Inter", system-ui, sans-serif;
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--black);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — halftone dot grid + paper noise (monochrome)
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.14;
+    background-image: radial-gradient(circle, #ffffff 0.9px, transparent 1.1px);
+    background-size: 18px 18px;
+  }
+
+  /* paper grain — monochrome */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — pure rectangle, hard border, no radius
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    flex: 0 0 auto;
+    background: var(--black);
+    border: 1px solid var(--white);
+    padding: 0;
+
+    /* load: hard appear — no opacity fade, chỉ clip từ trái */
+    clip-path: inset(0 100% 0 0);
+    animation: hardReveal 0.45s steps(8, end) 0.05s forwards;
+  }
+  @keyframes hardReveal {
+    to { clip-path: inset(0 0 0 0); }
+  }
+
+  /* ============================================================
+     HEADER — số 05 khổng lồ + meta
+     ============================================================ */
+  .sidebar-head {
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid var(--white);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 8px;
+  }
+
+  .head-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .head-meta .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+  }
+  .head-meta .brand {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    color: var(--white);
+    text-transform: uppercase;
+  }
+
+  .head-count {
+    font-family: var(--font-display);
+    font-size: 54px;
+    line-height: 0.85;
+    color: var(--red);
+    letter-spacing: -1px;
+  }
+
+  /* thin meta line dưới header */
+  .head-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 20px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gray-mid);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--gray-line);
+  }
+
+  /* ============================================================
+     NAV — brutalist rows: số khổng lồ | label | arrow
+     ============================================================ */
+  .nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-item {
+    border-bottom: 1px solid var(--gray-line);
+    position: relative;
+  }
+  .nav-item:last-child { border-bottom: none; }
+
+  .nav-link {
+    display: grid;
+    grid-template-columns: 68px 1fr 22px;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: var(--white);
+    background: var(--black);
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    font-family: var(--font-sans);
+
+    /* hard transition — 120ms, không ease */
+    transition: background 0.12s linear, color 0.12s linear;
+  }
+
+  /* số index khổng lồ */
+  .nav-index {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 0.85;
+    color: var(--white);
+    letter-spacing: -1.5px;
+    display: inline-block;
+    transition: transform 0.2s linear, color 0.12s linear;
+    will-change: transform;
+  }
+
+  /* block label + sub */
+  .nav-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .nav-label {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1.15;
+    transition: color 0.12s linear;
+  }
+  .nav-sub {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.4px;
+    color: var(--gray-mid);
+    text-transform: uppercase;
+    transition: color 0.12s linear;
+  }
+
+  /* arrow → chỉ hiện khi hover/active */
+  .nav-arrow {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1;
+    color: var(--red);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.15s linear, transform 0.2s linear;
+    text-align: right;
+  }
+
+  /* red dot chỉ active */
+  .nav-dot {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 24px;
+    background: var(--red);
+  }
+
+  /* ---- Hover ---- */
+  .nav-link:hover {
+    background: var(--white);
+    color: var(--black);
+  }
+  .nav-link:hover .nav-index {
+    transform: translateX(6px);
+    color: var(--black);
+  }
+  .nav-link:hover .nav-label { color: var(--black); }
+  .nav-link:hover .nav-sub { color: #444444; }
+  .nav-link:hover .nav-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--black);
+  }
+
+  /* ---- Active: INVERT tuyệt đối ---- */
+  .nav-link.is-active {
+    background: var(--white);
+    color: var(--black);
+  }
+  .nav-link.is-active .nav-index {
+    color: var(--red);
+    font-size: 56px;
+    transform: translateX(2px);
+  }
+  .nav-link.is-active .nav-label { color: var(--black); }
+  .nav-link.is-active .nav-sub { color: #444444; }
+  .nav-link.is-active .nav-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--black);
+  }
+  .nav-link.is-active .nav-dot { display: block; }
+
+  /* rule đỏ dưới item active */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    background: var(--red);
+  }
+
+  /* ---- Focus (keyboard) ---- */
+  .nav-link:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: -6px;
+  }
+
+  /* ============================================================
+     FOOTER STRIP — brutalist meta
+     ============================================================ */
+  .sidebar-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-top: 1px solid var(--white);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+  }
+  .sidebar-foot .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--white);
+  }
+  .sidebar-foot .status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--red);
+    animation: blink 1.2s steps(2, end) infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0; }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .sidebar { width: 300px; }
+    .sidebar-head { padding: 16px 16px 14px; }
+    .head-meta .brand { font-size: 26px; }
+    .head-count { font-size: 46px; }
+    .head-line { padding: 6px 16px; }
+    .nav-link { grid-template-columns: 58px 1fr 22px; padding: 14px 16px; gap: 10px; }
+    .nav-index { font-size: 38px; }
+    .nav-link.is-active .nav-index { font-size: 48px; }
+    .nav-label { font-size: 13px; }
+    .sidebar-foot { padding: 9px 16px; }
+  }
+
+  /* Mobile — vertical brutalist list full width */
+  @media (max-width: 640px) {
+    body {
+      padding: 12px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+    }
+
+    .sidebar-head {
+      padding: 14px 14px 12px;
+    }
+    .head-meta .brand { font-size: 24px; }
+    .head-count { font-size: 42px; }
+    .head-line { padding: 5px 14px; font-size: 8.5px; letter-spacing: 1.5px; }
+
+    .nav-link {
+      grid-template-columns: 54px 1fr 20px;
+      padding: 14px;
+      gap: 10px;
+      min-height: 60px;
+    }
+    .nav-index { font-size: 34px; }
+    .nav-link.is-active .nav-index { font-size: 42px; }
+    .nav-label { font-size: 12.5px; }
+    .nav-sub { font-size: 8.5px; letter-spacing: 1.2px; }
+    .nav-arrow { font-size: 16px; }
+
+    .sidebar-foot { padding: 8px 14px; }
+  }
+
+  /* Android rất nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { grid-template-columns: 46px 1fr 18px; padding: 12px; }
+    .nav-index { font-size: 30px; }
+    .nav-link.is-active .nav-index { font-size: 36px; }
+    .head-meta .brand { font-size: 21px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { clip-path: none; }
+    .sidebar-foot .status::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- HEADER -->
+    <div class="sidebar-head">
+      <div class="head-meta">
+        <span class="eyebrow">Brutalist / Mono</span>
+        <span class="brand">Menu</span>
+      </div>
+      <span class="head-count">05</span>
+    </div>
+    <div class="head-line">
+      <span>Nav-Index</span>
+      <span>2026 — Mono</span>
+    </div>
+
+    <!-- NAV -->
+    <ul class="nav" role="tablist">
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="nav-index">01</span>
+          <span class="nav-body">
+            <span class="nav-label">Trang chủ</span>
+            <span class="nav-sub">Home / landing</span>
+          </span>
+          <span class="nav-arrow">→</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="nav-index">02</span>
+          <span class="nav-body">
+            <span class="nav-label">Khám phá</span>
+            <span class="nav-sub">Explore / discover</span>
+          </span>
+          <span class="nav-arrow">→</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="nav-index">03</span>
+          <span class="nav-body">
+            <span class="nav-label">Dự án</span>
+            <span class="nav-sub">Projects / works</span>
+          </span>
+          <span class="nav-arrow">→</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="nav-index">04</span>
+          <span class="nav-body">
+            <span class="nav-label">Thông báo</span>
+            <span class="nav-sub">Notify / inbox</span>
+          </span>
+          <span class="nav-arrow">→</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="nav-index">05</span>
+          <span class="nav-body">
+            <span class="nav-label">Cài đặt</span>
+            <span class="nav-sub">Settings / config</span>
+          </span>
+          <span class="nav-arrow">→</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- FOOTER -->
+    <div class="sidebar-foot">
+      <span class="status">Online</span>
+      <span>v5.0</span>
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     BRUTALIST MONO — active state (hard swap)
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --charcoal:   #16120e;
+    --charcoal-2: #1f1a15;
+    --charcoal-3: #2a231c;
+    --copper:     #b8733d;
+    --copper-2:   #d4925a;
+    --parchment:  #ede4d3;
+    --parchment-2:#d9cbb0;
+    --olive:      #6b7458;
+    --muted:      #7a6f5c;
+    --line:       rgba(184, 115, 61, 0.28);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+    background: var(--charcoal);
+    color: var(--parchment);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: ATLAS TOPOGRAPHIC LAYERED ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 25% 20%, rgba(107, 116, 88, 0.12), transparent 65%),
+      radial-gradient(ellipse 55% 40% at 78% 82%, rgba(184, 115, 61, 0.14), transparent 65%),
+      linear-gradient(165deg, #16120e 0%, #1a1512 50%, #100d0a 100%);
+  }
+  /* Contour layer kiểu bản đồ atlas cổ */
+  .bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.13;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 500 500'><g fill='none' stroke='%23d4925a' stroke-width='0.7'><path d='M0 250 Q 125 180, 250 250 T 500 250'/><path d='M0 270 Q 125 200, 250 270 T 500 270'/><path d='M0 290 Q 125 220, 250 290 T 500 290'/><path d='M0 230 Q 125 160, 250 230 T 500 230'/><path d='M0 210 Q 125 140, 250 210 T 500 210'/><path d='M0 190 Q 125 120, 250 190 T 500 190'/><path d='M0 170 Q 125 100, 250 170 T 500 170'/><path d='M0 310 Q 125 240, 250 310 T 500 310'/><path d='M0 330 Q 125 260, 250 330 T 500 330'/><path d='M0 350 Q 125 280, 250 350 T 500 350'/></g></svg>");
+    background-size: 800px 800px;
+    background-position: center;
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.72  0 0 0 0 0.55  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 36px 20px;
+  }
+
+  /* ---------- CARD DỌC 3:4 ---------- */
+  .card {
+    position: relative;
+    width: min(340px, 88vw);
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(175deg, #2a231c 0%, #1f1a15 55%, #16120e 100%);
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    box-shadow:
+      0 50px 100px -40px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(184, 115, 61, 0.06),
+      0 0 80px -30px rgba(184, 115, 61, 0.35),
+      inset 0 1px 0 rgba(237, 228, 211, 0.08);
+    overflow: hidden;
+
+    opacity: 0;
+    transform: translateY(24px);
+    animation: cardIn 1100ms cubic-bezier(.2,.7,.2,1) 120ms forwards;
+  }
+
+  /* Viền kép atlas (double border effect) */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(184, 115, 61, 0.15);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---------- TOP BAND (image-band, chiếm 55%) ---------- */
+  .top-band {
+    position: relative;
+    flex: 0 0 55%;
+    padding: 32px 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+      radial-gradient(circle at 70% 20%, rgba(184, 115, 61, 0.25), transparent 55%),
+      radial-gradient(circle at 20% 80%, rgba(107, 116, 88, 0.20), transparent 55%),
+      linear-gradient(180deg, #2f2620 0%, #241d17 100%);
+    overflow: hidden;
+  }
+  /* Contour inside top-band tạo "vùng địa hình" */
+  .top-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.32;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'><g fill='none' stroke='%23d4925a' stroke-width='0.6'><ellipse cx='200' cy='80' rx='120' ry='70'/><ellipse cx='200' cy='80' rx='90' ry='52'/><ellipse cx='200' cy='80' rx='60' ry='34'/><ellipse cx='200' cy='80' rx='30' ry='16'/></g></svg>");
+    background-size: 400px 400px;
+    background-position: right top;
+    pointer-events: none;
+  }
+
+  /* Corner tag trái trên */
+  .tag {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 5px 12px;
+    background: rgba(22, 18, 14, 0.65);
+    border: 1px solid rgba(184, 115, 61, 0.5);
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--copper-2);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    animation: tagIn 700ms cubic-bezier(.2,.7,.2,1) 400ms forwards;
+  }
+  .tag::before {
+    content: "";
+    width: 4px; height: 4px;
+    background: var(--copper-2);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--copper-2);
+  }
+
+  /* Coordinate marks trái dưới */
+  .coords {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    animation: fadeIn 800ms ease 700ms forwards;
+  }
+  .coord {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 2.5px;
+    color: rgba(217, 203, 176, 0.55);
+  }
+  .coord::before {
+    content: "";
+    width: 14px; height: 1px;
+    background: rgba(184, 115, 61, 0.5);
+  }
+
+  /* ---------- DIVIDER: perforated atlas line ---------- */
+  .divider {
+    position: relative;
+    height: 0;
+    z-index: 3;
+    margin: 0 28px;
+    border-top: 1px dashed rgba(184, 115, 61, 0.35);
+  }
+  .divider::before,
+  .divider::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    width: 10px;
+    height: 10px;
+    background: var(--charcoal);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(184, 115, 61, 0.35);
+  }
+  .divider::before { left: -33px; }
+  .divider::after  { right: -33px; }
+
+  /* ---------- BOTTOM BAND (info, 45%) ---------- */
+  .bottom-band {
+    flex: 1;
+    padding: 26px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Tên dọc stack */
+  .name-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .name-line {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    line-height: 1;
+    color: var(--parchment);
+    opacity: 0;
+    animation: nameSlide 850ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .name-line:nth-child(1) { font-size: clamp(22px, 5.5vw, 28px); animation-delay: 650ms; }
+  .name-line:nth-child(2) { font-size: clamp(26px, 6.5vw, 32px); font-style: italic; color: var(--copper-2); animation-delay: 780ms; }
+  .name-line:nth-child(3) { font-size: clamp(22px, 5.5vw, 28px); animation-delay: 910ms; }
+
+  /* Meta rows dưới cùng */
+  .meta-block {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeUp 750ms cubic-bezier(.2,.7,.2,1) 1100ms forwards;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 10px;
+    border-top: 1px solid rgba(184, 115, 61, 0.15);
+  }
+  .meta-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.2px;
+    color: var(--parchment-2);
+  }
+
+  /* ---------- ANIMATIONS ---------- */
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes tagIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes nameSlide {
+    from { opacity: 0; transform: translateY(-10px); filter: blur(3px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .tag, .coords, .name-line, .meta-block {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card { width: min(310px, 86vw); }
+    .top-band { padding: 26px 22px 20px; }
+    .bottom-band { padding: 22px 22px 24px; }
+    .divider { margin: 0 22px; }
+    .divider::before { left: -27px; }
+    .divider::after  { right: -27px; }
+    .name-line:nth-child(1),
+    .name-line:nth-child(3) { font-size: 22px; }
+    .name-line:nth-child(2) { font-size: 26px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card { width: min(380px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND ATLAS TOPOGRAPHIC -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- CARD DỌC 3:4 -->
+    <article class="card">
+
+      <!-- TOP BAND -->
+      <div class="top-band">
+        <span class="tag">Hồ sơ</span>
+
+        <div class="coords" aria-hidden="true">
+          <span class="coord">ATLAS</span>
+          <span class="coord">N° 2007</span>
+        </div>
+      </div>
+
+      <!-- DIVIDER perforated -->
+      <div class="divider" aria-hidden="true"></div>
+
+      <!-- BOTTOM BAND -->
+      <div class="bottom-band">
+
+        <h1 class="name-stack">
+          <span class="name-line">Nguyễn</span>
+          <span class="name-line">Thanh</span>
+          <span class="name-line">Huy</span>
+        </h1>
+
+        <div class="meta-block">
+          <div class="meta-row">
+            <span class="meta-key">Năm sinh</span>
+            <span class="meta-val">2007</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Quê quán</span>
+            <span class="meta-val">Quảng Nam</span>
+          </div>
+        </div>
+
+      </div>
+
+    </article>
+  </main>
+
+</body>
+</html>

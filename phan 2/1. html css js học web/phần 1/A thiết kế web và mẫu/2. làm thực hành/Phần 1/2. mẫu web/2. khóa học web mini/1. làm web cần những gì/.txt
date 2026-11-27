@@ -1,0 +1,28 @@
+1. làm 1 web mini bất kì
+
+ví dụ : quán ăn
+- giới thiệu quán có những gì hấp dẫn và bao nhiêu người đã đánh giá trả nghiệm
+- menu giá 
+- ảnh món ăn
+- đỉa chỉ quán 
+- icon nút liên hệ zalo của người bán ( đề phòng thêm thông tin liên hệ nữa cho chắc )
+- Nên chia nhóm thức ăn cùng tên
+nhóm A
+có những món gì
+Nhóm B
+có những món gì
+
+
+chỉ quay video web mẫu nhé
+chứ đừng gửi link nó lấy source
+
+nhưng nếu cần
+thì vẫn phải bỏ login vào rồi mã hóa html thôi
+
+----
+
+Tháng 1 quay video Có 3–5 website mẫu, tìm khách đầu tiên
+
+Tháng 2 Hoàn thành 2–3 dự án mẫu nhiều
+
+tháng 3  Phát triển thành dịch vụ thiết kế website nhỏ 

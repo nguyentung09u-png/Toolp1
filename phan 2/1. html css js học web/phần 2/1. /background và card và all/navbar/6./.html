@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Aurora Spine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0d0812;
+    --bg-1: #140c1c;
+    --bg-2: #1a1024;
+
+    --rose: #e8b4a0;
+    --rose-deep: #c98d78;
+    --amber: #f4c97a;
+    --ice: #a8d8ff;
+    --gold: #e8c88e;
+
+    --text: #f3ebee;
+    --text-mute: #7a6b73;
+    --text-dim: #554751;
+
+    --glass: rgba(26, 16, 36, 0.62);
+    --glass-strong: rgba(20, 12, 28, 0.85);
+
+    --hex-clip: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
+    --hex-clip-r: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 12% 50%);
+
+    --font-display: "Outfit", system-ui, sans-serif;
+    --font-mono: "Space Mono", ui-monospace, monospace;
+    --font-script: "Caveat", cursive;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  /* ============================================================
+     BACKGROUND — aurora 3 màu + grain + vignette
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(720px 520px at 8% -6%, rgba(232, 180, 160, 0.22), transparent 60%),
+      radial-gradient(640px 480px at 100% 30%, rgba(168, 216, 255, 0.12), transparent 60%),
+      radial-gradient(820px 700px at 20% 110%, rgba(244, 201, 122, 0.14), transparent 65%),
+      linear-gradient(160deg, #0d0812 0%, #140c1c 55%, #0d0812 100%);
+  }
+
+  /* grain */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.055;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — organic curved spine
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 300px;
+    flex: 0 0 auto;
+    padding: 26px 18px 26px 22px;
+
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+
+    /* dải cong organic — bo tròn lớn góc trái trên + phải dưới */
+    border-radius: 44px 12px 44px 12px;
+    border: 1px solid rgba(232, 180, 160, 0.16);
+
+    box-shadow:
+      0 0 0 1px rgba(232, 180, 160, 0.05),
+      0 40px 80px -40px rgba(232, 180, 160, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    /* viền kép inset */
+    outline: 1px solid rgba(232, 180, 160, 0.06);
+    outline-offset: 6px;
+
+    /* load animation */
+    opacity: 0;
+    transform: translateX(-16px);
+    animation: shellIn 0.8s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes shellIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* corner marker (rose-gold tiny dot) */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--rose);
+    box-shadow: 0 0 12px var(--rose), 0 0 24px rgba(232, 180, 160, 0.5);
+    animation: cornerPulse 3s ease-in-out infinite;
+  }
+  @keyframes cornerPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ============================================================
+     HEADER LABEL — script accent + micro mono
+     ============================================================ */
+  .sidebar-head {
+    position: relative;
+    padding: 4px 8px 22px;
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sidebar-head .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-head .eyebrow::before {
+    content: "";
+    width: 16px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose));
+  }
+  .sidebar-head .brand {
+    font-family: var(--font-script);
+    font-size: 30px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: 0.5px;
+    background: linear-gradient(110deg, var(--rose) 0%, var(--gold) 50%, var(--ice) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(232, 180, 160, 0.3));
+  }
+
+  /* divider — gradient hairline + dot */
+  .sidebar-head::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--rose) 0%, rgba(232, 180, 160, 0.1) 60%, transparent 100%);
+    opacity: 0.6;
+  }
+
+  /* ============================================================
+     NAV — thread + hex items
+     ============================================================ */
+  .nav {
+    position: relative;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  /* sợi thread dọc (SVG path drawn) */
+  .thread {
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    bottom: 30px;
+    width: 2px;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+  }
+  .thread svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .thread .thread-line {
+    stroke: url(#threadGrad);
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px rgba(232, 180, 160, 0.5));
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawThread 1.4s var(--ease-out) 0.35s forwards;
+  }
+  @keyframes drawThread {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* node indicator di chuyển dọc thread */
+  .node {
+    position: absolute;
+    left: 21px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff5ec, var(--rose) 45%, var(--rose-deep) 100%);
+    box-shadow:
+      0 0 0 4px rgba(232, 180, 160, 0.12),
+      0 0 18px var(--rose),
+      0 0 40px rgba(232, 180, 160, 0.55);
+    z-index: 3;
+    pointer-events: none;
+    transition: transform 0.55s var(--ease-spring);
+    will-change: transform;
+  }
+  .node::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 180, 160, 0.35);
+    animation: nodeRing 2.4s ease-out infinite;
+  }
+  @keyframes nodeRing {
+    0%   { transform: scale(0.6); opacity: 0.9; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  /* ============================================================
+     NAV ITEM — hexagon clip
+     ============================================================ */
+  .nav-item {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 18px 13px 20px;
+    text-decoration: none;
+    color: var(--text-mute);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+
+    /* Hex shape (chỉ áp dụng cho lớp nền, không cắt chữ) */
+    transition: color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+  }
+
+  /* lớp nền hex */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(232, 180, 160, 0.02);
+    border: 1px solid rgba(232, 180, 160, 0.08);
+    clip-path: var(--hex-clip);
+    transition:
+      background 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out);
+    z-index: -1;
+  }
+
+  /* Hover */
+  .nav-link:hover {
+    color: var(--text);
+    transform: translateX(3px);
+  }
+  .nav-link:hover::before {
+    background: rgba(232, 180, 160, 0.08);
+    border-color: rgba(232, 180, 160, 0.28);
+    box-shadow: inset 0 0 20px rgba(232, 180, 160, 0.08);
+  }
+  .nav-link:hover .nav-icon {
+    color: var(--rose);
+    transform: scale(1.08);
+  }
+
+  /* Icon */
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    transition: color 0.3s var(--ease-out), transform 0.3s var(--ease-spring);
+  }
+  .nav-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Label */
+  .nav-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+
+  /* micro index number (mono, dim) */
+  .nav-index {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    color: var(--text-dim);
+    transition: color 0.3s var(--ease-out);
+    opacity: 0.7;
+  }
+
+  /* ============================================================
+     ACTIVE STATE — rose-gold rim + halo + tinted bg
+     ============================================================ */
+  .nav-link.is-active {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .nav-link.is-active::before {
+    background:
+      linear-gradient(100deg,
+        rgba(232, 180, 160, 0.18) 0%,
+        rgba(232, 180, 160, 0.06) 60%,
+        transparent 100%);
+    border-color: rgba(232, 180, 160, 0.55);
+    box-shadow:
+      inset 0 0 26px rgba(232, 180, 160, 0.12),
+      0 0 24px rgba(232, 180, 160, 0.22);
+  }
+  .nav-link.is-active .nav-icon {
+    color: var(--rose);
+    filter: drop-shadow(0 0 6px rgba(232, 180, 160, 0.6));
+  }
+  .nav-link.is-active .nav-index {
+    color: var(--rose);
+    opacity: 1;
+  }
+
+  /* indicator "notch" bên phải của active item */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 46%;
+    background: linear-gradient(180deg, transparent, var(--rose), transparent);
+    border-radius: 2px;
+    box-shadow: 0 0 12px var(--rose);
+    animation: notchPulse 2s ease-in-out infinite;
+  }
+  @keyframes notchPulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.55; }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet — sidebar gọn hơn */
+  @media (max-width: 900px) {
+    .sidebar { width: 260px; padding: 22px 14px 22px 18px; border-radius: 36px 10px 36px 10px; }
+    .sidebar-head .brand { font-size: 26px; }
+    .nav-link { padding: 12px 16px 12px 18px; font-size: 14px; }
+    .nav-icon { width: 20px; height: 20px; }
+    .thread { left: 26px; }
+    .node { left: 17px; width: 18px; height: 18px; }
+  }
+
+  /* Mobile — sidebar thành horizontal floating bar trên đầu */
+  @media (max-width: 640px) {
+    body {
+      padding: 14px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 16px 14px;
+      border-radius: 24px;
+    }
+
+    .sidebar-head {
+      padding-bottom: 14px;
+      margin-bottom: 6px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .sidebar-head::after { display: none; }
+    .sidebar-head .eyebrow { font-size: 9px; letter-spacing: 2px; }
+    .sidebar-head .brand { font-size: 22px; }
+
+    /* Nav thành horizontal scroll */
+    .nav {
+      flex-direction: row;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 2px 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .thread,
+    .node { display: none; } /* bỏ thread dọc trên mobile */
+
+    .nav-item {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 14px;
+      min-width: 76px;
+      font-size: 11px;
+      text-align: center;
+      letter-spacing: 0.2px;
+    }
+    .nav-link::before {
+      /* hex dọc không hợp — dùng rounded rect trên mobile */
+      clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+      border-radius: 6px;
+    }
+    .nav-link:hover { transform: none; }
+    .nav-icon { width: 20px; height: 20px; }
+    .nav-label { font-size: 11px; }
+    .nav-index { display: none; }
+    .nav-link.is-active::after {
+      right: 50%;
+      top: auto;
+      bottom: -3px;
+      transform: translateX(50%);
+      width: 40%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    }
+  }
+
+  /* Android nhỏ */
+  @media (max-width: 400px) {
+    .nav-link { min-width: 68px; padding: 10px 10px; }
+    .sidebar-head .brand { font-size: 20px; }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .thread .thread-line { stroke-dashoffset: 0; }
+    .sidebar { opacity: 1; transform: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- Header -->
+    <div class="sidebar-head">
+      <span class="eyebrow">Aurora Spine</span>
+      <span class="brand">Navigation</span>
+    </div>
+
+    <!-- Nav -->
+    <ul class="nav" role="tablist">
+
+      <!-- Thread + node -->
+      <span class="thread" aria-hidden="true">
+        <svg viewBox="0 0 2 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="threadGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="transparent" />
+              <stop offset="15%"  stop-color="#e8b4a0" />
+              <stop offset="50%"  stop-color="#f4c97a" />
+              <stop offset="85%"  stop-color="#e8b4a0" />
+              <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+          </defs>
+          <path class="thread-line" d="M1,0 L1,100" />
+        </svg>
+      </span>
+      <span class="node" aria-hidden="true"></span>
+
+      <!-- 1. Trang chủ -->
+      <li class="nav-item">
+        <a href="#home" class="nav-link is-active" data-target="home" role="tab" aria-selected="true">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+          </span>
+          <span class="nav-label">Trang chủ</span>
+          <span class="nav-index">01</span>
+        </a>
+      </li>
+
+      <!-- 2. Khám phá -->
+      <li class="nav-item">
+        <a href="#explore" class="nav-link" data-target="explore" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+          </span>
+          <span class="nav-label">Khám phá</span>
+          <span class="nav-index">02</span>
+        </a>
+      </li>
+
+      <!-- 3. Dự án -->
+      <li class="nav-item">
+        <a href="#projects" class="nav-link" data-target="projects" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+          </span>
+          <span class="nav-label">Dự án</span>
+          <span class="nav-index">03</span>
+        </a>
+      </li>
+
+      <!-- 4. Thông báo -->
+      <li class="nav-item">
+        <a href="#notifications" class="nav-link" data-target="notifications" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+          </span>
+          <span class="nav-label">Thông báo</span>
+          <span class="nav-index">04</span>
+        </a>
+      </li>
+
+      <!-- 5. Cài đặt -->
+      <li class="nav-item">
+        <a href="#settings" class="nav-link" data-target="settings" role="tab" aria-selected="false">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="nav-label">Cài đặt</span>
+          <span class="nav-index">05</span>
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     SIDEBAR NAV — active state + node indicator tracking
+     ============================================================ */
+  (function () {
+    const sidebar = document.querySelector(".sidebar");
+    const nav = document.querySelector(".nav");
+    const links = document.querySelectorAll(".nav-link");
+    const node = document.querySelector(".node");
+    const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* -------- di chuyển node tới vị trí link active (desktop) -------- */
+    function moveNodeTo(link) {
+      if (!node || !nav || isMobile()) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const offsetTop = linkRect.top - navRect.top + linkRect.height / 2;
+      // node có kích thước 20px — căn giữa theo trục dọc
+      node.style.transform = `translateY(${offsetTop - 10}px)`;
+    }
+
+    /* -------- kích hoạt link -------- */
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+      moveNodeTo(link);
+    }
+
+    /* -------- click handler (chức năng thật: chuyển mục) -------- */
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault(); // không nhảy anchor, chỉ đổi trạng thái mục
+        activate(this);
+      });
+    });
+
+    /* -------- khởi tạo vị trí node -------- */
+    function initNode() {
+      const initial = document.querySelector(".nav-link.is-active");
+      if (!initial) return;
+      // đợi layout ổn định (fonts, sidebar animation) rồi đặt node
+      if (prefersReduced) {
+        node.style.transition = "none";
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => moveNodeTo(initial));
+      });
+    }
+    initNode();
+
+    /* -------- reposition on resize / rotate -------- */
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const active = document.querySelector(".nav-link.is-active");
+        if (active) moveNodeTo(active);
+      }, 120);
+    });
+
+    /* -------- scroll horizontal nav trên mobile: auto center active -------- */
+    nav.addEventListener("click", (e) => {
+      const link = e.target.closest(".nav-link");
+      if (!link || !isMobile()) return;
+      // cuộn để active nằm giữa khung nhìn nav
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const delta = (linkRect.left + linkRect.width / 2) - (navRect.left + navRect.width / 2);
+      nav.scrollBy({ left: delta, behavior: prefersReduced ? "auto" : "smooth" });
+    });
+
+    /* -------- đảm bảo node cập nhật khi chuyển từ mobile → desktop -------- */
+    window.addEventListener("resize", () => {
+      if (!isMobile()) {
+        const active = document.querySelector(".nav-link.is-active");
+        if (active) moveNodeTo(active);
+      }
+    });
+  })();
+</script>
+</body>
+</html>

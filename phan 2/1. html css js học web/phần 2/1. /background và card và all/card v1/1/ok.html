@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello World Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --card-w: min(420px, 88vw);
+    --card-h: min(280px, 60vw);
+    --cut: 44px;
+
+    --bg-1: #0e0d12;
+    --bg-2: #1a1724;
+    --ink: #ece7dc;
+    --ink-dim: #a09a8e;
+
+    --accent: #e8b84b;
+    --accent-soft: rgba(232, 184, 75, 0.14);
+    --accent-line: rgba(232, 184, 75, 0.55);
+
+    --ghost-offset: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #07060a;
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: 24px;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* --- Ambient stage (chỉ để tôn card, không phải background component) --- */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(600px 400px at 20% 15%, rgba(232,184,75,0.07), transparent 60%),
+      radial-gradient(700px 500px at 85% 85%, rgba(90,80,160,0.10), transparent 65%),
+      linear-gradient(180deg, #07060a 0%, #0b0a11 100%);
+    z-index: -2;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ============ CARD STAGE ============ */
+  .card-stage {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    perspective: 1200px;
+  }
+
+  /* Ghost layer phía sau */
+  .card-ghost {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(232,184,75,0.10), rgba(232,184,75,0.02));
+    clip-path: polygon(
+      var(--cut) 0,
+      100% 0,
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      0 100%,
+      0 var(--cut)
+    );
+    transform: translate(0, 0);
+    transition: transform 0.55s cubic-bezier(.2,.7,.2,1), opacity 0.4s ease;
+    opacity: 0.55;
+    pointer-events: none;
+    filter: blur(0.4px);
+  }
+
+  /* Card chính */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(
+      var(--cut) 0,
+      100% 0,
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      0 100%,
+      0 var(--cut)
+    );
+    background:
+      linear-gradient(150deg, rgba(255,255,255,0.045), rgba(255,255,255,0.008) 40%, transparent 70%),
+      linear-gradient(140deg, #17141f 0%, #100e18 55%, #0c0a12 100%);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    cursor: default;
+    transition:
+      transform 0.55s cubic-bezier(.2,.7,.2,1),
+      filter 0.5s ease;
+    will-change: transform;
+
+    /* Viền mảnh bên trong theo clip-path */
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      inset 0 0 0 1px rgba(232,184,75,0.10);
+
+    animation: cardEnter 1s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Spotlight warm từ trên trái */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background:
+      radial-gradient(120% 90% at 0% 0%, rgba(232,184,75,0.16), transparent 55%),
+      radial-gradient(80% 60% at 100% 100%, rgba(120,100,220,0.10), transparent 60%);
+    pointer-events: none;
+    opacity: 0.9;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Rim light viền amber mảnh */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 40%, var(--accent-line) 50%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /* Đường cut-corner accent mảnh */
+  .card-edge {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .card-edge::before,
+  .card-edge::after {
+    content: "";
+    position: absolute;
+    background: var(--accent-line);
+    opacity: 0.5;
+    transition: opacity 0.5s ease;
+  }
+  /* góc cut trên-trái */
+  .card-edge::before {
+    top: 0;
+    left: 0;
+    width: calc(var(--cut) + 2px);
+    height: 1px;
+    transform-origin: top left;
+    transform: rotate(45deg) translate(0, -0.5px);
+  }
+  /* góc cut dưới-phải */
+  .card-edge::after {
+    bottom: 0;
+    right: 0;
+    width: calc(var(--cut) + 2px);
+    height: 1px;
+    transform-origin: bottom right;
+    transform: rotate(45deg) translate(0, 0.5px);
+  }
+
+  /* Nội dung */
+  .card-content {
+    position: relative;
+    z-index: 3;
+    padding: 32px clamp(20px, 6%, 44px);
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .card-text {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-weight: 500;
+    font-size: clamp(28px, 7vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    background: linear-gradient(180deg, #f4efe3 0%, #d9d2c1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 0.5s cubic-bezier(.2,.7,.2,1);
+  }
+
+  /* Hover */
+  .card-stage:hover .card {
+    transform: translate(-3px, -3px);
+  }
+  .card-stage:hover .card-ghost {
+    transform: translate(var(--ghost-offset), var(--ghost-offset));
+    opacity: 0.9;
+  }
+  .card-stage:hover .card::after {
+    opacity: 0.7;
+  }
+  .card-stage:hover .card-edge::before,
+  .card-stage:hover .card-edge::after {
+    opacity: 1;
+  }
+  .card-stage:hover .card-text {
+    transform: translateY(-2px);
+  }
+
+  /* Touch devices: kích hoạt nhẹ khi chạm */
+  @media (hover: none) {
+    .card:active { transform: translate(-2px, -2px); }
+    .card-ghost { transform: translate(8px, 8px); opacity: 0.75; }
+  }
+
+  /* --- Entrance --- */
+  @keyframes cardEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(14px) scale(0.965);
+      filter: blur(8px);
+    }
+    60% {
+      filter: blur(0.6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  .card-ghost {
+    animation: ghostEnter 1.15s 0.12s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes ghostEnter {
+    0% { opacity: 0; transform: translate(-8px, -8px); filter: blur(6px); }
+    100% { opacity: 0.55; transform: translate(0, 0); filter: blur(0.4px); }
+  }
+
+  .card-text {
+    animation: textEnter 1.1s 0.22s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes textEnter {
+    0% { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  /* --- Reduced motion --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .card-stage:hover .card,
+    .card-stage:hover .card-ghost,
+    .card-stage:hover .card-text {
+      transform: none;
+    }
+  }
+
+  /* --- Responsive tinh chỉnh --- */
+  @media (max-width: 480px) {
+    :root {
+      --cut: 34px;
+      --card-h: min(240px, 68vw);
+      --ghost-offset: 12px;
+    }
+    .card-content { padding: 24px 20px; }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --card-w: 460px;
+      --card-h: 300px;
+      --cut: 48px;
+      --ghost-offset: 18px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-stage">
+    <div class="card-ghost" aria-hidden="true"></div>
+    <div class="card" role="group" aria-label="Hello World card">
+      <span class="card-edge" aria-hidden="true"></span>
+      <div class="card-content">
+        <span class="card-text">Hello World</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Card không yêu cầu chức năng tương tác.
+    // JS chỉ tối ưu: re-trigger animation khi tab được focus lại (nhẹ nhàng, không lặp liên tục).
+    (function () {
+      const stage = document.querySelector('.card-stage');
+      if (!stage) return;
+
+      // Không có chức năng bổ sung để tránh thêm hành vi ngoài yêu cầu.
+      // Chỉ log nhẹ khi reduced-motion để dev biết.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = 'true';
+      }
+    })();
+  </script>
+
+</body>
+</html>

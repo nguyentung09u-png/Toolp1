@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Hội An - Sản Phẩm Chất Lượng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(90deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 1.5rem 5%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #2d6a4f;
+            font-size: 1.8rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: #52b788;
+            border-radius: 2px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(45, 106, 79, 0.15);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #e8f5e9, #d8f3dc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+        }
+
+        /* ✅ Badge mã sản phẩm */
+        .product-code {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(45, 106, 79, 0.92);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.65rem;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+
+        .product-info {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            color: #1b4332;
+            margin-bottom: 0.6rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.75rem;
+            line-height: 1.25;
+        }
+
+        .product-desc {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.7rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #d62828;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+        }
+
+        /* ✅ Nút Liên hệ Zalo */
+        .contact-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: auto;
+            background: linear-gradient(90deg, #2d6a4f, #40916c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            font-family: inherit;
+        }
+
+        .contact-btn:hover {
+            background: linear-gradient(90deg, #1b4332, #2d6a4f);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+        }
+
+        .contact-btn .phone-icon {
+            display: inline-block;
+            animation: ring 2s ease-in-out infinite;
+        }
+
+        @keyframes ring {
+            0%, 100% { transform: rotate(0); }
+            10%, 30% { transform: rotate(-12deg); }
+            20%, 40% { transform: rotate(12deg); }
+            50% { transform: rotate(0); }
+        }
+
+        @media (max-width: 1200px) {
+            .products-grid { grid-template-columns: 1fr 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+            .product-info { padding: 0.7rem; }
+            .product-img { height: 130px; font-size: 2.5rem; }
+            .product-code { font-size: 0.68rem; padding: 0.25rem 0.5rem; top: 7px; left: 7px; }
+            .product-name {
+                font-size: 0.9rem;
+                line-height: 1.2;
+                -webkit-line-clamp: 3;
+                min-height: 3.6rem;
+            }
+            .product-desc {
+                font-size: 0.78rem;
+                line-height: 1.35;
+                -webkit-line-clamp: 3;
+                min-height: 3.15rem;
+            }
+            .product-price {
+                font-size: 1rem;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .contact-btn {
+                font-size: 0.82rem;
+                padding: 0.6rem 0.4rem;
+                gap: 0.25rem;
+            }
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            max-width: calc(100vw - 40px);
+            word-break: break-word;
+            background: linear-gradient(90deg, #2d6a4f, #40916c);
+        }
+
+        .toast.show { transform: translateX(0); }
+
+        footer {
+            background: #1b4332;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌿 Hội An Fresh — Sản Phẩm Địa Phương</h1>
+        <p>Chất lượng từ thiên nhiên, hương vị Hội An</p>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+
+        <div class="products-grid">
+            <!-- SP #1 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#1</span>
+                    🍊
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Cam Nghĩa Đường</h3>
+                    <p class="product-desc">Cam ngọt tự nhiên, nổi tiếng xứ Quảng</p>
+                    <div class="product-price">35.000đ / kg</div>
+                    <a class="contact-btn"
+                       href="https://zalo.me/0367411225"
+                       target="_blank" rel="noopener"
+                       data-code="1"
+                       data-name="Cam Nghĩa Đường">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #2 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#2</span>
+                    🫚
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Nghệ An Toàn Thổ</h3>
+                    <p class="product-desc">Nghệ vàng tự trồng, không hóa chất</p>
+                    <div class="product-price">45.000đ / gói</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="2" data-name="Nghệ An Toàn Thổ">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #3 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#3</span>
+                    🍯
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Mật Ong Rừng</h3>
+                    <p class="product-desc">Mật ong nguyên chất từ rừng Quảng Nam</p>
+                    <div class="product-price">185.000đ / lít</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="3" data-name="Mật Ong Rừng">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #4 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#4</span>
+                    🥥
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Dừa Xiêm Hội An</h3>
+                    <p class="product-desc">Dừa tươi nước ngọt, thanh mát</p>
+                    <div class="product-price">15.000đ / trái</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="4" data-name="Dừa Xiêm Hội An">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #5 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#5</span>
+                    🍋
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Chanh Đào Xứ Quảng</h3>
+                    <p class="product-desc">Chanh ruột vàng, thơm ngon đặc biệt</p>
+                    <div class="product-price">28.000đ / kg</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="5" data-name="Chanh Đào Xứ Quảng">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #6 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#6</span>
+                    🌶️
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Ớt Xiêm Rừng</h3>
+                    <p class="product-desc">Ớt cay nồng, hương vị đặc trưng</p>
+                    <div class="product-price">40.000đ / gói</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="6" data-name="Ớt Xiêm Rừng">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #7 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#7</span>
+                    🍍
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Dứa Hậu Lộc</h3>
+                    <p class="product-desc">Dứa vàng ngọt, ít chua, thơm ngon</p>
+                    <div class="product-price">22.000đ / kg</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="7" data-name="Dứa Hậu Lộc">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- SP #8 -->
+            <div class="product-card">
+                <div class="product-img">
+                    <span class="product-code">#8</span>
+                    🌿
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">Trà Thảo Mộc Hội An</h3>
+                    <p class="product-desc">Hỗn hợp thảo mộc địa phương, thanh nhiệt</p>
+                    <div class="product-price">65.000đ / hộp</div>
+                    <a class="contact-btn" href="https://zalo.me/0367411225" target="_blank" rel="noopener" data-code="8" data-name="Trà Thảo Mộc Hội An">
+                        <span class="phone-icon">☎</span> Liên hệ ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <footer>
+        <p>🌿 Hội An Fresh — Đường Nguyễn Thái Học, Thành phố Hội An, Quảng Nam</p>
+        <p>&copy; 2026 Tất cả quyền được bảo lưu</p>
+    </footer>
+
+    <script>
+        const toastContainer = document.getElementById('toastContainer');
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>📞</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Mở Zalo + tự động copy mã SP vào clipboard để khách dán vào chat
+        document.querySelectorAll('.contact-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const code = this.dataset.code;
+                const name = this.dataset.name;
+
+                // Toast thông báo
+                showToast(`Đang chuyển đến Zalo — Mã SP #${code}`);
+
+                // Bonus: copy mã vào clipboard để khách dán nhanh
+                const textToCopy = `SP #${code} - ${name}`;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).catch(() => {});
+                }
+
+                // Link Zalo mở tự động qua href + target="_blank"
+            });
+        });
+    </script>
+</body>
+</html>

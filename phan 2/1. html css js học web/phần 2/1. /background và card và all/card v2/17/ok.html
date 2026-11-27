@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0:    #07080c;
+    --bg-1:    #0d0f18;
+    --bg-2:    #151824;
+    --bg-3:    #1e2230;
+    --lime:    #c4ff3d;
+    --violet:  #a57bff;
+    --sky:     #5ec8ff;
+    --coral:   #ff7a5c;
+    --white:   #f4f5f8;
+    --muted:   #6a7088;
+    --line:    rgba(244, 245, 248, 0.08);
+    --line-2:  rgba(244, 245, 248, 0.14);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--bg-0);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- BACKGROUND ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(196, 255, 61, 0.08), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(165, 123, 255, 0.10), transparent 42%),
+      radial-gradient(circle at 50% 50%, rgba(94, 200, 255, 0.05), transparent 50%),
+      linear-gradient(180deg, #07080c 0%, #0d0f18 55%, #07080c 100%);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.9  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER ---------- */
+  .card-wrap {
+    width: min(360px, 90vw);
+    aspect-ratio: 3 / 4;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: cardIn 1000ms cubic-bezier(.16,1,.3,1) 100ms forwards;
+  }
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- CARD — 4 GÓC BO TRÒN ---------- */
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;          /* ← 4 góc bo tròn */
+    background:
+      linear-gradient(155deg,
+        var(--bg-3) 0%,
+        var(--bg-2) 35%,
+        var(--bg-1) 70%,
+        var(--bg-0) 100%);
+    border: 1px solid var(--line-2);
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.9),
+      0 0 0 1px rgba(244, 245, 248, 0.04),
+      0 0 80px -30px rgba(165, 123, 255, 0.25),
+      inset 0 1px 0 rgba(244, 245, 248, 0.10);
+    overflow: hidden;
+
+    /* Bento padding — khoảng giữa các ô */
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 10px;
+  }
+
+  /* Viền sáng trên cùng */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 24px; right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent, rgba(196, 255, 61, 0.5), transparent);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* ---------- BENTO TILE BASE ---------- */
+  .tile {
+    position: relative;
+    border-radius: 18px;
+    background: rgba(244, 245, 248, 0.03);
+    border: 1px solid var(--line);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    opacity: 0;
+    animation: tileIn 700ms cubic-bezier(.16,1,.3,1) forwards;
+    transition: background 250ms ease, border-color 250ms ease;
+  }
+  .tile:hover {
+    background: rgba(244, 245, 248, 0.06);
+    border-color: var(--line-2);
+  }
+  @keyframes tileIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- ROW 1: TOP TILES ---------- */
+  .tile.t-top-left  { grid-column: 1 / 2; grid-row: 1 / 2; animation-delay: 350ms; }
+  .tile.t-top-right { grid-column: 2 / 3; grid-row: 1 / 2; animation-delay: 450ms; }
+
+  .t-top-left  { background: linear-gradient(135deg, rgba(196, 255, 61, 0.14), rgba(196, 255, 61, 0.02)); border-color: rgba(196, 255, 61, 0.28); }
+  .t-top-right { background: linear-gradient(135deg, rgba(165, 123, 255, 0.14), rgba(165, 123, 255, 0.02)); border-color: rgba(165, 123, 255, 0.28); }
+
+  .tile-index {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .t-top-left  .tile-index { color: var(--lime); }
+  .t-top-right .tile-index { color: var(--violet); }
+
+  .tile-mini-val {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .tile-mini-val small {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ---------- ROW 2: NAME (giữa, to) ---------- */
+  .tile.t-name {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    animation-delay: 550ms;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(94, 200, 255, 0.12), transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(165, 123, 255, 0.10), transparent 50%),
+      linear-gradient(155deg, var(--bg-3), var(--bg-1));
+    border-color: rgba(94, 200, 255, 0.20);
+    padding: 22px 18px;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .name-eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .name-main {
+    font-size: clamp(30px, 8vw, 42px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 0.9;
+    color: var(--white);
+  }
+  .name-main span {
+    background: linear-gradient(135deg, var(--sky) 0%, var(--violet) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* ---------- ROW 3: META (2 ô) ---------- */
+  .tile.t-meta-a { grid-column: 1 / 2; grid-row: 3 / 4; animation-delay: 700ms; }
+  .tile.t-meta-b { grid-column: 2 / 3; grid-row: 3 / 4; animation-delay: 780ms; }
+
+  .tile-key {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tile-val {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--white);
+    margin-top: 8px;
+  }
+
+  /* ---------- ROW 4: FOOTER (1 ô rộng) ---------- */
+  .tile.t-foot {
+    grid-column: 1 / 3;
+    grid-row: 4 / 5;
+    animation-delay: 880ms;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(196, 255, 61, 0.04);
+    border-color: rgba(196, 255, 61, 0.22);
+  }
+
+  .foot-label {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+  }
+  .foot-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .foot-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrap, .tile, .foot-status::before {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card-wrap { width: min(310px, 88vw); }
+    .card { border-radius: 24px; padding: 12px; gap: 8px; }
+    .tile { border-radius: 14px; padding: 12px 10px; }
+    .name-main { letter-spacing: -1.5px; }
+    .tile-mini-val { font-size: 18px; }
+    .tile-val { font-size: 15px; }
+  }
+
+  /* ---------- TABLET+ ---------- */
+  @media (min-width: 700px) {
+    .card-wrap { width: min(400px, 90vw); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <div class="card-wrap">
+
+      <article class="card">
+
+        <!-- TOP LEFT: Năm sinh -->
+        <div class="tile t-top-left">
+          <span class="tile-index">Năm sinh</span>
+          <span class="tile-mini-val">2007<small>Year</small></span>
+        </div>
+
+        <!-- TOP RIGHT: Quê quán -->
+        <div class="tile t-top-right">
+          <span class="tile-index">Quê quán</span>
+          <span class="tile-mini-val">Quảng Nam<small>Region</small></span>
+        </div>
+
+        <!-- MID: Name -->
+        <div class="tile t-name">
+          <span class="name-eyebrow">Nguyễn Thanh</span>
+          <h1 class="name-main">Huy<span>.</span></h1>
+        </div>
+
+        <!-- ROW 3: 2 meta tiles -->
+        <div class="tile t-meta-a">
+          <span class="tile-key">Năm sinh</span>
+          <span class="tile-val">2007</span>
+        </div>
+        <div class="tile t-meta-b">
+          <span class="tile-key">Quê quán</span>
+          <span class="tile-val">Quảng Nam</span>
+        </div>
+
+        <!-- ROW 4: footer -->
+        <div class="tile t-foot">
+          <span class="foot-label">Profile</span>
+          <span class="foot-status">Active</span>
+        </div>
+
+      </article>
+
+    </div>
+  </main>
+
+</body>
+</html>

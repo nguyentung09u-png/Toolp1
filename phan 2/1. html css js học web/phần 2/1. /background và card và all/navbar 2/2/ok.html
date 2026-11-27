@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sidebar — Radial Orbit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0a0c14;
+    --bg-1: #0e1220;
+    --bg-2: #131828;
+
+    --chrome: #d4d8e3;
+    --chrome-dark: #8b93a8;
+    --blue: #3b6bff;
+    --blue-soft: rgba(59, 107, 255, 0.14);
+    --blue-line: rgba(59, 107, 255, 0.4);
+
+    --magenta: #ff2e8b;
+    --magenta-soft: rgba(255, 46, 139, 0.16);
+
+    --text: #e8ecf7;
+    --text-mute: #7d869e;
+    --text-dim: #4a5266;
+
+    --glass: rgba(19, 24, 40, 0.65);
+    --glass-strong: rgba(12, 16, 28, 0.85);
+
+    --font-display: "Sora", system-ui, sans-serif;
+    --font-mono: "Azeret Mono", ui-monospace, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* orbit geometry */
+    --hub-size: 72px;
+    --orbit-radius: 130px;
+    --orbit-start: -110deg;   /* góc item đầu tiên */
+    --orbit-step: 55deg;      /* 55° * 4 = 220° tổng cung */
+    --item-size: 56px;
+  }
+
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     BACKGROUND — dark chrome gradient + concentric rings
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 700px at 12% 30%, rgba(59, 107, 255, 0.16), transparent 60%),
+      radial-gradient(700px 600px at 100% 80%, rgba(255, 46, 139, 0.1), transparent 60%),
+      linear-gradient(160deg, #0a0c14 0%, #0e1220 55%, #0a0c14 100%);
+  }
+
+  /* concentric rings (tròn đồng tâm, mờ) */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translate(-30%, -50%);
+    width: 900px;
+    height: 900px;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle, transparent 0%, transparent calc(100% - 1px), rgba(212, 216, 227, 0.06) 100%);
+    background-size: 100% 100%;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 1px rgba(212, 216, 227, 0.05),
+      0 0 0 200px transparent,
+      0 0 0 240px rgba(212, 216, 227, 0.04),
+      0 0 0 260px transparent,
+      0 0 0 320px rgba(212, 216, 227, 0.03);
+  }
+
+  /* orbit particles */
+  .orbit-particles {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translate(-30%, -50%);
+    width: 900px;
+    height: 900px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .orbit-particles i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 10px var(--blue);
+    transform-origin: 0 0;
+  }
+  .orbit-particles i:nth-child(1) {
+    animation: orbitA 24s linear infinite;
+    --r: 240px;
+  }
+  .orbit-particles i:nth-child(2) {
+    background: var(--magenta);
+    box-shadow: 0 0 10px var(--magenta);
+    animation: orbitB 18s linear infinite reverse;
+    --r: 320px;
+  }
+  .orbit-particles i:nth-child(3) {
+    animation: orbitC 30s linear infinite;
+    --r: 400px;
+  }
+  @keyframes orbitA {
+    from { transform: rotate(0deg) translateX(var(--r)); }
+    to   { transform: rotate(360deg) translateX(var(--r)); }
+  }
+  @keyframes orbitB {
+    from { transform: rotate(90deg) translateX(var(--r)); }
+    to   { transform: rotate(450deg) translateX(var(--r)); }
+  }
+  @keyframes orbitC {
+    from { transform: rotate(200deg) translateX(var(--r)); }
+    to   { transform: rotate(560deg) translateX(var(--r)); }
+  }
+
+  /* ============================================================
+     SIDEBAR SHELL — Radial Orbit Panel
+     ============================================================ */
+  .sidebar {
+    position: relative;
+    z-index: 1;
+    width: 380px;
+    height: 520px;
+    flex: 0 0 auto;
+
+    background: var(--glass);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+    /* bo tròn mạnh bên phải vì hub nằm bên trái */
+    border-radius: 20px 40px 40px 20px;
+    border: 1px solid rgba(212, 216, 227, 0.14);
+
+    box-shadow:
+      0 0 0 1px rgba(212, 216, 227, 0.04),
+      0 40px 90px -44px rgba(59, 107, 255, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    opacity: 0;
+    transform: scale(0.96);
+    animation: shellIn 0.9s var(--ease-out) 0.1s forwards;
+  }
+  @keyframes shellIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* corner accent top-right */
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    width: 24px;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--blue), var(--magenta));
+    box-shadow: 0 0 10px var(--blue);
+  }
+
+  /* eyebrow label */
+  .sidebar-head {
+    position: absolute;
+    top: 20px;
+    left: 26px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sidebar-head .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sidebar-head .eyebrow::before {
+    content: "";
+    width: 10px;
+    height: 1px;
+    background: var(--blue);
+    box-shadow: 0 0 6px var(--blue);
+  }
+  .sidebar-head .brand {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .sidebar-head .brand em {
+    font-style: normal;
+    color: var(--blue);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-left: 4px;
+  }
+
+  /* ============================================================
+     ORBIT SYSTEM — hub + items trên cung tròn
+     ============================================================ */
+  .orbit {
+    position: absolute;
+    top: 50%;
+    left: 44px;
+    width: 0;
+    height: 0;
+    /* origin = hub center */
+    transform: translateY(-50%);
+  }
+
+  /* --- HUB --- */
+  .hub {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--hub-size);
+    height: var(--hub-size);
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+      radial-gradient(circle at 35% 30%, #e8ecf7 0%, #d4d8e3 25%, #8b93a8 60%, #3d4458 100%);
+    box-shadow:
+      0 0 0 1px rgba(212, 216, 227, 0.4),
+      0 0 24px rgba(59, 107, 255, 0.5),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.35),
+      inset 0 4px 8px rgba(255, 255, 255, 0.4);
+  }
+
+  /* hub core ring (pulse) */
+  .hub::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(10, 12, 20, 0.6);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+  }
+  .hub::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(59, 107, 255, 0.35);
+    animation: hubRing 3s ease-out infinite;
+  }
+  @keyframes hubRing {
+    0%   { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  /* hub pointer — kim quét quay tới item active */
+  .hub-pointer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 90px;
+    height: 3px;
+    transform-origin: 0 50%;
+    transform: translateY(-50%) rotate(var(--angle, 0deg));
+    transition: transform 0.7s var(--ease-spring);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .hub-pointer::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 12px;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg,
+      var(--blue) 0%,
+      var(--blue) 60%,
+      var(--magenta) 90%,
+      transparent 100%);
+    box-shadow: 0 0 12px var(--blue);
+    border-radius: 2px;
+  }
+  /* dot ở đầu kim */
+  .hub-pointer::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: var(--magenta);
+    box-shadow: 0 0 12px var(--magenta), 0 0 24px rgba(255, 46, 139, 0.6);
+  }
+
+  /* hub center dot */
+  .hub-core-dot {
+    position: relative;
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--blue) 60%, #1a3fd4);
+    box-shadow: 0 0 12px var(--blue), 0 0 24px rgba(59, 107, 255, 0.7);
+    animation: corePulse 2.2s ease-in-out infinite;
+  }
+  @keyframes corePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 12px var(--blue), 0 0 24px rgba(59, 107, 255, 0.7); }
+    50%      { transform: scale(1.2); box-shadow: 0 0 18px var(--blue), 0 0 36px rgba(59, 107, 255, 0.9); }
+  }
+
+  /* --- ORBIT RINGS (visual only, phía sau) --- */
+  .orbit-ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    border: 1px dashed rgba(212, 216, 227, 0.1);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orbit-ring.r1 { width: calc(var(--orbit-radius) * 2); height: calc(var(--orbit-radius) * 2); }
+
+  /* --- NAV ITEMS TRÊN CUNG --- */
+  .nav-orbit {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 2;
+    list-style: none;
+  }
+
+  .nav-item {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--item-size);
+    height: var(--item-size);
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--angle))
+      translateX(var(--orbit-radius))
+      rotate(calc(-1 * var(--angle)));
+    /* dùng --angle được set inline */
+  }
+
+  .nav-link {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(212, 216, 227, 0.08) 0%, rgba(19, 24, 40, 0.85) 70%);
+    border: 1px solid rgba(212, 216, 227, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 6px 16px -8px rgba(0, 0, 0, 0.6);
+    transition:
+      color 0.3s var(--ease-out),
+      border-color 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out),
+      transform 0.4s var(--ease-spring),
+      background 0.35s var(--ease-out);
+  }
+
+  .nav-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.4s var(--ease-spring), filter 0.3s ease;
+  }
+
+  /* tooltip label (hiện khi hover / active) */
+  .nav-link .tooltip {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 8px);
+    transform: translateX(-50%) translateY(-4px);
+    padding: 5px 10px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    color: var(--text);
+    background: rgba(12, 16, 28, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 216, 227, 0.18);
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.35s var(--ease-out);
+    z-index: 10;
+  }
+  .nav-link .tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: rgba(12, 16, 28, 0.92);
+  }
+
+  /* Hover */
+  .nav-link:hover {
+    color: var(--text);
+    border-color: rgba(212, 216, 227, 0.3);
+    transform: scale(1.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 10px 24px -8px rgba(59, 107, 255, 0.4);
+  }
+  .nav-link:hover svg {
+    color: var(--blue);
+    transform: scale(1.1);
+  }
+  .nav-link:hover .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Active */
+  .nav-link.is-active {
+    color: var(--text);
+    border-color: var(--blue);
+    background:
+      radial-gradient(circle at 35% 30%,
+        rgba(59, 107, 255, 0.55) 0%,
+        rgba(59, 107, 255, 0.22) 50%,
+        rgba(19, 24, 40, 0.85) 100%);
+    box-shadow:
+      0 0 0 1px var(--blue),
+      0 0 22px rgba(59, 107, 255, 0.55),
+      inset 0 0 18px rgba(59, 107, 255, 0.35);
+  }
+  .nav-link.is-active svg {
+    color: var(--chrome);
+    filter: drop-shadow(0 0 6px var(--blue));
+  }
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 46, 139, 0.5);
+    animation: activeRing 2s ease-out infinite;
+  }
+  @keyframes activeRing {
+    0%   { transform: scale(0.85); opacity: 0.7; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+  .nav-link.is-active .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    color: var(--blue);
+    border-color: rgba(59, 107, 255, 0.4);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  /* Tablet — thu nhỏ bán kính & hub */
+  @media (max-width: 900px) and (min-width: 641px) {
+    :root {
+      --hub-size: 60px;
+      --orbit-radius: 100px;
+      --item-size: 48px;
+    }
+    .sidebar { width: 320px; height: 440px; }
+    .orbit { left: 40px; }
+    .nav-link svg { width: 19px; height: 19px; }
+    .sidebar-head .brand { font-size: 16px; }
+    .nav-link .tooltip { font-size: 10px; padding: 4px 8px; }
+  }
+
+  /* Mobile — fallback DỌC + hub nhỏ trên đầu */
+  @media (max-width: 640px) {
+    body {
+      padding: 14px;
+      display: block;
+    }
+
+    :root {
+      --hub-size: 44px;
+      --item-size: 44px;
+    }
+
+    .sidebar {
+      width: 100%;
+      height: auto;
+      padding: 16px 14px 14px;
+      border-radius: 20px;
+    }
+    .sidebar::before { display: none; }
+
+    .sidebar-head {
+      position: static;
+      margin-bottom: 14px;
+      padding-left: 4px;
+    }
+    .sidebar-head .brand { font-size: 17px; }
+
+    /* chuyển orbit → layout dọc, hub ở giữa header, items hàng dưới */
+    .orbit {
+      position: static;
+      transform: none;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hub {
+      position: static;
+      transform: none;
+      width: var(--hub-size);
+      height: var(--hub-size);
+      margin: 0 auto;
+    }
+
+    .hub-pointer { display: none; }
+    .orbit-ring { display: none; }
+
+    .nav-orbit {
+      position: static;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-item {
+      position: static;
+      transform: none;
+      width: var(--item-size);
+      height: var(--item-size);
+    }
+
+    .nav-link .tooltip {
+      display: none;
+    }
+
+    /* label dưới icon (mobile) */
+    .nav-link .nav-mobile-label {
+      display: block;
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.4px;
+      color: var(--text-mute);
+      white-space: nowrap;
+    }
+    .nav-link.is-active .nav-mobile-label {
+      color: var(--blue);
+    }
+  }
+
+  /* ============================================================
+     A11Y
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .sidebar { opacity: 1; transform: none; }
+    .orbit-particles { display: none; }
+    .hub-pointer { transition: none; }
+    .nav-link.is-active::after { animation: none; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
+  }
+
+  /* ẩn mobile label trên desktop */
+  .nav-mobile-label { display: none; }
+</style>
+</head>
+<body>
+
+  <!-- orbit particles -->
+  <div class="orbit-particles" aria-hidden="true">
+    <i></i><i></i><i></i>
+  </div>
+
+  <aside class="sidebar" aria-label="Main navigation">
+
+    <!-- Header -->
+    <div class="sidebar-head">
+      <span class="eyebrow">Radial Orbit</span>
+      <span class="brand">Menu<em>/nav</em></span>
+    </div>
+
+    <!-- ORBIT SYSTEM -->
+    <div class="orbit">
+
+      <!-- orbit ring -->
+      <span class="orbit-ring r1" aria-hidden="true"></span>
+
+      <!-- HUB -->
+      <div class="hub" aria-hidden="true">
+        <span class="hub-pointer" style="--angle: 0deg;"></span>
+        <span class="hub-core-dot"></span>
+      </div>
+
+      <!-- NAV ITEMS trải trên cung -->
+      <ul class="nav-orbit" role="tablist">
+
+        <!-- 1. Trang chủ — góc -110° -->
+        <li class="nav-item" style="--angle: -110deg;">
+          <a href="#home" class="nav-link is-active" data-target="home" data-angle="-110" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+            <span class="tooltip">Trang chủ</span>
+            <span class="nav-mobile-label">Trang chủ</span>
+          </a>
+        </li>
+
+        <!-- 2. Khám phá — góc -55° -->
+        <li class="nav-item" style="--angle: -55deg;">
+          <a href="#explore" class="nav-link" data-target="explore" data-angle="-55" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" />
+            </svg>
+            <span class="tooltip">Khám phá</span>
+            <span class="nav-mobile-label">Khám phá</span>
+          </a>
+        </li>
+
+        <!-- 3. Dự án — góc 0° -->
+        <li class="nav-item" style="--angle: 0deg;">
+          <a href="#projects" class="nav-link" data-target="projects" data-angle="0" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+              <path d="M3 11h18" />
+            </svg>
+            <span class="tooltip">Dự án</span>
+            <span class="nav-mobile-label">Dự án</span>
+          </a>
+        </li>
+
+        <!-- 4. Thông báo — góc 55° -->
+        <li class="nav-item" style="--angle: 55deg;">
+          <a href="#notifications" class="nav-link" data-target="notifications" data-angle="55" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16z" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+            <span class="tooltip">Thông báo</span>
+            <span class="nav-mobile-label">Thông báo</span>
+          </a>
+        </li>
+
+        <!-- 5. Cài đặt — góc 110° -->
+        <li class="nav-item" style="--angle: 110deg;">
+          <a href="#settings" class="nav-link" data-target="settings" data-angle="110" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+            <span class="tooltip">Cài đặt</span>
+            <span class="nav-mobile-label">Cài đặt</span>
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+
+  </aside>
+
+<script>
+  /* ============================================================
+     RADIAL ORBIT — active state + hub pointer rotate
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    const pointer = document.querySelector(".hub-pointer");
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* --- quay kim hub tới góc của item --- */
+    function rotatePointer(link) {
+      if (!pointer) return;
+      const angle = link.dataset.angle || "0";
+      pointer.style.setProperty("--angle", angle + "deg");
+    }
+
+    /* --- activate --- */
+    function activate(link) {
+      links.forEach((l) => {
+        l.classList.remove("is-active");
+        l.setAttribute("aria-selected", "false");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-selected", "true");
+      rotatePointer(link);
+    }
+
+    /* --- click handler (chức năng thật) --- */
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        activate(this);
+      });
+    });
+
+    /* --- khởi tạo --- */
+    function init() {
+      const active = document.querySelector(".nav-link.is-active");
+      if (!active) return;
+
+      if (prefersReduced && pointer) {
+        pointer.style.transition = "none";
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => rotatePointer(active));
+      });
+    }
+    init();
+  })();
+</script>
+</body>
+</html>

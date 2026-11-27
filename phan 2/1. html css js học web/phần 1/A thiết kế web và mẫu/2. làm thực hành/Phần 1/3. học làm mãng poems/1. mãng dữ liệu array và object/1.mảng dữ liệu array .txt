@@ -1,0 +1,20 @@
+✅ CÁCH MỚI — Dùng mảng dữ liệu array 
+┌─────────────────────────────────────────────┐
+│  data.js (hoặc trong script)                │
+│                                             │
+│  const products = [        ← MẢNG DỮ LIỆU array  │
+│    { ten: "Áo thun",  moTa: "...", gia: 150 },│
+│    { ten: "Quần jean",moTa: "...", gia: 350 },│
+│    { ten: "Giày",     moTa: "...", gia: 500 },│
+│    ...                                      │
+│  ];                                         │
+└──────────────────┬──────────────────────────┘
+                   │
+                   ▼
+
+
+const products = [
+  { ten: "Áo thun",   moTa: "Áo cotton thoáng mát", gia: 150 },
+  { ten: "Quần jean", moTa: "Jean slim co giãn",    gia: 350 },
+  { ten: "Giày",      moTa: "Giày thể thao",        gia: 500 }
+];

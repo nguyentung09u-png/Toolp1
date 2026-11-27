@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nguyễn Thanh Huy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --noir:       #0c0808;
+    --noir-2:     #140d0d;
+    --noir-3:     #1c1212;
+    --crimson:    #c1272d;
+    --crimson-2:  #8f1c21;
+    --rose:       #e8b4b8;
+    --rose-soft:  #f2d5d6;
+    --cream:      #f5ebe6;
+    --muted:      #7a5a5c;
+    --hairline:   rgba(232, 180, 184, 0.22);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+    background: var(--noir);
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BACKGROUND: DUOTONE MESH TĨNH ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 50% at 78% 22%, rgba(193, 39, 45, 0.16), transparent 60%),
+      radial-gradient(ellipse 70% 55% at 18% 78%, rgba(232, 180, 184, 0.08), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(143, 28, 33, 0.10), transparent 70%),
+      linear-gradient(160deg, #0c0808 0%, #140d0d 45%, #0a0606 100%);
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.28;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.9  0 0 0 0 0.7  0 0 0 0 0.72  0 0 0 0.045 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* ---------- STAGE ---------- */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ---------- CARD WRAPPER (giữ ribbon tab nổi ra ngoài) ---------- */
+  .card-wrap {
+    position: relative;
+    width: min(400px, 100%);
+    padding-top: 18px; /* chừa chỗ ribbon nhô lên */
+    opacity: 0;
+    animation: cardIn 900ms cubic-bezier(.2,.7,.2,1) 100ms forwards;
+  }
+
+  /* ---------- RIBBON TAB (accent nhô ra, đặc trưng edition này) ---------- */
+  .ribbon {
+    position: absolute;
+    top: 0;
+    left: 32px;
+    padding: 7px 20px 8px;
+    background: linear-gradient(135deg, var(--crimson), var(--crimson-2));
+    color: var(--rose-soft);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 4px 12px -2px rgba(193, 39, 45, 0.5);
+    transform-origin: bottom left;
+    opacity: 0;
+    transform: translateY(-6px) scaleX(0.85);
+    animation: ribbonIn 700ms cubic-bezier(.2,.7,.2,1) 350ms forwards;
+  }
+  /* Đuôi ribbon vát phải */
+  .ribbon::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    background: var(--crimson-2);
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    position: relative;
+    padding: 44px 34px 38px;
+    background:
+      linear-gradient(165deg, #1c1212 0%, #140d0d 55%, #0c0808 100%);
+    border-radius: 10px;
+    border: 1px solid var(--hairline);
+    box-shadow:
+      0 40px 90px -30px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(193, 39, 45, 0.08),
+      0 0 70px -25px rgba(193, 39, 45, 0.28),
+      inset 0 1px 0 rgba(232, 180, 184, 0.10);
+    overflow: hidden;
+  }
+  /* Hairline gradient viền trên (nhẹ, không chói) */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(232, 180, 184, 0.55) 30%,
+      rgba(193, 39, 45, 0.7) 50%,
+      rgba(232, 180, 184, 0.55) 70%,
+      transparent);
+  }
+
+  /* ---------- NỘI DUNG ---------- */
+  .body {
+    display: grid;
+    gap: 26px;
+  }
+
+  /* Tên — serif display */
+  .name-zone {
+    opacity: 0;
+    animation: fadeCascade 800ms ease 550ms forwards;
+  }
+  .name {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(27px, 6.5vw, 36px);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.15;
+    color: var(--cream);
+  }
+
+  /* Divider: 2 nét chéo nhỏ gợi "dấu" (không phải line thẳng) */
+  .marks {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .marks span {
+    width: 18px;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--crimson), transparent);
+  }
+  .marks span:last-child {
+    width: 8px;
+    background: var(--rose);
+    opacity: 0.6;
+  }
+
+  /* Meta — 2 dòng stacked, key trên value (khác mọi bản trước) */
+  .meta {
+    display: grid;
+    gap: 22px;
+    padding-top: 4px;
+  }
+  .meta-item {
+    display: grid;
+    gap: 5px;
+    padding-left: 14px;
+    position: relative;
+    opacity: 0;
+    animation: fadeCascade 800ms ease forwards;
+  }
+  .meta-item:nth-child(1) { animation-delay: 750ms; }
+  .meta-item:nth-child(2) { animation-delay: 900ms; }
+
+  /* Dấu chấm dọc bên trái mỗi meta */
+  .meta-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--crimson);
+    box-shadow: 0 0 8px rgba(193, 39, 45, 0.7);
+  }
+
+  .meta-key {
+    font-family: 'Helvetica Neue', 'Arial Narrow', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-val {
+    font-family: 'Georgia', serif;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+    color: var(--rose-soft);
+  }
+
+  /* ---------- ANIMATIONS ---------- */
+  @keyframes cardIn {
+    to { opacity: 1; }
+  }
+  @keyframes ribbonIn {
+    to { opacity: 1; transform: translateY(0) scaleX(1); }
+  }
+  @keyframes fadeCascade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrap, .ribbon, .name-zone, .meta-item {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 420px) {
+    .card { padding: 38px 24px 32px; }
+    .ribbon { left: 22px; font-size: 9px; letter-spacing: 2.5px; }
+    .name { font-size: 26px; }
+    .meta-val { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BACKGROUND DUOTONE MESH -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- CARD WRAP -->
+    <div class="card-wrap">
+      <span class="ribbon" aria-hidden="true">Profile</span>
+
+      <article class="card">
+        <div class="body">
+          <!-- Tên -->
+          <div class="name-zone">
+            <h1 class="name">Nguyễn Thanh Huy</h1>
+            <div class="marks" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+          <!-- Meta -->
+          <div class="meta">
+            <div class="meta-item">
+              <div class="meta-key">Năm sinh</div>
+              <div class="meta-val">2007</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">Quê quán</div>
+              <div class="meta-val">Quảng Nam</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DEV STUDIO — Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS v2
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #04070a;
+    --bg-1: #070d13;
+    --bg-2: #0b141c;
+
+    --mint: #2ff0c8;
+    --mint-deep: #16c8a4;
+    --mint-soft: rgba(47, 240, 200, 0.12);
+    --mint-line: rgba(47, 240, 200, 0.38);
+
+    --amber: #ffb547;
+    --amber-soft: rgba(255, 181, 71, 0.14);
+
+    --text: #e8fbf6;
+    --text-mute: #6f8b87;
+
+    --glass: rgba(9, 18, 24, 0.55);
+    --glass-strong: rgba(7, 15, 20, 0.78);
+
+    --cut: 16px;
+
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-0);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 22px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     BACKGROUND v2 — mesh + perspective grid + noise
+     ============================================================ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 600px at 8% -8%, rgba(47, 240, 200, 0.18), transparent 60%),
+      radial-gradient(700px 500px at 100% 20%, rgba(255, 181, 71, 0.08), transparent 60%),
+      radial-gradient(800px 700px at 50% 120%, rgba(22, 200, 164, 0.14), transparent 65%),
+      linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 55%, var(--bg-0) 100%);
+  }
+
+  /* perspective grid (nghiêng) */
+  body::after {
+    content: "";
+    position: fixed;
+    left: 50%;
+    bottom: -20%;
+    width: 260%;
+    height: 90%;
+    transform: translateX(-50%) perspective(600px) rotateX(62deg);
+    transform-origin: center bottom;
+    background:
+      linear-gradient(rgba(47, 240, 200, 0.14) 1px, transparent 1px) 0 0 / 60px 60px,
+      linear-gradient(90deg, rgba(47, 240, 200, 0.14) 1px, transparent 1px) 0 0 / 60px 60px;
+    mask-image: radial-gradient(ellipse at 50% 100%, #000 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 100%, #000 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+  }
+
+  /* noise layer */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-top: 6px;
+  }
+  .page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============================================================
+     NAVBAR v2 — logo trái | capsule nav giữa | status phải
+     ============================================================ */
+  .navbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 18px;
+
+    background: var(--glass);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(47, 240, 200, 0.18);
+    border-radius: 20px;
+
+    box-shadow:
+      0 0 0 1px rgba(47, 240, 200, 0.05),
+      0 24px 48px -28px rgba(47, 240, 200, 0.4);
+
+    opacity: 0;
+    transform: translateY(-14px);
+    animation: navIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s forwards;
+  }
+  @keyframes navIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Logo */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand-mark {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: var(--mint);
+    border-radius: 10px;
+    background: conic-gradient(from 180deg, var(--mint), var(--amber), var(--mint));
+    padding: 1px;
+  }
+  .brand-mark::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 9px;
+    background: var(--bg-1);
+    box-shadow: inset 0 0 12px rgba(47, 240, 200, 0.35);
+  }
+  .brand-mark svg {
+    position: relative;
+    z-index: 1;
+    width: 18px;
+    height: 18px;
+    stroke: var(--mint);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .brand-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mint);
+    margin-left: 8px;
+    padding: 3px 6px;
+    border: 1px solid var(--mint-line);
+    border-radius: 4px;
+    background: var(--mint-soft);
+  }
+
+  /* Capsule menu — pill group */
+  .nav-capsule {
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    background: rgba(4, 8, 11, 0.6);
+    border: 1px solid rgba(47, 240, 200, 0.14);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    list-style: none;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    color: var(--text-mute);
+    text-decoration: none;
+    border-radius: 999px;
+    transition:
+      color 0.28s ease,
+      background 0.28s ease,
+      transform 0.28s ease;
+    white-space: nowrap;
+  }
+  .nav-link svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.28s ease;
+  }
+  .nav-link:hover {
+    color: var(--text);
+    background: rgba(47, 240, 200, 0.08);
+    transform: translateY(-1px);
+  }
+  .nav-link:hover svg { transform: rotate(-8deg) scale(1.12); }
+
+  /* Active state: pill mint gradient + amber dot indicator */
+  .nav-link.is-active {
+    color: #04120f;
+    background: linear-gradient(180deg, var(--mint) 0%, var(--mint-deep) 100%);
+    box-shadow:
+      0 0 0 1px rgba(47, 240, 200, 0.6),
+      0 8px 22px -8px rgba(47, 240, 200, 0.7);
+  }
+  .nav-link.is-active svg { stroke: #04120f; }
+
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    transform: translateY(-50%);
+    box-shadow: 0 0 8px var(--amber);
+    animation: dotPulse 1.6s ease-in-out infinite;
+  }
+  .nav-link.is-active:last-child::after { display: none; }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+    50% { opacity: 0.6; transform: translateY(-50%) scale(1.4); }
+  }
+
+  /* Status indicator bên phải (thuộc Navbar, không phải content thêm) */
+  .nav-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    color: var(--text-mute);
+    padding: 6px 10px;
+    border: 1px solid rgba(47, 240, 200, 0.2);
+    border-radius: 999px;
+    background: rgba(47, 240, 200, 0.05);
+  }
+  .nav-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 10px var(--mint);
+    animation: dotPulse2 1.8s ease-in-out infinite;
+  }
+  @keyframes dotPulse2 {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ============================================================
+     CARDS v2 — Cut corner TR+BL, số lớn trái, gradient conic border
+     ============================================================ */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    position: relative;
+    padding: 22px 22px 24px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+
+    /* Cut corner TOP-RIGHT + BOTTOM-LEFT */
+    clip-path: polygon(
+      0 0, calc(100% - var(--cut)) 0, 100% var(--cut),
+      100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))
+    );
+
+    /* viền gradient = border 2 lớp giả lập qua ::before */
+    border: 1px solid rgba(47, 240, 200, 0.16);
+
+    overflow: hidden;
+
+    /* reveal animation */
+    opacity: 0;
+    clip-path: polygon(0 0, 0 0, 0 var(--cut), 0 100%, 0 100%, 0 calc(100% - var(--cut)));
+    animation: cardReveal 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.12s; }
+  .stat-card:nth-child(2) { animation-delay: 0.22s; }
+  .stat-card:nth-child(3) { animation-delay: 0.32s; }
+  .stat-card:nth-child(4) { animation-delay: 0.42s; }
+
+  @keyframes cardReveal {
+    to {
+      opacity: 1;
+      clip-path: polygon(
+        0 0, calc(100% - var(--cut)) 0, 100% var(--cut),
+        100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))
+      );
+    }
+  }
+
+  /* Conic rotate border on hover (dùng ::before làm lớp viền gradient) */
+  .stat-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: conic-gradient(
+      from var(--a, 0deg),
+      transparent 0%,
+      var(--mint) 15%,
+      transparent 30%,
+      transparent 70%,
+      var(--amber) 85%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+    pointer-events: none;
+    animation: spin 6s linear infinite paused;
+  }
+  .stat-card:hover::before {
+    opacity: 0.9;
+    animation-play-state: running;
+  }
+  @property --a {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes spin {
+    to { --a: 360deg; }
+  }
+
+  /* inner mask để conic border chỉ lộ 1px viền */
+  .stat-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    background: linear-gradient(180deg, rgba(7, 15, 20, 0.92), rgba(5, 11, 15, 0.96));
+    clip-path: polygon(
+      0 0, calc(100% - var(--cut)) 0, 100% var(--cut),
+      100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* beam sweep khi hover */
+  .stat-card .beam {
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(47, 240, 200, 0.18), transparent);
+    transform: skewX(-18deg);
+    z-index: 2;
+    pointer-events: none;
+    transition: left 0.9s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+  .stat-card:hover .beam { left: 120%; }
+
+  /* content layer trên cùng */
+  .stat-card > *:not(.beam) {
+    position: relative;
+    z-index: 3;
+  }
+
+  .stat-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+
+  .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: var(--mint);
+    background: rgba(47, 240, 200, 0.08);
+    border: 1px solid rgba(47, 240, 200, 0.28);
+    border-radius: 10px;
+    box-shadow: inset 0 0 12px rgba(47, 240, 200, 0.2);
+    flex: 0 0 auto;
+  }
+  .stat-icon svg {
+    width: 17px;
+    height: 17px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* số liệu bên trái, lớn */
+  .stat-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--text);
+    text-shadow: 0 0 22px rgba(47, 240, 200, 0.35);
+  }
+  .stat-value .unit {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mint);
+    letter-spacing: 0.8px;
+  }
+
+  /* Activity card dạng text */
+  .stat-value.is-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-shadow: 0 0 14px rgba(47, 240, 200, 0.28);
+    color: var(--text);
+    margin-top: 4px;
+  }
+  .live-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 3px rgba(47, 240, 200, 0.18), 0 0 12px var(--mint);
+    animation: livePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(47, 240, 200, 0.18), 0 0 12px var(--mint); }
+    50% { box-shadow: 0 0 0 6px rgba(47, 240, 200, 0.05), 0 0 18px var(--mint); }
+  }
+
+  /* mini progress bar cho 3 card số liệu */
+  .stat-bar {
+    margin-top: 18px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(47, 240, 200, 0.12);
+    overflow: hidden;
+  }
+  .stat-bar > i {
+    display: block;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--mint-deep), var(--mint));
+    box-shadow: 0 0 10px rgba(47, 240, 200, 0.7);
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1080px) {
+    .navbar {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "brand status"
+        "nav nav";
+      row-gap: 12px;
+    }
+    .brand { grid-area: brand; }
+    .nav-status { grid-area: status; }
+    .nav-capsule { grid-area: nav; justify-self: stretch; justify-content: center; flex-wrap: wrap; }
+  }
+
+  @media (max-width: 980px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 14px; }
+    .page { gap: 26px; }
+    .navbar { padding: 12px 14px; border-radius: 16px; }
+    .brand-sub { display: none; }
+    .nav-link { padding: 7px 11px; font-size: 11.5px; }
+    .nav-link svg { width: 13px; height: 13px; }
+    .stat-value { font-size: 32px; }
+    .stat-value.is-text { font-size: 15px; }
+    .nav-link.is-active::after { display: none; } /* tránh rối trên mobile nhỏ */
+  }
+
+  @media (max-width: 460px) {
+    .cards { grid-template-columns: 1fr; }
+    .nav-capsule { gap: 2px; padding: 4px; }
+    .nav-link { flex: 1 1 44%; justify-content: center; }
+    .nav-status { display: none; }
+  }
+
+  /* ============================================================
+     ACCESSIBILITY
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .stat-card { opacity: 1; clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))); }
+    .stat-bar > i { width: var(--w, 0%) !important; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- ================= NAVBAR v2 ================= -->
+    <nav class="navbar" aria-label="Main navigation">
+      <a href="#" class="brand" aria-label="DEV STUDIO home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 6 3 12l5 6" />
+            <path d="M16 6l5 6-5 6" />
+            <path d="M14 4l-4 16" />
+          </svg>
+        </span>
+        <span>DEV STUDIO</span>
+        <span class="brand-sub">v2.0</span>
+      </a>
+
+      <ul class="nav-capsule">
+        <li>
+          <a href="#home" class="nav-link is-active" data-nav="home">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+            </svg>
+            <span>Home</span>
+          </a>
+        </li>
+        <li>
+          <a href="#projects" class="nav-link" data-nav="projects">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M3 9h18" />
+              <path d="M9 9v11" />
+            </svg>
+            <span>Projects</span>
+          </a>
+        </li>
+        <li>
+          <a href="#tools" class="nav-link" data-nav="tools">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.6 2.6-2.9-2.9 2.5-2.7Z" />
+            </svg>
+            <span>Tools</span>
+          </a>
+        </li>
+        <li>
+          <a href="#about" class="nav-link" data-nav="about">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 10v6" />
+              <circle cx="12" cy="7.5" r="0.6" fill="currentColor" stroke="none" />
+            </svg>
+            <span>About</span>
+          </a>
+        </li>
+      </ul>
+
+      <span class="nav-status" aria-label="System online">ONLINE</span>
+    </nav>
+
+    <!-- ================= CARDS v2 ================= -->
+    <section class="cards" aria-label="Developer statistics">
+
+      <!-- Total Projects -->
+      <article class="stat-card">
+        <span class="beam" aria-hidden="true"></span>
+        <div class="stat-head">
+          <span class="stat-label">Total Projects</span>
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+            </svg>
+          </span>
+        </div>
+        <div class="stat-value"><span data-count="128">0</span><span class="unit">PRJ</span></div>
+        <div class="stat-bar"><i data-fill="82"></i></div>
+      </article>
+
+      <!-- Completed Tasks -->
+      <article class="stat-card">
+        <span class="beam" aria-hidden="true"></span>
+        <div class="stat-head">
+          <span class="stat-label">Completed Tasks</span>
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12.5 10 17.5 19 6.5" />
+            </svg>
+          </span>
+        </div>
+        <div class="stat-value"><span data-count="1248">0</span><span class="unit">TSK</span></div>
+        <div class="stat-bar"><i data-fill="94"></i></div>
+      </article>
+
+      <!-- Active Projects -->
+      <article class="stat-card">
+        <span class="beam" aria-hidden="true"></span>
+        <div class="stat-head">
+          <span class="stat-label">Active Projects</span>
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          </span>
+        </div>
+        <div class="stat-value"><span data-count="17">0</span><span class="unit">RUN</span></div>
+        <div class="stat-bar"><i data-fill="46"></i></div>
+      </article>
+
+      <!-- Recent Activity -->
+      <article class="stat-card">
+        <span class="beam" aria-hidden="true"></span>
+        <div class="stat-head">
+          <span class="stat-label">Recent Activity</span>
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 12h4l3-7 4 14 3-7h4" />
+            </svg>
+          </span>
+        </div>
+        <div class="stat-value is-text">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span>System active</span>
+        </div>
+        <div class="stat-bar"><i data-fill="100"></i></div>
+      </article>
+
+    </section>
+
+  </div>
+
+<script>
+  /* ============================================================
+     1) NAV — Active state thật
+     ============================================================ */
+  (function () {
+    const links = document.querySelectorAll(".nav-link");
+    links.forEach((link) => {
+      link.addEventListener("click", function () {
+        links.forEach((l) => l.classList.remove("is-active"));
+        this.classList.add("is-active");
+      });
+    });
+  })();
+
+  /* ============================================================
+     2) COUNTER + PROGRESS BAR animation
+     ============================================================ */
+  (function () {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fmt = (n) => n.toLocaleString("en-US");
+
+    // counters
+    document.querySelectorAll(".stat-value [data-count]").forEach((el) => {
+      const target = Number(el.dataset.count);
+      if (prefersReduced) { el.textContent = fmt(target); return; }
+
+      const duration = 1200;
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = fmt(target);
+      })(start);
+    });
+
+    // progress bars — delay nhẹ để chạy sau card reveal
+    document.querySelectorAll(".stat-bar > i").forEach((bar, i) => {
+      const pct = Number(bar.dataset.fill) || 0;
+      bar.style.setProperty("--w", pct + "%");
+      if (prefersReduced) { bar.style.width = pct + "%"; return; }
+      setTimeout(() => { bar.style.width = pct + "%"; }, 600 + i * 90);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+1. thêm vào class chính div
+
+.header {
+  text-align: center;   /* ← dòng này căn giữa chữ theo chiều ngang */
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Quán Ăn Vặt</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Phần header giới thiệu -->
+  <header class="header">
+    <div class="header-content">
+      <span class="header-emoji">🍢</span>
+      <h1>Món Ăn Vặt Cuối Tuần</h1>
+      <p>Ngon - Nóng - Hấp dẫn mỗi ngày!</p>
+    </div>
+  </header>
+
+  <!-- Khu vực chứa các món ăn sẽ được JS tạo tự động -->
+  <main class="menu-container" id="menu-container">
+    <!-- Các card món ăn sẽ được JS render vào đây -->
+  </main>
+
+  <!-- Nút Zalo nổi ở góc màn hình -->
+  <a href="https://zalo.me/0367411225" target="_blank" class="zalo-btn">
+    <img src="https://static.freepnglogo.com/images/all_img/zalo-icon-4635.png" alt="Zalo">
+    <span>Liên hệ Zalo</span>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
