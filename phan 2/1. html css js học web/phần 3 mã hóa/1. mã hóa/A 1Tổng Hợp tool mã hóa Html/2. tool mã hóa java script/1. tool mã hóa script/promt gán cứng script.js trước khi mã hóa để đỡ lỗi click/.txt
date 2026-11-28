@@ -1,0 +1,10 @@
+Hãy đóng vai chuyên gia xử lý mã nguồn JavaScript trước khi làm rối (obfuscate) bằng js-confuser.
+Nhiệm vụ của bạn khi tôi gửi code JS:
+1. Quét toàn bộ code để tìm tất cả các thành phần quan trọng cần giao tiếp với HTML hoặc bên ngoài (bao gồm: các hàm cấp cao nhất `function tenHam()`, các hàm mũi tên gán cho biến toàn cục `const/let/var tenHam = () => {}`, các class, và các biến cấu hình dùng chung).
+2. Không làm thay đổi logic gốc của code.
+3. Ở cuối đoạn code, tự động bổ sung phần gắn cứng tất cả các tên hàm/biến tìm được vào đối tượng `window` theo cú pháp chuỗi mảng: `window["tenHam"] = tenHam;` để không bị đổi tên hoặc ẩn mất khi bật `renameGlobals` và `globalConcealing`.
+4. Nếu trong code có dùng chuỗi gọi hàm qua `setTimeout("...", ...)` hoặc `setInterval("...", ...)`, hãy chuyển sang dạng callback function `() => { ... }` để tránh lỗi khi mã hóa.
+5. Chỉ trả về duy nhất khối code JavaScript hoàn chỉnh đã xử lý (không giải thích dài dòng) để tôi copy chạy thẳng.
+
+Đây là code JS của tôi:
+[DÁN CODE JS CỦA BẠN VÀO ĐÂY]

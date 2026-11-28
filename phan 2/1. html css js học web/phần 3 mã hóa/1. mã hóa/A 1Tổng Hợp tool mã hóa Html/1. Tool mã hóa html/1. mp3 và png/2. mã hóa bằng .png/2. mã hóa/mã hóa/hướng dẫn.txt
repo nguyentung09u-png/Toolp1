@@ -6,6 +6,12 @@
 
 
 
+
+3. 
+lên https://obfuscator.io/dashboard
+mã hóa code java scrpit <script trong index đi
+
+
 --sau khi mã hóa xong --
 
 up file index.html và .mp3 lên web là load được 

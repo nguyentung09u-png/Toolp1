@@ -1,0 +1,34 @@
+1.
+pkg install nodejs
+npm install -g js-confuser
+
+
+2. cd đến thư mục có script.js gốc cần mã hóa
+
+
+cd /storage/emulated/0/cc/
+
+rồi chạy lệnh này dán trực tiếp vào termux là xong :
+
+
+NODE_PATH=$(npm root -g) node -e '
+const fs = require("fs");
+const JsConfuser = require("js-confuser");
+const code = fs.readFileSync("script.js", "utf8");
+JsConfuser.obfuscate(code, {
+  target: "browser",
+  preset: "high",
+  renameGlobals: false,
+  globalConcealing: false
+}).then(res => {
+  fs.writeFileSync("out.js", res.code);
+  console.log("Xong -> out.js");
+});
+'
+
+
+
+
+4. sau khi xong
+rename out.js thành script.js dán lại vị trí gốc là mã hóa xong 
+

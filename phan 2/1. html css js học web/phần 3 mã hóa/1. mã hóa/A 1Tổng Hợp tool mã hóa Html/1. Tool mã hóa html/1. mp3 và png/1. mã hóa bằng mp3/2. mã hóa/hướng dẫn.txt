@@ -19,6 +19,27 @@ anh_that.mp3
 xong sài 1.py
 --sau khi mã hóa xong --
 
+
+
+
+
+
+3. 
+lên https://obfuscator.io/dashboard
+mã hóa code java scrpit <script trong index đi
+
+
+
+
+
+
+
+rồi mới được up
+
+
+
 up file index.html và .mp3 lên web là load được 
 
 xong
+
+
