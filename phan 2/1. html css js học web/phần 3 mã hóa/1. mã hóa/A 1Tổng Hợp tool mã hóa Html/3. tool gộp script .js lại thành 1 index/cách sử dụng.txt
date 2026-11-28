@@ -1,0 +1,12 @@
+1. copy file scrpit hoặc .css cần copy vào chung thư mục
+/storage/emulated/0/A2Test/
+2 file cần nhất
+
+1. index.html
+2. script.js
+hoặc 
+3. .css
+
+nó tự thêm vào
+
+rồi nhớ xóa 2 file .js .css sau khi đã thêm vào
