@@ -1,0 +1,658 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — SAIGON ART DECO & EMERALD LACQUER
+   Visual Redesign v11: Jade Lacquer, Burnished Gold & Cinnabar
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Deep Jade Lacquer & Malachite Slate) */
+  --bg-lacquer: #0B1917;
+  --bg-emerald-dark: #0F211E;
+  --surface-malachite: #122421;
+  --surface-malachite-hover: #172E2A;
+  --surface-nav: rgba(11, 25, 23, 0.9);
+  --surface-gold-tint: rgba(218, 175, 92, 0.11);
+
+  /* Bảng màu chữ (Pearl Ivory & Celadon Mist) */
+  --ink-ivory: #F6F1E7;
+  --ink-sage-silver: #A3B8B3;
+  --ink-muted: #6C827D;
+  --ink-obsidian: #0B1917;
+
+  /* Điểm nhấn Đông Dương (Burnished Gold & Cinnabar Lacquer) */
+  --deco-gold: #DAAF5C;
+  --deco-gold-light: #EBC882;
+  --deco-gold-glow: rgba(218, 175, 92, 0.28);
+  --cinnabar: #D4523B;
+  --cinnabar-hover: #BA412B;
+
+  /* Viền hình học & Đổ bóng */
+  --border-jade: rgba(246, 241, 231, 0.09);
+  --border-gold: rgba(218, 175, 92, 0.36);
+  --shadow-card: 0 14px 30px -12px rgba(3, 10, 9, 0.78), 0 2px 8px rgba(3, 10, 9, 0.45);
+  --shadow-card-hover: 0 22px 44px -12px rgba(3, 10, 9, 0.9), 0 0 0 1px rgba(218, 175, 92, 0.36);
+  --shadow-fab: 0 14px 32px -6px rgba(3, 10, 9, 0.85), 0 4px 18px rgba(212, 82, 59, 0.36);
+
+  /* Bo góc hình học Art Deco */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-deco: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-lacquer);
+  background-image:
+    radial-gradient(860px 440px at 50% -8%, rgba(218, 175, 92, 0.12), transparent 70%),
+    radial-gradient(640px 460px at 10% 42%, rgba(22, 78, 69, 0.24), transparent 65%),
+    radial-gradient(700px 480px at 90% 88%, rgba(212, 82, 59, 0.07), transparent 65%);
+  color: var(--ink-ivory);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 66px 20px 50px;
+  text-align: center;
+  background: linear-gradient(180deg, #0F221F 0%, var(--bg-lacquer) 100%);
+  border-bottom: 1px solid var(--border-gold);
+  overflow: hidden;
+}
+
+/* Khung viền kép Art Deco lồng nhau */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(218, 175, 92, 0.22);
+  pointer-events: none;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  inset: 19px;
+  border: 1px solid rgba(218, 175, 92, 0.1);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'SAIGON HERITAGE • COFFEE & TEA';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 16px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--deco-gold-light);
+  background: var(--surface-gold-tint);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.15rem, 5.6vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--ink-ivory) 50%, var(--deco-gold-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink-sage-silver);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-jade);
+  border-radius: var(--radius-xs);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '❖';
+  font-size: 0.65rem;
+  color: var(--deco-gold);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid var(--border-jade);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-jade);
+  background: var(--surface-malachite);
+  color: var(--ink-sage-silver);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-deco),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-ivory);
+  background: var(--surface-malachite-hover);
+  border-color: var(--border-gold);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-lacquer), 0 0 0 4px var(--deco-gold);
+}
+
+.filter-btn.active {
+  color: var(--ink-obsidian);
+  background: linear-gradient(135deg, var(--deco-gold-light) 0%, var(--deco-gold) 100%);
+  border-color: var(--deco-gold-light);
+  font-weight: 700;
+  box-shadow: 0 6px 18px -4px var(--deco-gold-glow);
+}
+
+.filter-btn.active:hover {
+  color: var(--ink-obsidian);
+  filter: brightness(1.05);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 40px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-sage-silver) !important;
+  font-weight: 600;
+  background: var(--surface-malachite);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-sm);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-malachite);
+  border: 1px solid var(--border-jade);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s var(--ease-deco),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-deco);
+  will-change: transform;
+}
+
+/* Chỉ vàng Art Deco mảnh ở cạnh trên thẻ khi hover */
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--deco-gold), var(--cinnabar));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  background: var(--surface-malachite-hover);
+  border-color: var(--border-gold);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  display: block;
+  background-color: #162B27;
+  background-image: linear-gradient(110deg, #122421 8%, #1C3531 18%, #122421 33%);
+  background-size: 200% 100%;
+  animation: jadeShimmer 1.8s linear infinite;
+  filter: brightness(0.95) contrast(1.04);
+  transition: transform 0.55s var(--ease-deco), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: brightness(1.02) contrast(1.06);
+}
+
+@keyframes jadeShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: linear-gradient(180deg, rgba(18, 36, 33, 0.96) 0%, #0E1D1A 100%);
+  border-top: 1px solid var(--border-jade);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--deco-gold-light);
+  background: var(--surface-gold-tint);
+  border: 1px solid rgba(218, 175, 92, 0.25);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-ivory);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--deco-gold-light);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-gold);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.015em;
+  text-decoration: none;
+  color: var(--ink-ivory);
+  background: rgba(218, 175, 92, 0.1);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-deco),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--cinnabar);
+  border-color: var(--cinnabar);
+  color: var(--ink-ivory);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -6px rgba(212, 82, 59, 0.45);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-lacquer), 0 0 0 4px var(--deco-gold);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 48px 20px 104px;
+  color: var(--ink-sage-silver);
+  font-size: 0.85rem;
+  background: #081210;
+  border-top: 1px solid var(--border-gold);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: var(--deco-gold);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-sage-silver);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--deco-gold-light);
+  background: var(--surface-malachite);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-ivory);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--cinnabar);
+  border: 1.5px solid rgba(218, 175, 92, 0.55);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-deco),
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--cinnabar-hover);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 18px 36px -6px rgba(3, 10, 9, 0.9), 0 0 24px -2px rgba(212, 82, 59, 0.5);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-lacquer), 0 0 0 5px var(--deco-gold-light);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 198px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 48px 16px 38px;
+  }
+
+  .header::before {
+    inset: 8px;
+  }
+
+  .header::after {
+    inset: 12px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 164px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 142px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

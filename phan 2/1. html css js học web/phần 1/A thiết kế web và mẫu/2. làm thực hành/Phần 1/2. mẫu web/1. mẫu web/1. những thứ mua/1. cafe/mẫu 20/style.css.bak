@@ -1,0 +1,650 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — BAUHAUS GEOMETRIC COLOR-BLOCK CAFE POSTER
+   Visual Redesign v14: Prussian Navy, Vermilion & Mustard Ochre
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu Bauhaus & Color-Block */
+  --bg-cream: #F7F2E7;
+  --bg-cream-deep: #EDE5D4;
+  --surface-white: #FFFDF9;
+  --surface-nav: rgba(247, 242, 231, 0.92);
+
+  /* Các gam màu khối chủ đạo */
+  --prussian: #0D2644;
+  --prussian-deep: #08192E;
+  --vermilion: #D9381E;
+  --vermilion-hover: #B82B14;
+  --ochre: #E8A317;
+  --ochre-soft: rgba(232, 163, 23, 0.22);
+  --verdigris: #1E6B60;
+  --verdigris-soft: rgba(30, 107, 96, 0.12);
+
+  /* Bảng màu chữ */
+  --ink-primary: #0D2644;
+  --ink-secondary: #3D5068;
+  --ink-cream: #FFFDF9;
+
+  /* Viền hình học & Đổ bóng */
+  --border-navy: #0D2644;
+  --shadow-block: 0 10px 0px rgba(13, 38, 68, 0.08), 0 14px 28px -10px rgba(13, 38, 68, 0.16);
+  --shadow-block-hover: 0 14px 0px rgba(217, 56, 30, 0.16), 0 22px 38px -10px rgba(13, 38, 68, 0.24);
+  --shadow-fab: 0 12px 26px -4px rgba(13, 38, 68, 0.38);
+
+  /* Bo góc bất đối xứng đặc trưng */
+  --radius-asym-lg: 26px 4px 26px 4px;
+  --radius-asym-md: 16px 4px 16px 4px;
+  --radius-asym-sm: 10px 2px 10px 2px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-bauhaus: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-cream);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(232, 163, 23, 0.12) 0%, transparent 42%),
+    radial-gradient(circle at 88% 72%, rgba(30, 107, 96, 0.1) 0%, transparent 45%);
+  color: var(--ink-primary);
+  line-height: 1.52;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (KHỐI MÀU PRUSSIAN NAVY TƯƠNG PHẢN CAO) ===== */
+.header {
+  position: relative;
+  padding: 62px 20px 52px;
+  text-align: center;
+  background-color: var(--prussian);
+  color: var(--ink-cream);
+  border-bottom: 4px solid var(--ochre);
+  overflow: hidden;
+}
+
+/* Khối hình học trang trí góc trái & phải header */
+.header::before {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: -45px;
+  left: -35px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  bottom: -40px;
+  right: 4%;
+  border-radius: 28px 0 28px 0;
+  background: var(--verdigris);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'CRAFT COFFEE • GRAPHIC MENU';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 16px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--prussian);
+  background: var(--ochre);
+  border-radius: var(--radius-asym-sm);
+}
+
+.shop-name {
+  font-size: clamp(2.2rem, 5.8vw, 3.45rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--ink-cream);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 16px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #DCE5F0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+}
+
+.shop-slogan::before {
+  content: '▲';
+  font-size: 0.62rem;
+  color: var(--ochre);
+}
+
+.shop-slogan::after {
+  content: '●';
+  font-size: 0.68rem;
+  color: var(--vermilion);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--border-navy);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-asym-sm);
+  border: 2px solid var(--border-navy);
+  background: var(--surface-white);
+  color: var(--ink-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.22s var(--ease-bauhaus),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  background: var(--ochre);
+  color: var(--prussian);
+  transform: translateY(-2px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-cream), 0 0 0 4px var(--vermilion);
+}
+
+.filter-btn.active {
+  color: var(--ink-cream);
+  background: var(--vermilion);
+  border-color: var(--border-navy);
+}
+
+.filter-btn.active:hover {
+  background: var(--vermilion-hover);
+  color: var(--ink-cream);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 40px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-primary) !important;
+  font-weight: 700;
+  background: var(--surface-white);
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-asym-md);
+}
+
+/* ===== CARD SẢN PHẨM (KHUNG BẤT ĐỐI XỨNG BAUHAUS) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-white);
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-asym-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-block);
+  transition:
+    transform 0.3s var(--ease-bauhaus),
+    border-color 0.25s ease,
+    box-shadow 0.3s var(--ease-bauhaus);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--vermilion);
+  box-shadow: var(--shadow-block-hover);
+}
+
+.card-image {
+  width: 100%;
+  height: 228px;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-cream-deep);
+  background-image: linear-gradient(110deg, #EDE5D4 8%, #F9F5EC 18%, #EDE5D4 33%);
+  background-size: 200% 100%;
+  animation: bauhausShimmer 1.8s linear infinite;
+  transition: transform 0.5s var(--ease-bauhaus), filter 0.3s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.04);
+  filter: contrast(1.05);
+}
+
+@keyframes bauhausShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-white);
+  border-top: 2px solid var(--border-navy);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--verdigris);
+  background: var(--verdigris-soft);
+  border: 1px solid rgba(30, 107, 96, 0.3);
+  padding: 3px 10px;
+  border-radius: var(--radius-asym-sm);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 800;
+  line-height: 1.36;
+  color: var(--ink-primary);
+  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.36 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--prussian);
+  background: var(--ochre-soft);
+  border-left: 3px solid var(--ochre);
+  padding: 4px 11px;
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-asym-sm);
+  border: 2px solid var(--border-navy);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-cream);
+  background: var(--prussian);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.22s var(--ease-bauhaus),
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--vermilion);
+  border-color: var(--border-navy);
+  color: var(--ink-cream);
+  transform: translateY(-2px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--vermilion);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 48px 20px 104px;
+  color: #DCE5F0;
+  font-size: 0.85rem;
+  background: var(--prussian);
+  border-top: 4px solid var(--vermilion);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ochre);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: #DCE5F0;
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--prussian);
+  background: var(--ochre);
+  border-radius: var(--radius-asym-sm);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-cream);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--vermilion);
+  border: 2px solid var(--border-navy);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-bauhaus),
+    background-color 0.2s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--prussian);
+  transform: translateY(-3px) scale(1.03);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-cream), 0 0 0 5px var(--vermilion);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 196px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 48px 16px 38px;
+  }
+
+  .header::before {
+    width: 100px;
+    height: 100px;
+    top: -35px;
+    left: -25px;
+  }
+
+  .header::after {
+    width: 85px;
+    height: 85px;
+    bottom: -30px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 12px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .product-card {
+    border-radius: 20px 4px 20px 4px;
+  }
+
+  .card-image {
+    height: 162px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.36 * 2);
+    margin-bottom: 8px;
+  }
+
+  .card-price {
+    font-size: 0.98rem;
+    padding: 3px 9px;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 140px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.36 * 2);
+  }
+
+  .card-price {
+    font-size: 0.9rem;
+    padding: 3px 8px;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

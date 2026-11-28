@@ -1,0 +1,665 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — CYANOTYPE BLUEPRINT & POLAROID CONTACT SHEET
+   Visual Redesign v20: Prussian Blueprint, Archival Polaroid & Ruby
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền Cyanotype Blueprint */
+  --bg-blueprint: #0B1D36;
+  --bg-blueprint-deep: #071324;
+  --grid-line: rgba(147, 197, 253, 0.07);
+  --surface-nav: rgba(11, 29, 54, 0.88);
+
+  /* Bề mặt giấy ảnh Polaroid */
+  --paper-polaroid: #FAF9F5;
+  --paper-polaroid-hover: #FFFFFF;
+  --paper-well: #E8E5DC;
+
+  /* Bảng màu chữ */
+  --ink-blueprint: #0B1D36;
+  --ink-slate: #475569;
+  --ink-ice: #E0F2FE;
+  --ink-ice-muted: #93C5FD;
+  --ink-white: #FFFFFF;
+
+  /* Điểm nhấn phòng tối (Safelight Ruby & Amber Film) */
+  --ruby: #E11D48;
+  --ruby-hover: #BE123C;
+  --ruby-soft: rgba(225, 29, 72, 0.1);
+  --amber-film: #F59E0B;
+  --cyan-accent: #38BDF8;
+
+  /* Viền & Đổ bóng Polaroid */
+  --border-cyan: rgba(147, 197, 253, 0.22);
+  --shadow-polaroid: 0 14px 28px -8px rgba(3, 9, 20, 0.65), 0 2px 6px rgba(3, 9, 20, 0.4);
+  --shadow-polaroid-hover: 0 24px 44px -10px rgba(3, 9, 20, 0.85), 0 0 0 2px var(--cyan-accent);
+  --shadow-fab: 0 14px 30px -6px rgba(3, 9, 20, 0.8), 0 4px 18px rgba(225, 29, 72, 0.4);
+
+  /* Bo góc giấy ảnh */
+  --radius-photo: 3px;
+  --radius-card: 6px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-darkroom: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-blueprint);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(840px 440px at 50% -8%, rgba(56, 189, 248, 0.14), transparent 70%);
+  background-size: 32px 32px, 32px 32px, 100% 100%;
+  color: var(--ink-ice);
+  line-height: 1.52;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (BẢN VẼ CYANOTYPE & DẤU CĂN KHUNG) ===== */
+.header {
+  position: relative;
+  padding: 62px 20px 46px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(7, 19, 36, 0.72) 0%, rgba(11, 29, 54, 0.35) 100%);
+  border-bottom: 1px solid var(--border-cyan);
+  overflow: hidden;
+}
+
+/* Dấu căn khung phim (+) ở hai góc trên header */
+.header::before,
+.header::after {
+  content: '+';
+  position: absolute;
+  top: 18px;
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: var(--cyan-accent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.header::before {
+  left: 24px;
+}
+
+.header::after {
+  right: 24px;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'CYANOTYPE LAB • CONTACT SHEET 01';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan-accent);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px dashed rgba(56, 189, 248, 0.45);
+  border-radius: var(--radius-photo);
+}
+
+.shop-name {
+  font-size: clamp(2.2rem, 5.8vw, 3.45rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--ink-white);
+  text-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-ice-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: rgba(7, 19, 36, 0.55);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--radius-pill);
+}
+
+.shop-slogan::before {
+  content: '◉';
+  font-size: 0.62rem;
+  color: var(--ruby);
+}
+
+.shop-slogan::after {
+  content: '◉';
+  font-size: 0.62rem;
+  color: var(--amber-film);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY INDEX BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border-cyan);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-photo);
+  border: 1px solid var(--border-cyan);
+  background: rgba(7, 19, 36, 0.6);
+  color: var(--ink-ice-muted);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition:
+    transform 0.22s var(--ease-darkroom),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-white);
+  border-color: var(--cyan-accent);
+  background: rgba(56, 189, 248, 0.14);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-blueprint), 0 0 0 4px var(--cyan-accent);
+}
+
+.filter-btn.active {
+  color: var(--ink-blueprint);
+  background: var(--paper-polaroid);
+  border-color: var(--paper-polaroid);
+  font-weight: 800;
+  box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.45);
+}
+
+.filter-btn.active:hover {
+  background: var(--cyan-accent);
+  border-color: var(--cyan-accent);
+  color: var(--ink-blueprint);
+}
+
+/* ===== LƯỚI SẢN PHẨM (CONTACT SHEET 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px 24px;
+  padding: 42px 24px 80px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-ice) !important;
+  font-weight: 600;
+  background: rgba(7, 19, 36, 0.65);
+  border: 1px dashed var(--border-cyan);
+  border-radius: var(--radius-card);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH (KHUNG ẢNH POLAROID LƯU TRỮ) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-polaroid);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-card);
+  padding: 12px 12px 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-polaroid);
+  transform: rotate(-0.55deg);
+  transition:
+    transform 0.32s var(--ease-darkroom),
+    background-color 0.25s ease,
+    box-shadow 0.32s var(--ease-darkroom);
+  will-change: transform;
+}
+
+.product-card:nth-child(even) {
+  transform: rotate(0.55deg);
+}
+
+.product-card:hover {
+  transform: rotate(0deg) translateY(-6px) scale(1.01);
+  background: var(--paper-polaroid-hover);
+  box-shadow: var(--shadow-polaroid-hover);
+  z-index: 5;
+}
+
+.card-image {
+  width: 100%;
+  height: 224px;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-photo);
+  border: 1px solid rgba(11, 29, 54, 0.12);
+  background-color: var(--paper-well);
+  background-image: linear-gradient(110deg, #E8E5DC 8%, #F6F4EE 18%, #E8E5DC 33%);
+  background-size: 200% 100%;
+  animation: filmShimmer 1.8s linear infinite;
+  filter: contrast(1.04);
+  transition: transform 0.55s var(--ease-darkroom), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.03);
+  filter: contrast(1.08) saturate(1.05);
+}
+
+@keyframes filmShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 14px 4px 2px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-blueprint);
+  background: rgba(56, 189, 248, 0.18);
+  padding: 3px 9px;
+  border-radius: var(--radius-photo);
+  margin-bottom: 8px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 800;
+  line-height: 1.36;
+  color: var(--ink-blueprint);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.36 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ruby);
+  background: var(--ruby-soft);
+  padding: 3px 10px;
+  border-radius: var(--radius-photo);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--radius-photo);
+  border: 1.5px solid var(--ink-blueprint);
+  font-weight: 700;
+  font-size: 0.84rem;
+  letter-spacing: 0.015em;
+  text-decoration: none;
+  color: var(--ink-white);
+  background: var(--ink-blueprint);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.22s var(--ease-darkroom),
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--ruby);
+  border-color: var(--ruby);
+  color: var(--ink-white);
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--paper-polaroid), 0 0 0 4px var(--ruby);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-ice-muted);
+  font-size: 0.85rem;
+  background: var(--bg-blueprint-deep);
+  border-top: 1px solid var(--border-cyan);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: var(--cyan-accent);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-ice-muted);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-blueprint);
+  background: var(--paper-polaroid);
+  border-radius: var(--radius-photo);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--ruby);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-darkroom),
+    background-color 0.2s ease,
+    box-shadow 0.28s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ruby-hover);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 18px 36px -6px rgba(3, 9, 20, 0.85), 0 0 24px rgba(225, 29, 72, 0.5);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-blueprint), 0 0 0 5px var(--cyan-accent);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 20px 18px;
+    padding: 34px 18px 64px;
+  }
+
+  .card-image {
+    height: 194px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header::before {
+    left: 14px;
+  }
+
+  .header::after {
+    right: 14px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 11px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 12px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  /* Giữ thẻ thẳng hàng sắc nét trên màn hình cảm ứng nhỏ */
+  .product-card,
+  .product-card:nth-child(even) {
+    transform: none;
+    padding: 8px 8px 12px;
+  }
+
+  .product-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .card-image {
+    height: 158px;
+  }
+
+  .card-body {
+    padding: 11px 2px 2px;
+  }
+
+  .card-category-tag {
+    font-size: 0.59rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.36 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 0.98rem;
+    padding: 3px 9px;
+    margin-bottom: 11px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .product-card {
+    padding: 7px 7px 10px;
+  }
+
+  .card-image {
+    height: 138px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.36 * 2);
+  }
+
+  .card-price {
+    font-size: 0.9rem;
+    padding: 2px 8px;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

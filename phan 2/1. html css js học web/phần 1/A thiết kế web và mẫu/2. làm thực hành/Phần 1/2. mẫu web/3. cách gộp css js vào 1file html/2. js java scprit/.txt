@@ -1,0 +1,9 @@
+1. cách add scprit .js vào chung 1 file index.html
+
+gốc :
+  <script src="script.js"></script>
+sau khi sửa :
+
+<script>
+  // Dán toàn bộ code của file script.js vào đây
+</script>

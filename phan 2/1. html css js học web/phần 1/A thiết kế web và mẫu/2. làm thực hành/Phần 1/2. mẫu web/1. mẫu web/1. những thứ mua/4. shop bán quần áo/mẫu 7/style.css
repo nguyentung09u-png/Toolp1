@@ -1,0 +1,626 @@
+/* =========================================================
+   TIỆM QUẦN ÁO — NOCTURNAL MOSS & BRUSHED BRASS ATELIER
+   Visual Redesign v2: Dark Luxury Flagship Aesthetic
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Obsidian Moss & Slate Pine) */
+  --bg-void: #0D110F;
+  --bg-elevated: #121714;
+  --surface-card: #161C19;
+  --surface-card-hover: #1C2420;
+  --surface-glass: rgba(13, 17, 15, 0.84);
+  --surface-pill: #1E2622;
+
+  /* Bảng màu chữ (Ivory Silk & Warm Ash) */
+  --ink-primary: #F3F0E8;
+  --ink-secondary: #A6A39B;
+  --ink-muted: #6E6C66;
+  --ink-dark: #0D110F;
+
+  /* Điểm nhấn kim loại (Brushed Brass & Champagne) */
+  --brass: #CFA860;
+  --brass-light: #E4C588;
+  --brass-deep: #A8823E;
+  --brass-tint: rgba(207, 168, 96, 0.12);
+  --brass-glow: rgba(207, 168, 96, 0.24);
+
+  /* Đường viền & Đổ bóng */
+  --border-subtle: rgba(243, 240, 232, 0.08);
+  --border-brass: rgba(207, 168, 96, 0.34);
+  --shadow-card: 0 12px 32px -12px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 20px 44px -12px rgba(0, 0, 0, 0.82), 0 0 0 1px rgba(207, 168, 96, 0.28);
+  --shadow-fab: 0 14px 34px -6px rgba(0, 0, 0, 0.75), 0 0 20px -4px rgba(207, 168, 96, 0.3);
+
+  /* Bo góc kiến trúc */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-atelier: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-void);
+  background-image:
+    radial-gradient(850px 420px at 50% -10%, rgba(207, 168, 96, 0.09), transparent 70%),
+    radial-gradient(640px 480px at 8% 35%, rgba(36, 56, 47, 0.22), transparent 65%),
+    radial-gradient(600px 460px at 92% 75%, rgba(207, 168, 96, 0.05), transparent 65%);
+  color: var(--ink-primary);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 68px 20px 52px;
+  text-align: center;
+  background: linear-gradient(180deg, #131916 0%, var(--bg-void) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+/* Đường kẻ chỉ mảnh đối xứng phong cách Atelier */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border: 1px solid rgba(207, 168, 96, 0.12);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'EST. 2024 • CURATED APPAREL';
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 6px 16px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brass-light);
+  background: var(--brass-tint);
+  border: 1px solid var(--border-brass);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.1rem, 5.6vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3F0E8 45%, var(--brass-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 16px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--ink-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '—';
+  color: var(--brass);
+  font-weight: 300;
+}
+
+/* ===== BỘ LỌC DANH MỤC ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--ink-secondary);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-atelier),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-primary);
+  background: var(--surface-card-hover);
+  border-color: var(--border-brass);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-void), 0 0 0 4px var(--brass);
+}
+
+.filter-btn.active {
+  color: var(--ink-dark);
+  background: linear-gradient(135deg, var(--brass-light) 0%, var(--brass) 100%);
+  border-color: var(--brass-light);
+  font-weight: 700;
+  box-shadow: 0 6px 18px -4px var(--brass-glow);
+}
+
+.filter-btn.active:hover {
+  color: var(--ink-dark);
+  filter: brightness(1.04);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 42px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-secondary) !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* ===== CARD SẢN PHẨM ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s var(--ease-atelier),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-atelier);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  background: var(--surface-card-hover);
+  border-color: var(--border-brass);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 100%;
+  height: 236px;
+  object-fit: cover;
+  display: block;
+  background-color: #1A211E;
+  background-image: linear-gradient(110deg, #141917 8%, #1E2622 18%, #141917 33%);
+  background-size: 200% 100%;
+  animation: darkShimmer 1.9s linear infinite;
+  filter: brightness(0.95) contrast(1.04);
+  transition: transform 0.6s var(--ease-atelier), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.04);
+  filter: brightness(1.02) contrast(1.06);
+}
+
+@keyframes darkShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: linear-gradient(180deg, rgba(22, 28, 25, 0.96) 0%, #131815 100%);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass-light);
+  background: var(--brass-tint);
+  border: 1px solid rgba(207, 168, 96, 0.24);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 11px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.4 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--brass-light);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-brass);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--ink-primary);
+  background: rgba(207, 168, 96, 0.1);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-atelier),
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: linear-gradient(135deg, var(--brass-light) 0%, var(--brass) 100%);
+  border-color: var(--brass-light);
+  color: var(--ink-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -6px var(--brass-glow);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-void), 0 0 0 4px var(--brass);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 50px 20px 108px;
+  color: var(--ink-secondary);
+  font-size: 0.85rem;
+  background: #0A0D0B;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.footer::before {
+  content: 'TIỆM QUẦN ÁO';
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: var(--brass);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--brass-light);
+  background: var(--surface-card);
+  border: 1px solid var(--border-brass);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, var(--brass-light) 0%, var(--brass) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-atelier),
+    filter 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.06);
+  box-shadow: 0 18px 36px -6px rgba(0, 0, 0, 0.8), 0 0 26px -2px rgba(207, 168, 96, 0.45);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-void), 0 0 0 5px var(--brass-light);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 34px 18px 64px;
+  }
+
+  .card-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 50px 16px 40px;
+  }
+
+  .header::before {
+    inset: 10px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 5px 12px;
+    letter-spacing: 0.18em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 54px;
+  }
+
+  .card-image {
+    height: 165px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.4 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 40px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 42px 12px 32px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 144px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.85rem;
+    min-height: calc(0.85rem * 1.4 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.73rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

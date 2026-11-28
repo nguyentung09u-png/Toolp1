@@ -1,0 +1,668 @@
+/* =========================================================
+   QUÝ TÌNH BARBER SHOP — WARM EDITORIAL ATELIER REDESIGN
+   Crisp Limestone, Terracotta Copper & Deep Forest Palette
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Nền & Bề mặt phân lớp (Limestone & Warm Ivory) */
+  --bg-canvas: #F6F3EE;
+  --bg-sand: #ECE6DC;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #FAF8F5;
+  --surface-glass: rgba(246, 243, 238, 0.86);
+
+  /* Bảng màu chữ (Espresso Charcoal & Warm Slate) */
+  --ink-primary: #181715;
+  --ink-secondary: #57534E;
+  --ink-muted: #78716C;
+  --ink-on-dark: #FAF8F5;
+
+  /* Điểm nhấn chủ đạo (Terracotta Copper & Deep Forest) */
+  --accent-copper: #C4532D;
+  --accent-copper-hover: #A94220;
+  --accent-copper-soft: rgba(196, 83, 45, 0.1);
+  --accent-forest: #1E3A32;
+  --accent-forest-hover: #152923;
+
+  /* Viền & Đổ bóng đa tầng */
+  --border-subtle: rgba(24, 23, 21, 0.08);
+  --border-medium: rgba(24, 23, 21, 0.14);
+  --border-copper: rgba(196, 83, 45, 0.35);
+
+  --shadow-card:
+    0 2px 6px rgba(24, 23, 21, 0.04),
+    0 12px 28px -8px rgba(24, 23, 21, 0.08);
+  --shadow-card-hover:
+    0 8px 18px -4px rgba(24, 23, 21, 0.08),
+    0 22px 42px -12px rgba(196, 83, 45, 0.18);
+  --shadow-fab:
+    0 10px 25px -5px rgba(30, 58, 50, 0.35),
+    0 4px 10px -2px rgba(24, 23, 21, 0.12);
+
+  /* Hệ thống bo góc */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* Đường cong chuyển động 60FPS */
+  --ease-atelier: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-canvas);
+  background-image:
+    radial-gradient(900px 420px at 12% -5%, rgba(196, 83, 45, 0.07), transparent 60%),
+    radial-gradient(800px 460px at 92% 18%, rgba(30, 58, 50, 0.06), transparent 60%);
+  color: var(--ink-primary);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (EDITORIAL ARCHITECTURAL HERO) ===== */
+.header {
+  position: relative;
+  padding: 56px 20px 46px;
+  text-align: center;
+  background: linear-gradient(180deg, #EFEAE1 0%, var(--bg-canvas) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+/* Dải đường kẻ kiến trúc tinh tế phía trên */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-forest) 0%, var(--accent-copper) 50%, var(--accent-forest) 100%);
+}
+
+/* Khung hình học mờ tạo chiều sâu */
+.header::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  max-width: 1092px;
+  margin: 0 auto;
+  border: 1px solid rgba(24, 23, 21, 0.05);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'GROOMING ATELIER • EST. 2026';
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 6px 14px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-copper);
+  background: var(--surface-card);
+  border: 1px solid var(--border-copper);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(196, 83, 45, 0.08);
+}
+
+.shop-name {
+  font-size: clamp(2rem, 5.2vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 14px;
+  font-size: clamp(0.86rem, 2.2vw, 0.96rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 6px rgba(24, 23, 21, 0.04);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-copper);
+  flex-shrink: 0;
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY SEGMENTED BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  background: var(--surface-card);
+  color: var(--ink-secondary);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(24, 23, 21, 0.04);
+  transition:
+    transform 0.24s var(--ease-atelier),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.24s var(--ease-atelier);
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-primary);
+  border-color: var(--accent-copper);
+  background: var(--surface-elevated);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--accent-copper);
+}
+
+.filter-btn.active {
+  color: var(--ink-on-dark);
+  font-weight: 700;
+  background: var(--accent-forest);
+  border-color: var(--accent-forest);
+  box-shadow: 0 6px 16px -4px rgba(30, 58, 50, 0.35);
+}
+
+.filter-btn.active:hover {
+  background: var(--accent-forest-hover);
+  border-color: var(--accent-forest-hover);
+  color: var(--ink-on-dark);
+}
+
+/* ===== LƯỚI DỊCH VỤ (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 36px 24px 80px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-secondary) !important;
+  font-weight: 600;
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* ===== CARD DỊCH VỤ (LAYERED EDITORIAL CARD) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.32s var(--ease-atelier),
+    border-color 0.25s ease,
+    box-shadow 0.32s var(--ease-atelier);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-copper);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 164px;
+  height: auto;
+  min-height: 184px;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-sand);
+  background-image: linear-gradient(110deg, #ECE6DC 8%, #F7F4EF 18%, #ECE6DC 33%);
+  background-size: 200% 100%;
+  animation: warmShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-atelier);
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+@keyframes warmShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  background: var(--surface-card);
+  border-left: 1px solid var(--border-subtle);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-forest);
+  background: rgba(30, 58, 50, 0.08);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.02rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-start;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--accent-copper);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-on-dark);
+  background: var(--ink-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.24s var(--ease-atelier),
+    background-color 0.2s ease,
+    box-shadow 0.24s var(--ease-atelier);
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--accent-copper);
+  color: var(--ink-on-dark);
+  box-shadow: 0 8px 18px -6px rgba(196, 83, 45, 0.45);
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--accent-copper);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-secondary);
+  font-size: 0.86rem;
+  background: var(--bg-sand);
+  border-top: 1px solid var(--border-medium);
+}
+
+.footer::before {
+  content: 'QUÝ TÌNH BARBER SHOP';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--accent-forest);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-primary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(24, 23, 21, 0.05);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (HUD FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-on-dark);
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+  background: var(--accent-forest);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-atelier),
+    background-color 0.2s ease,
+    box-shadow 0.28s var(--ease-atelier);
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--accent-copper);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 30px -6px rgba(196, 83, 45, 0.45);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-canvas), 0 0 0 5px var(--accent-copper);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & ANDROID MOBILE) ===== */
+@media (max-width: 960px) {
+  .product-grid {
+    gap: 16px;
+    padding: 30px 16px 64px;
+  }
+
+  .card-image {
+    width: 136px;
+    min-height: 172px;
+  }
+
+  .card-body {
+    padding: 14px 15px;
+  }
+}
+
+/* Chuyển về thẻ dọc 2 cột cân đối trên Tablet nhỏ & Mobile */
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header::after {
+    inset: 10px;
+    border-radius: var(--radius-md);
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 5px 12px;
+    letter-spacing: 0.11em;
+  }
+
+  .filter-nav {
+    gap: 8px;
+    padding: 12px 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 15px;
+    font-size: 0.79rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 56px;
+  }
+
+  .product-card {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 156px;
+    min-height: 0;
+  }
+
+  .card-body {
+    padding: 14px 14px 15px;
+    border-left: none;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.91rem;
+    min-height: calc(0.91rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1.02rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 16px 9px 9px;
+    font-size: 0.81rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 50px;
+  }
+
+  .card-image {
+    height: 136px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.94rem;
+  }
+
+  .card-btn {
+    font-size: 0.73rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

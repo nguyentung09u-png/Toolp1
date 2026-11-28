@@ -1,0 +1,649 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — MODERN COFFEE KIOSK & THERMAL RECEIPT
+   Visual Redesign v24: Thermal White, Carbon Ink & Cobalt Stamp
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & giấy in nhiệt */
+  --bg-kiosk: #E4E7EC;
+  --bg-slot: #D5DAE2;
+  --paper-thermal: #FFFFFF;
+  --surface-nav: rgba(228, 231, 236, 0.9);
+  --surface-cobalt-tint: rgba(29, 78, 216, 0.08);
+
+  /* Bảng màu mực in */
+  --ink-carbon: #111315;
+  --ink-slate: #4B525C;
+  --ink-muted: #7F8794;
+  --ink-white: #FFFFFF;
+
+  /* Điểm nhấn biên lai (Receipt Cobalt & Order Orange) */
+  --cobalt: #1D4ED8;
+  --cobalt-hover: #1E40AF;
+  --signal-orange: #EA580C;
+  --signal-soft: rgba(234, 88, 12, 0.1);
+
+  /* Đường kẻ & Đổ bóng Kiosk */
+  --border-ink: rgba(17, 19, 21, 0.14);
+  --border-dashed: rgba(17, 19, 21, 0.22);
+  --shadow-receipt: 0 10px 24px -8px rgba(17, 19, 21, 0.14), 0 2px 5px rgba(17, 19, 21, 0.05);
+  --shadow-receipt-hover: 0 18px 34px -10px rgba(17, 19, 21, 0.22), 0 0 0 1.5px var(--cobalt);
+  --shadow-fab: 0 12px 26px -6px rgba(17, 19, 21, 0.36);
+
+  /* Bo góc kỹ thuật */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-kiosk: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-kiosk);
+  background-image:
+    linear-gradient(90deg, rgba(17, 19, 21, 0.025) 1px, transparent 1px),
+    radial-gradient(820px 420px at 50% 0%, rgba(29, 78, 216, 0.07), transparent 65%);
+  background-size: 36px 100%, 100% 100%;
+  color: var(--ink-carbon);
+  line-height: 1.52;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (ĐẦU BIÊN LAI KIOSK & MÃ VẠCH) ===== */
+.header {
+  position: relative;
+  padding: 58px 20px 46px;
+  text-align: center;
+  background-color: var(--paper-thermal);
+  border-bottom: 2px dashed var(--border-dashed);
+  overflow: hidden;
+}
+
+/* Dải mã vạch đồ họa tối giản ở đỉnh biên lai */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(320px, 76%);
+  height: 7px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink-carbon) 0px,
+    var(--ink-carbon) 3px,
+    transparent 3px,
+    transparent 6px,
+    var(--ink-carbon) 6px,
+    var(--ink-carbon) 11px,
+    transparent 11px,
+    transparent 14px,
+    var(--cobalt) 14px,
+    var(--cobalt) 18px,
+    transparent 18px,
+    transparent 22px
+  );
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'ORDER KIOSK • RECEIPT #2026';
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 5px 14px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  background: var(--surface-cobalt-tint);
+  border: 1px solid rgba(29, 78, 216, 0.28);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.2rem, 5.8vw, 3.45rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--ink-carbon);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 14px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink-slate);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  background: var(--bg-kiosk);
+  border: 1px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+}
+
+.shop-slogan::before {
+  content: '■';
+  font-size: 0.55rem;
+  color: var(--cobalt);
+}
+
+.shop-slogan::after {
+  content: '■';
+  font-size: 0.55rem;
+  color: var(--signal-orange);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY KIOSK TABS) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1.5px solid var(--border-ink);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-ink);
+  background: var(--paper-thermal);
+  color: var(--ink-slate);
+  font-weight: 700;
+  font-size: 0.81rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.22s var(--ease-kiosk),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-carbon);
+  border-color: var(--ink-carbon);
+  background: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-kiosk), 0 0 0 4px var(--cobalt);
+}
+
+.filter-btn.active {
+  color: var(--ink-white);
+  background: var(--cobalt);
+  border-color: var(--cobalt);
+}
+
+.filter-btn.active:hover {
+  background: var(--cobalt-hover);
+  border-color: var(--cobalt-hover);
+  color: var(--ink-white);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 38px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-carbon) !important;
+  font-weight: 700;
+  background: var(--paper-thermal);
+  border: 1px dashed var(--border-dashed);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH (PHIẾU ORDER RĂNG CƯA HÓA ĐƠN) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-thermal);
+  border-left: 1px solid var(--border-ink);
+  border-right: 1px solid var(--border-ink);
+  padding-bottom: 10px;
+  box-shadow: var(--shadow-receipt);
+  transition:
+    transform 0.3s var(--ease-kiosk),
+    box-shadow 0.3s var(--ease-kiosk);
+  will-change: transform;
+}
+
+/* Mép dưới tạo hình răng cưa hóa đơn nhiệt bằng CSS thuần */
+.product-card::after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: 0;
+  height: 8px;
+  background-image:
+    linear-gradient(135deg, transparent 50%, var(--bg-kiosk) 50%),
+    linear-gradient(225deg, transparent 50%, var(--bg-kiosk) 50%);
+  background-position: bottom left, bottom left;
+  background-size: 14px 8px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-receipt-hover);
+}
+
+.card-image {
+  width: 100%;
+  height: 222px;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-slot);
+  background-image: linear-gradient(110deg, #D5DAE2 8%, #ECEFF4 18%, #D5DAE2 33%);
+  background-size: 200% 100%;
+  animation: thermalShimmer 1.8s linear infinite;
+  transition: transform 0.5s var(--ease-kiosk), filter 0.3s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: contrast(1.04);
+}
+
+@keyframes thermalShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 15px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--paper-thermal);
+  border-top: 1.5px dashed var(--border-dashed);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  background: var(--surface-cobalt-tint);
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 800;
+  line-height: 1.36;
+  color: var(--ink-carbon);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.36 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--signal-orange);
+  background: var(--signal-soft);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--ink-carbon);
+  font-weight: 700;
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-white);
+  background: var(--ink-carbon);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.22s var(--ease-kiosk),
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--cobalt);
+  border-color: var(--cobalt);
+  color: var(--ink-white);
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--paper-thermal), 0 0 0 4px var(--cobalt);
+}
+
+.card-btn img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-slate);
+  font-size: 0.85rem;
+  background: var(--paper-thermal);
+  border-top: 2px dashed var(--border-dashed);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ink-carbon);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-slate);
+  font-weight: 500;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-white);
+  background: var(--cobalt);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--signal-orange);
+  border: 1.5px solid var(--ink-carbon);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-kiosk),
+    background-color 0.2s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-carbon);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-kiosk), 0 0 0 5px var(--signal-orange);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  border: 1px solid var(--ink-carbon);
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 194px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 11px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 12px;
+    font-size: 0.76rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 158px;
+  }
+
+  .card-body {
+    padding: 12px 12px 10px;
+  }
+
+  .card-category-tag {
+    font-size: 0.59rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.36 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 0.98rem;
+    padding: 3px 8px;
+    margin-bottom: 11px;
+  }
+
+  .card-btn {
+    padding: 10px 8px;
+    font-size: 0.76rem;
+    gap: 5px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 138px;
+  }
+
+  .card-body {
+    padding: 10px 10px 8px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.36 * 2);
+  }
+
+  .card-price {
+    font-size: 0.9rem;
+    padding: 2px 7px;
+  }
+
+  .card-btn {
+    font-size: 0.7rem;
+    padding: 9px 6px;
+    gap: 4px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

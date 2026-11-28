@@ -1,0 +1,676 @@
+/* =========================================================
+   TIỆM QUẦN ÁO — KYOTO INDIGO & SELVEDGE CRAFT STUDIO
+   Visual Redesign v5: Raw Indigo, Ecru Cotton & Selvedge Red
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Raw Selvedge Indigo) */
+  --bg-indigo-deep: #0E1525;
+  --bg-indigo-mid: #131C30;
+  --surface-denim: #172136;
+  --surface-denim-hover: #1D2942;
+  --surface-nav: rgba(14, 21, 37, 0.88);
+  --surface-badge: rgba(217, 138, 60, 0.14);
+
+  /* Bảng màu chữ (Ecru Cotton & Faded Chambray) */
+  --ink-ecru: #F4EFE6;
+  --ink-chambray: #9FAAC2;
+  --ink-muted: #6C7893;
+  --ink-dark: #0E1525;
+
+  /* Điểm nhấn thủ công (Selvedge Vermilion & Copper Thread) */
+  --selvedge-red: #E04F33;
+  --selvedge-red-hover: #C93E23;
+  --selvedge-glow: rgba(224, 79, 51, 0.32);
+  --copper-thread: #D98A3C;
+  --copper-light: #E8A662;
+
+  /* Viền chỉ khâu & Đổ bóng */
+  --border-seam: rgba(244, 239, 230, 0.1);
+  --border-copper: rgba(217, 138, 60, 0.38);
+  --shadow-card: 0 12px 28px -10px rgba(5, 8, 16, 0.72), 0 2px 6px rgba(5, 8, 16, 0.4);
+  --shadow-card-hover: 0 20px 42px -12px rgba(5, 8, 16, 0.88), 0 0 0 1px rgba(217, 138, 60, 0.35);
+  --shadow-fab: 0 14px 32px -6px rgba(5, 8, 16, 0.8), 0 4px 16px rgba(224, 79, 51, 0.35);
+
+  /* Bo góc may đo tinh gọn */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-tailor: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-indigo-deep);
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 8px
+    ),
+    radial-gradient(820px 440px at 50% -8%, rgba(217, 138, 60, 0.11), transparent 70%),
+    radial-gradient(680px 460px at 10% 85%, rgba(224, 79, 51, 0.08), transparent 65%);
+  color: var(--ink-ecru);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 64px 20px 48px;
+  text-align: center;
+  background: linear-gradient(180deg, #131D33 0%, var(--bg-indigo-deep) 100%);
+  border-bottom: 1px solid var(--border-seam);
+  overflow: hidden;
+}
+
+/* Dải chỉ biên Selvedge đặc trưng ở cạnh trên */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--ink-ecru) 0%,
+    var(--ink-ecru) 38%,
+    var(--selvedge-red) 38%,
+    var(--selvedge-red) 62%,
+    var(--ink-ecru) 62%,
+    var(--ink-ecru) 100%
+  );
+}
+
+/* Đường chỉ khâu đứt nét trang trí phía dưới header */
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 24px;
+  right: 24px;
+  border-bottom: 1px dashed rgba(217, 138, 60, 0.35);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'CRAFTED APPAREL • INDIGO EDITION';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper-light);
+  background: var(--surface-badge);
+  border: 1px solid var(--border-copper);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.15rem, 5.6vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink-ecru);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-chambray);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-seam);
+  border-radius: var(--radius-pill);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '◆';
+  font-size: 0.55rem;
+  color: var(--selvedge-red);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY FILTER BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border-seam);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-seam);
+  background: var(--surface-denim);
+  color: var(--ink-chambray);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-tailor),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-ecru);
+  background: var(--surface-denim-hover);
+  border-color: var(--border-copper);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-indigo-deep), 0 0 0 4px var(--copper-thread);
+}
+
+.filter-btn.active {
+  color: var(--ink-ecru);
+  background: var(--selvedge-red);
+  border-color: var(--selvedge-red);
+  font-weight: 700;
+  box-shadow: 0 6px 18px -4px var(--selvedge-glow);
+}
+
+.filter-btn.active:hover {
+  background: var(--selvedge-red-hover);
+  border-color: var(--selvedge-red-hover);
+  color: var(--ink-ecru);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 40px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-chambray) !important;
+  font-weight: 600;
+  background: var(--surface-denim);
+  border: 1px dashed var(--border-copper);
+  border-radius: var(--radius-md);
+}
+
+/* ===== CARD SẢN PHẨM ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-denim);
+  border: 1px solid var(--border-seam);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.32s var(--ease-tailor),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.32s var(--ease-tailor);
+  will-change: transform;
+}
+
+/* Đường chỉ đỏ mảnh ở mép trên card khi hover */
+.product-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--selvedge-red), var(--copper-thread));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  background: var(--surface-denim-hover);
+  border-color: var(--border-copper);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.product-card:hover::after {
+  opacity: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 236px;
+  object-fit: cover;
+  display: block;
+  background-color: #1A253C;
+  background-image: linear-gradient(110deg, #151E32 8%, #202D4A 18%, #151E32 33%);
+  background-size: 200% 100%;
+  animation: denimShimmer 1.8s linear infinite;
+  filter: contrast(1.03);
+  transition: transform 0.55s var(--ease-tailor), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: contrast(1.06) brightness(1.02);
+}
+
+@keyframes denimShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-denim);
+  border-top: 1px dashed rgba(217, 138, 60, 0.28);
+  transition: background-color 0.25s ease;
+}
+
+.product-card:hover .card-body {
+  background: var(--surface-denim-hover);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--copper-light);
+  background: var(--surface-badge);
+  border: 1px solid rgba(217, 138, 60, 0.28);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-ecru);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--copper-light);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(244, 239, 230, 0.16);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.015em;
+  text-decoration: none;
+  color: var(--ink-ecru);
+  background: rgba(244, 239, 230, 0.06);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-tailor),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--selvedge-red);
+  border-color: var(--selvedge-red);
+  color: var(--ink-ecru);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -6px var(--selvedge-glow);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-indigo-deep), 0 0 0 4px var(--copper-thread);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 48px 20px 104px;
+  color: var(--ink-chambray);
+  font-size: 0.85rem;
+  background: #0A0F1B;
+  border-top: 1px solid var(--border-seam);
+}
+
+.footer::before {
+  content: 'TIỆM QUẦN ÁO';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: var(--copper-light);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-chambray);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-ecru);
+  background: var(--surface-denim);
+  border: 1px solid var(--border-copper);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-ecru);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--selvedge-red);
+  border: 1.5px solid rgba(244, 239, 230, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-tailor),
+    background-color 0.2s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--selvedge-red-hover);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 18px 36px -6px rgba(5, 8, 16, 0.85), 0 6px 22px rgba(224, 79, 51, 0.45);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-indigo-deep), 0 0 0 5px var(--copper-light);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header::after {
+    left: 14px;
+    right: 14px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 164px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 142px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

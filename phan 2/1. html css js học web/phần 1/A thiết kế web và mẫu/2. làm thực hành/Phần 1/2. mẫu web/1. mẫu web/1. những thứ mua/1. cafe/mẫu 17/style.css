@@ -1,0 +1,647 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — HANJI PAPER & PERSIMMON SUMI GALLERY
+   Visual Redesign v21: Floating Plinth Cards, Sumi & Persimmon
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Hanji Warm Stone & Frosted Plinth) */
+  --bg-hanji: #EFECE6;
+  --bg-stone-deep: #E3DFD7;
+  --surface-plinth: rgba(255, 255, 255, 0.94);
+  --surface-solid: #FFFFFF;
+  --surface-nav: rgba(239, 236, 230, 0.88);
+  --surface-pine-tint: rgba(47, 102, 85, 0.1);
+
+  /* Bảng màu chữ (Sumi Charcoal & Stone Slate) */
+  --ink-sumi: #18181B;
+  --ink-slate: #52525B;
+  --ink-muted: #8A8994;
+  --ink-white: #FFFFFF;
+
+  /* Điểm nhấn (Persimmon Vermilion & Pine Celadon) */
+  --persimmon: #E85D2A;
+  --persimmon-hover: #CC4B1C;
+  --persimmon-soft: rgba(232, 93, 42, 0.11);
+  --pine: #2F6655;
+  --pine-dark: #224D40;
+
+  /* Viền & Đổ bóng chiều sâu */
+  --border-stone: rgba(24, 24, 27, 0.09);
+  --border-plinth: rgba(255, 255, 255, 0.95);
+  --shadow-plinth: 0 12px 28px -8px rgba(24, 24, 27, 0.14), 0 2px 6px rgba(24, 24, 27, 0.05);
+  --shadow-plinth-hover: 0 20px 40px -10px rgba(24, 24, 27, 0.22), 0 4px 14px rgba(232, 93, 42, 0.12);
+  --shadow-fab: 0 14px 28px -6px rgba(24, 24, 27, 0.36);
+
+  /* Bo góc hiện đại */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-hanji);
+  background-image:
+    radial-gradient(840px 440px at 12% 0%, rgba(232, 93, 42, 0.07), transparent 65%),
+    radial-gradient(760px 460px at 88% 8%, rgba(47, 102, 85, 0.08), transparent 65%),
+    radial-gradient(820px 500px at 50% 96%, rgba(24, 24, 27, 0.04), transparent 70%);
+  color: var(--ink-sumi);
+  line-height: 1.54;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 62px 20px 46px;
+  text-align: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-hanji) 100%);
+  border-bottom: 1px solid var(--border-stone);
+  overflow: hidden;
+}
+
+/* Đường chỉ đối xứng hai bên tiêu đề kiểu phòng triển lãm */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 3px;
+  background: var(--persimmon);
+  border-radius: var(--radius-pill);
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'ARTISAN COFFEE & TEA PAVILION';
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 5px 15px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pine-dark);
+  background: var(--surface-pine-tint);
+  border: 1px solid rgba(47, 102, 85, 0.24);
+  border-radius: var(--radius-pill);
+}
+
+.shop-name {
+  font-size: clamp(2.2rem, 5.8vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--ink-sumi);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-slate);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--surface-solid);
+  border: 1px solid var(--border-stone);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 12px rgba(24, 24, 27, 0.04);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '—';
+  color: var(--persimmon);
+  font-weight: 700;
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border-stone);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 8px 17px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-stone);
+  background: var(--surface-solid);
+  color: var(--ink-slate);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-gallery),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-sumi);
+  border-color: var(--persimmon);
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.06);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-hanji), 0 0 0 4px var(--persimmon);
+}
+
+.filter-btn.active {
+  color: var(--ink-white);
+  background: var(--ink-sumi);
+  border-color: var(--ink-sumi);
+  box-shadow: 0 6px 16px -4px rgba(24, 24, 27, 0.28);
+}
+
+.filter-btn.active:hover {
+  background: var(--persimmon);
+  border-color: var(--persimmon);
+  color: var(--ink-white);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 22px;
+  padding: 38px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-slate) !important;
+  font-weight: 600;
+  background: var(--surface-solid);
+  border: 1px solid var(--border-stone);
+  border-radius: var(--radius-lg);
+}
+
+/* ===== CARD SẢN PHẨM (OVERLAPPING FLOATING PLINTH) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  overflow: visible;
+  transition: transform 0.35s var(--ease-gallery);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-image {
+  width: 100%;
+  height: 238px;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-stone);
+  background-color: var(--bg-stone-deep);
+  background-image: linear-gradient(110deg, #E3DFD7 8%, #F4F2ED 18%, #E3DFD7 33%);
+  background-size: 200% 100%;
+  animation: hanjiShimmer 1.8s linear infinite;
+  box-shadow: 0 8px 20px -8px rgba(24, 24, 27, 0.16);
+  transition: transform 0.55s var(--ease-gallery), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.025);
+  filter: saturate(1.06);
+}
+
+@keyframes hanjiShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+/* Tấm thẻ nội dung nổi đè lên phần chân ảnh */
+.card-body {
+  position: relative;
+  z-index: 2;
+  margin: -42px 12px 0;
+  padding: 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-plinth);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--border-plinth);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-plinth);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-gallery);
+}
+
+.product-card:hover .card-body {
+  background: var(--surface-solid);
+  border-color: rgba(232, 93, 42, 0.28);
+  box-shadow: var(--shadow-plinth-hover);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pine-dark);
+  background: var(--surface-pine-tint);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 8px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.03rem;
+  font-weight: 700;
+  line-height: 1.36;
+  color: var(--ink-sumi);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.03rem * 1.36 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--persimmon);
+  background: var(--persimmon-soft);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ink-sumi);
+  font-weight: 700;
+  font-size: 0.84rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-white);
+  background: var(--ink-sumi);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-gallery),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--persimmon);
+  border-color: var(--persimmon);
+  color: var(--ink-white);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -6px rgba(232, 93, 42, 0.42);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--persimmon);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-slate);
+  font-size: 0.85rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-stone);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ink-sumi);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-slate);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--persimmon);
+  background: var(--bg-hanji);
+  border: 1px solid rgba(232, 93, 42, 0.28);
+  border-radius: var(--radius-pill);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--persimmon);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-gallery),
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-sumi);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 32px -6px rgba(24, 24, 27, 0.44);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-hanji), 0 0 0 5px var(--persimmon);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 20px 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 205px;
+  }
+
+  .card-body {
+    margin: -34px 10px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 48px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 11px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 12px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 172px;
+    border-radius: 18px;
+  }
+
+  .card-body {
+    margin: -28px 6px 0;
+    padding: 12px 11px 13px;
+    border-radius: 14px;
+  }
+
+  .card-category-tag {
+    font-size: 0.59rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.91rem;
+    min-height: calc(0.91rem * 1.36 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 0.97rem;
+    padding: 3px 8px;
+    margin-bottom: 11px;
+  }
+
+  .card-btn {
+    padding: 9px 10px;
+    font-size: 0.77rem;
+    gap: 6px;
+    border-radius: 9px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 14px 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 152px;
+  }
+
+  .card-body {
+    margin: -24px 5px 0;
+    padding: 10px 9px 11px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.36 * 2);
+  }
+
+  .card-price {
+    font-size: 0.9rem;
+    padding: 2px 7px;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

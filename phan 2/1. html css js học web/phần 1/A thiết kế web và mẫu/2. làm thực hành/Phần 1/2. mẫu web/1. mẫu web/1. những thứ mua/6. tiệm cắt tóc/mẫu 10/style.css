@@ -1,0 +1,658 @@
+/* =========================================================
+   QUÝ TÌNH BARBER SHOP — HERITAGE INDIGO & SANDSTONE (V9)
+   Desert Sandstone, Raw Indigo Denim & Burnt Clay Accent
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Nền & Bề mặt phân lớp (Desert Sandstone & Natural Cotton) */
+  --bg-sandstone: #F5EFE6;
+  --bg-dune: #EAE1D3;
+  --surface-card: #FFFDF9;
+  --surface-cotton: #FAF6F0;
+  --surface-nav: rgba(245, 239, 230, 0.88);
+
+  /* Bảng màu chữ (Raw Indigo & Deep Umber) */
+  --ink-indigo: #1E2F50;
+  --ink-umber: #534A40;
+  --ink-muted: #7D7265;
+  --ink-cream: #FFFDF9;
+
+  /* Điểm nhấn chủ đạo (Raw Indigo Denim & Burnt Terracotta Clay) */
+  --indigo: #253A63;
+  --indigo-deep: #192847;
+  --indigo-soft: rgba(37, 58, 99, 0.09);
+  --clay: #C85A32;
+  --clay-hover: #AD4925;
+  --clay-soft: rgba(200, 90, 50, 0.11);
+
+  /* Viền chỉ khâu & Đổ bóng tự nhiên */
+  --border-sand: rgba(30, 47, 80, 0.12);
+  --border-indigo: rgba(37, 58, 99, 0.28);
+  --border-clay: rgba(200, 90, 50, 0.38);
+
+  --shadow-card:
+    0 2px 5px rgba(30, 47, 80, 0.05),
+    0 12px 26px -8px rgba(30, 47, 80, 0.11);
+  --shadow-card-hover:
+    0 10px 22px -6px rgba(30, 47, 80, 0.14),
+    0 22px 40px -12px rgba(200, 90, 50, 0.18);
+  --shadow-fab:
+    0 12px 28px -6px rgba(37, 58, 99, 0.42),
+    0 4px 10px -2px rgba(30, 47, 80, 0.16);
+
+  /* Hệ thống bo góc Mid-Century */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-craft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-sandstone);
+  background-image:
+    radial-gradient(880px 440px at 12% -6%, rgba(37, 58, 99, 0.08), transparent 62%),
+    radial-gradient(760px 460px at 90% 24%, rgba(200, 90, 50, 0.08), transparent 62%),
+    radial-gradient(840px 480px at 50% 105%, rgba(37, 58, 99, 0.06), transparent 65%);
+  color: var(--ink-indigo);
+  line-height: 1.56;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (CRAFT DENIM & SANDSTONE HERO) ===== */
+.header {
+  position: relative;
+  padding: 60px 20px 48px;
+  text-align: center;
+  background-color: var(--indigo);
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.025) 0px,
+      rgba(255, 255, 255, 0.025) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  border-bottom: 4px solid var(--clay);
+  overflow: hidden;
+}
+
+/* Đường chỉ khâu trang trí chạy ngang phía dưới mép trên */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  border-top: 1px dashed rgba(255, 253, 249, 0.25);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'CRAFT BARBERING • MENU 2026';
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px 16px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-cream);
+  background: var(--clay);
+  border: 1px solid rgba(255, 253, 249, 0.28);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.05rem, 5.4vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink-cream);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 16px;
+  font-size: clamp(0.86rem, 2.2vw, 0.96rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #DCE3F0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  background: rgba(255, 253, 249, 0.08);
+  border: 1px solid rgba(255, 253, 249, 0.2);
+  border-radius: var(--radius-pill);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '✦';
+  font-size: 0.72rem;
+  color: #F4A283;
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY CRAFT BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border-bottom: 1px solid var(--border-sand);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-indigo);
+  background: var(--surface-card);
+  color: var(--ink-umber);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(30, 47, 80, 0.05);
+  transition:
+    transform 0.24s var(--ease-craft),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.24s var(--ease-craft);
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--indigo);
+  border-color: var(--clay);
+  background: var(--surface-cotton);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-sandstone), 0 0 0 4px var(--clay);
+}
+
+.filter-btn.active {
+  color: var(--ink-cream);
+  font-weight: 700;
+  background: var(--indigo);
+  border-color: var(--indigo);
+  box-shadow: 0 6px 16px -4px rgba(37, 58, 99, 0.36);
+}
+
+.filter-btn.active:hover {
+  background: var(--indigo-deep);
+  border-color: var(--indigo-deep);
+  color: var(--ink-cream);
+}
+
+/* ===== LƯỚI DỊCH VỤ (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 36px 24px 82px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-umber) !important;
+  font-weight: 600;
+  background: var(--surface-card);
+  border: 1px solid var(--border-indigo);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+/* ===== CARD DỊCH VỤ (SANDSTONE & INDIGO CARD) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--surface-card);
+  border: 1px solid var(--border-sand);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.32s var(--ease-craft),
+    border-color 0.25s ease,
+    box-shadow 0.32s var(--ease-craft);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-clay);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 164px;
+  height: auto;
+  min-height: 186px;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-dune);
+  background-image: linear-gradient(110deg, #EAE1D3 8%, #F8F4EC 18%, #EAE1D3 33%);
+  background-size: 200% 100%;
+  animation: sandstoneShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-craft);
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+@keyframes sandstoneShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  background: var(--surface-card);
+  border-left: 1px dashed var(--border-indigo);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  background: var(--indigo-soft);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-indigo);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.02rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-start;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--clay);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-clay);
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--clay);
+  background: var(--clay-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.24s var(--ease-craft),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: var(--ink-cream);
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--clay);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-umber);
+  font-size: 0.86rem;
+  background: var(--bg-dune);
+  border-top: 1px solid var(--border-indigo);
+}
+
+.footer::before {
+  content: 'QUÝ TÌNH BARBER SHOP';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--indigo);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-umber);
+  font-weight: 500;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-cream);
+  background: var(--indigo);
+  border: 1px solid var(--indigo-deep);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 12px rgba(37, 58, 99, 0.2);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (HUD FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-cream);
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.005em;
+  background: var(--indigo);
+  border: 1.5px solid rgba(255, 253, 249, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-craft),
+    background-color 0.2s ease,
+    box-shadow 0.28s var(--ease-craft);
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--clay);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 30px -6px rgba(200, 90, 50, 0.45);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-sandstone), 0 0 0 5px var(--clay);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & ANDROID MOBILE) ===== */
+@media (max-width: 960px) {
+  .product-grid {
+    gap: 16px;
+    padding: 30px 16px 64px;
+  }
+
+  .card-image {
+    width: 136px;
+    min-height: 172px;
+  }
+
+  .card-body {
+    padding: 14px 15px;
+  }
+}
+
+/* Chuyển về thẻ dọc 2 cột cân đối trên Tablet nhỏ & Mobile */
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.61rem;
+    padding: 5px 13px;
+    letter-spacing: 0.11em;
+  }
+
+  .filter-nav {
+    gap: 8px;
+    padding: 12px 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 15px;
+    font-size: 0.79rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 56px;
+  }
+
+  .product-card {
+    flex-direction: column;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 156px;
+    min-height: 0;
+  }
+
+  .card-body {
+    padding: 14px 14px 15px;
+    border-left: none;
+    border-top: 1px dashed var(--border-indigo);
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.91rem;
+    min-height: calc(0.91rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1.04rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 16px 9px 9px;
+    font-size: 0.81rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 50px;
+  }
+
+  .card-image {
+    height: 136px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.95rem;
+  }
+
+  .card-btn {
+    font-size: 0.73rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

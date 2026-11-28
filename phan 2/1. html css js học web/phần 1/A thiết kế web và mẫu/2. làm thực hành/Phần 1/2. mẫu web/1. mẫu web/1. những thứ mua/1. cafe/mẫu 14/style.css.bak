@@ -1,0 +1,641 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — MILANESE PASTICCERIA & TRAVERTINE ESPRESSO BAR
+   Visual Redesign v9: Sunlit Travertine, Dark Umber & Campari Red
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Sunlit Travertine & Panna White) */
+  --bg-travertine: #F2ECE1;
+  --bg-sandstone: #E7DEC9;
+  --surface-panna: #FCFBF8;
+  --surface-nav: rgba(242, 236, 225, 0.9);
+  --surface-pistachio: rgba(78, 110, 82, 0.11);
+
+  /* Bảng màu chữ (Dark Umber & Roasted Cocoa) */
+  --ink-umber: #241916;
+  --ink-cocoa: #5B4A44;
+  --ink-muted: #8C7B74;
+  --ink-ivory: #FCFBF8;
+
+  /* Điểm nhấn phong cách Ý (Campari Vermilion, Pistachio & Antique Gold) */
+  --campari: #B82925;
+  --campari-hover: #991F1C;
+  --campari-soft: rgba(184, 41, 37, 0.09);
+  --pistachio: #3F5E43;
+  --antique-gold: #B08444;
+
+  /* Viền khung thực đơn & Đổ bóng */
+  --border-umber: rgba(36, 25, 22, 0.14);
+  --border-gold: rgba(176, 132, 68, 0.42);
+  --shadow-card: 0 8px 22px -8px rgba(36, 25, 22, 0.1), 0 2px 5px rgba(36, 25, 22, 0.04);
+  --shadow-card-hover: 0 18px 34px -10px rgba(36, 25, 22, 0.18), 0 4px 12px rgba(184, 41, 37, 0.1);
+  --shadow-fab: 0 12px 26px -6px rgba(36, 25, 22, 0.34), 0 4px 14px rgba(184, 41, 37, 0.3);
+
+  /* Bo góc cổ điển đương đại */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-milan: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-travertine);
+  background-image:
+    radial-gradient(840px 440px at 15% 0%, rgba(184, 41, 37, 0.07), transparent 65%),
+    radial-gradient(760px 480px at 88% 10%, rgba(176, 132, 68, 0.12), transparent 65%),
+    radial-gradient(820px 520px at 50% 96%, rgba(63, 94, 67, 0.07), transparent 70%);
+  color: var(--ink-umber);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 64px 20px 48px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--surface-panna) 0%, var(--bg-travertine) 100%);
+  border-bottom: 1px solid var(--border-umber);
+  overflow: hidden;
+}
+
+/* Khung viền kép mảnh phong cách thực đơn Milan */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'CAFFÈ & PASTICCERIA • DAL 2024';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 15px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--campari);
+  background: var(--campari-soft);
+  border: 1px solid rgba(184, 41, 37, 0.24);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.15rem, 5.6vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink-umber);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  color: var(--ink-cocoa);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--surface-panna);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 10px rgba(36, 25, 22, 0.04);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '✦';
+  font-size: 0.68rem;
+  color: var(--antique-gold);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  border-bottom: 1px solid var(--border-umber);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-umber);
+  background: var(--surface-panna);
+  color: var(--ink-cocoa);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-milan),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-umber);
+  border-color: var(--campari);
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(36, 25, 22, 0.07);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-travertine), 0 0 0 4px var(--campari);
+}
+
+.filter-btn.active {
+  color: var(--ink-ivory);
+  background: var(--campari);
+  border-color: var(--campari);
+  box-shadow: 0 6px 16px -4px rgba(184, 41, 37, 0.38);
+}
+
+.filter-btn.active:hover {
+  background: var(--campari-hover);
+  border-color: var(--campari-hover);
+  color: var(--ink-ivory);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 38px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-cocoa) !important;
+  font-weight: 600;
+  background: var(--surface-panna);
+  border: 1px solid var(--border-umber);
+  border-radius: var(--radius-md);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-panna);
+  border: 1px solid var(--border-umber);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s var(--ease-milan),
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-milan);
+  will-change: transform;
+}
+
+/* Đường viền vàng mảnh ở cạnh trên thẻ khi hover */
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--campari), var(--antique-gold));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-gold);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 226px;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-sandstone);
+  background-image: linear-gradient(110deg, #E7DEC9 8%, #F5EFE2 18%, #E7DEC9 33%);
+  background-size: 200% 100%;
+  animation: travertineShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-milan), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: contrast(1.04);
+}
+
+@keyframes travertineShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-panna);
+  border-top: 1px solid var(--border-umber);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pistachio);
+  background: var(--surface-pistachio);
+  border: 1px solid rgba(63, 94, 67, 0.22);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-umber);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--campari);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ink-umber);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.015em;
+  text-decoration: none;
+  color: var(--ink-ivory);
+  background: var(--ink-umber);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-milan),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--campari);
+  border-color: var(--campari);
+  color: var(--ink-ivory);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -6px rgba(184, 41, 37, 0.42);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-panna), 0 0 0 4px var(--campari);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-cocoa);
+  font-size: 0.85rem;
+  background: var(--surface-panna);
+  border-top: 1px solid var(--border-umber);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ink-umber);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-cocoa);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--campari);
+  background: var(--bg-travertine);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-ivory);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--campari);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-milan),
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-umber);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 32px -6px rgba(36, 25, 22, 0.42);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-travertine), 0 0 0 5px var(--campari);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 196px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 48px 16px 38px;
+  }
+
+  .header::before {
+    inset: 8px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 162px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 140px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,7 @@
+1. cách add css file vào code index html
+
+
+css file style.css
+  <link rel="stylesheet" href="style.css">
+
+nếu nhúng vào html index.html 1 file

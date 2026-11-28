@@ -1,0 +1,660 @@
+/* =========================================================
+   QUÝ TÌNH BARBER SHOP — RIVIERA MARINER & CRIMSON (V8)
+   Sailcloth White, Deep Mariner Navy & Classic Barber Crimson
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Nền & Bề mặt phân lớp (Sailcloth White & Coastal Mist) */
+  --bg-sail: #F7F9FC;
+  --bg-mist: #EBF0F7;
+  --surface-card: #FFFFFF;
+  --surface-tint: #F2F5FA;
+  --surface-nav: rgba(247, 249, 252, 0.88);
+
+  /* Bảng màu chữ (Deep Mariner Navy & Harbor Slate) */
+  --ink-navy: #0B1F3A;
+  --ink-harbor: #435772;
+  --ink-muted: #6E819B;
+  --ink-white: #FFFFFF;
+
+  /* Điểm nhấn chủ đạo (Classic Barber Crimson & Royal Navy) */
+  --crimson: #C81E32;
+  --crimson-hover: #A61627;
+  --crimson-soft: rgba(200, 30, 50, 0.09);
+  --navy-accent: #13315C;
+  --navy-soft: rgba(19, 49, 92, 0.08);
+
+  /* Viền & Đổ bóng tinh tế */
+  --border-mist: rgba(11, 31, 58, 0.1);
+  --border-navy: rgba(11, 31, 58, 0.2);
+  --border-crimson: rgba(200, 30, 50, 0.36);
+
+  --shadow-card:
+    0 2px 6px rgba(11, 31, 58, 0.04),
+    0 12px 28px -8px rgba(11, 31, 58, 0.09);
+  --shadow-card-hover:
+    0 10px 22px -6px rgba(11, 31, 58, 0.12),
+    0 22px 40px -12px rgba(200, 30, 50, 0.16);
+  --shadow-fab:
+    0 12px 28px -6px rgba(200, 30, 50, 0.38),
+    0 4px 10px -2px rgba(11, 31, 58, 0.14);
+
+  /* Hệ thống bo góc */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-mariner: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-sail);
+  background-image:
+    radial-gradient(860px 420px at 14% -5%, rgba(19, 49, 92, 0.07), transparent 60%),
+    radial-gradient(780px 460px at 88% 20%, rgba(200, 30, 50, 0.06), transparent 60%);
+  color: var(--ink-navy);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (HERITAGE MARINER BANNER) ===== */
+.header {
+  position: relative;
+  padding: 60px 20px 48px;
+  text-align: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-sail) 100%);
+  border-bottom: 1px solid var(--border-navy);
+  overflow: hidden;
+}
+
+/* Dải ruy-băng Barber cổ điển mảnh ở đỉnh trang */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--crimson) 0px,
+    var(--crimson) 14px,
+    #FFFFFF 14px,
+    #FFFFFF 24px,
+    var(--navy-accent) 24px,
+    var(--navy-accent) 38px,
+    #FFFFFF 38px,
+    #FFFFFF 48px
+  );
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'AUTHENTIC BARBERING • MENU 2026';
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 5px 15px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  background: var(--crimson-soft);
+  border: 1px solid var(--border-crimson);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.05rem, 5.4vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink-navy);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 15px;
+  font-size: clamp(0.86rem, 2.2vw, 0.96rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-harbor);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-navy);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 10px rgba(11, 31, 58, 0.05);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '★';
+  font-size: 0.72rem;
+  color: var(--crimson);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY HARBOR BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--border-mist);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-navy);
+  background: var(--surface-card);
+  color: var(--ink-harbor);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(11, 31, 58, 0.04);
+  transition:
+    transform 0.24s var(--ease-mariner),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.24s var(--ease-mariner);
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-navy);
+  border-color: var(--crimson);
+  background: var(--surface-tint);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-sail), 0 0 0 4px var(--crimson);
+}
+
+.filter-btn.active {
+  color: var(--ink-white);
+  font-weight: 700;
+  background: var(--ink-navy);
+  border-color: var(--ink-navy);
+  box-shadow: 0 6px 16px -4px rgba(11, 31, 58, 0.35);
+}
+
+.filter-btn.active:hover {
+  background: var(--crimson);
+  border-color: var(--crimson);
+  color: var(--ink-white);
+}
+
+/* ===== LƯỚI DỊCH VỤ (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 36px 24px 82px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-harbor) !important;
+  font-weight: 600;
+  background: var(--surface-card);
+  border: 1px solid var(--border-navy);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* ===== CARD DỊCH VỤ (CRISP MARINER CARD) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--surface-card);
+  border: 1px solid var(--border-mist);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.32s var(--ease-mariner),
+    border-color 0.25s ease,
+    box-shadow 0.32s var(--ease-mariner);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-crimson);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 164px;
+  height: auto;
+  min-height: 186px;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-mist);
+  background-image: linear-gradient(110deg, #EBF0F7 8%, #F8FAFD 18%, #EBF0F7 33%);
+  background-size: 200% 100%;
+  animation: marinerShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-mariner);
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+@keyframes marinerShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  background: var(--surface-card);
+  border-left: 1px solid var(--border-mist);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--navy-accent);
+  background: var(--navy-soft);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-navy);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.02rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-start;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--crimson);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ink-navy);
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-white);
+  background: var(--ink-navy);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.24s var(--ease-mariner),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.24s var(--ease-mariner);
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--crimson);
+  border-color: var(--crimson);
+  color: var(--ink-white);
+  box-shadow: 0 8px 18px -6px rgba(200, 30, 50, 0.42);
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--crimson);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-harbor);
+  font-size: 0.86rem;
+  background: var(--bg-mist);
+  border-top: 1px solid var(--border-navy);
+}
+
+.footer::before {
+  content: 'QUÝ TÌNH BARBER SHOP';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--ink-navy);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-harbor);
+  font-weight: 500;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--crimson);
+  background: var(--surface-card);
+  border: 1px solid var(--border-crimson);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 10px rgba(11, 31, 58, 0.05);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (HUD FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-white);
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.005em;
+  background: var(--crimson);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.28s var(--ease-mariner),
+    background-color 0.2s ease,
+    box-shadow 0.28s var(--ease-mariner);
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-navy);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 30px -6px rgba(11, 31, 58, 0.42);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-sail), 0 0 0 5px var(--crimson);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & ANDROID MOBILE) ===== */
+@media (max-width: 960px) {
+  .product-grid {
+    gap: 16px;
+    padding: 30px 16px 64px;
+  }
+
+  .card-image {
+    width: 136px;
+    min-height: 172px;
+  }
+
+  .card-body {
+    padding: 14px 15px;
+  }
+}
+
+/* Chuyển về thẻ dọc 2 cột cân đối trên Tablet nhỏ & Mobile */
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.61rem;
+    padding: 4px 12px;
+    letter-spacing: 0.11em;
+  }
+
+  .filter-nav {
+    gap: 8px;
+    padding: 12px 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 15px;
+    font-size: 0.79rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 56px;
+  }
+
+  .product-card {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 156px;
+    min-height: 0;
+  }
+
+  .card-body {
+    padding: 14px 14px 15px;
+    border-left: none;
+    border-top: 1px solid var(--border-mist);
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.91rem;
+    min-height: calc(0.91rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1.04rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+    border-radius: var(--radius-xs);
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 16px 9px 9px;
+    font-size: 0.81rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 50px;
+  }
+
+  .card-image {
+    height: 136px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.95rem;
+  }
+
+  .card-btn {
+    font-size: 0.73rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,619 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — COPENHAGEN SPECIALTY BREW LAB & COPPER
+   Visual Redesign v12: Limestone Mist, Graphite & Copper
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Limestone Mist & Matte Porcelain) */
+  --bg-limestone: #EEF0F2;
+  --bg-pebble: #E2E6EA;
+  --surface-matte: #FFFFFF;
+  --surface-nav: rgba(238, 240, 242, 0.88);
+  --surface-slate-tint: rgba(54, 79, 107, 0.08);
+
+  /* Bảng màu chữ (Matte Graphite & Cool Ash) */
+  --ink-graphite: #1D2024;
+  --ink-ash: #525963;
+  --ink-muted: #848D99;
+  --ink-white: #FFFFFF;
+
+  /* Điểm nhấn hiện đại (Burnished Copper & Cold Brew Slate) */
+  --copper: #C25934;
+  --copper-hover: #A84826;
+  --copper-soft: rgba(194, 89, 52, 0.09);
+  --slate-blue: #364F6B;
+  --slate-dark: #25384D;
+
+  /* Viền kiến trúc & Đổ bóng đa lớp */
+  --border-hairline: rgba(29, 32, 36, 0.09);
+  --border-copper: rgba(194, 89, 52, 0.32);
+  --shadow-card: 0 6px 20px -8px rgba(24, 28, 34, 0.08), 0 1px 4px rgba(24, 28, 34, 0.04);
+  --shadow-card-hover: 0 18px 36px -12px rgba(24, 28, 34, 0.15), 0 4px 12px rgba(194, 89, 52, 0.08);
+  --shadow-fab: 0 12px 26px -6px rgba(24, 28, 34, 0.3), 0 4px 14px rgba(194, 89, 52, 0.28);
+
+  /* Bo góc tinh gọn hiện đại */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-lab: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-limestone);
+  background-image:
+    radial-gradient(860px 460px at 14% 0%, rgba(194, 89, 52, 0.06), transparent 65%),
+    radial-gradient(780px 480px at 88% 8%, rgba(54, 79, 107, 0.07), transparent 65%);
+  color: var(--ink-graphite);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 62px 20px 46px;
+  text-align: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-limestone) 100%);
+  border-bottom: 1px solid var(--border-hairline);
+  overflow: hidden;
+}
+
+/* Thanh chỉ dấu đồng đỏ tối giản ở đỉnh trang */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 3px;
+  background: var(--copper);
+  border-radius: 0 0 4px 4px;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'SPECIALTY BREW LAB • EST. 2024';
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 5px 14px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--copper);
+  background: var(--copper-soft);
+  border: 1px solid var(--border-copper);
+  border-radius: var(--radius-xs);
+}
+
+.shop-name {
+  font-size: clamp(2.15rem, 5.6vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--ink-graphite);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 14px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-ash);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--surface-matte);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 10px rgba(24, 28, 34, 0.03);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '—';
+  color: var(--copper);
+  font-weight: 600;
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-matte);
+  color: var(--ink-ash);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-lab),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-graphite);
+  border-color: var(--ink-graphite);
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 28, 34, 0.06);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-limestone), 0 0 0 4px var(--copper);
+}
+
+.filter-btn.active {
+  color: var(--ink-white);
+  background: var(--ink-graphite);
+  border-color: var(--ink-graphite);
+  box-shadow: 0 6px 16px -4px rgba(29, 32, 36, 0.28);
+}
+
+.filter-btn.active:hover {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: var(--ink-white);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 38px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-ash) !important;
+  font-weight: 600;
+  background: var(--surface-matte);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-matte);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s var(--ease-lab),
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-lab);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-copper);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 100%;
+  height: 226px;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-pebble);
+  background-image: linear-gradient(110deg, #E2E6EA 8%, #F2F4F7 18%, #E2E6EA 33%);
+  background-size: 200% 100%;
+  animation: limestoneShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-lab), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: contrast(1.03);
+}
+
+@keyframes limestoneShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-matte);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-blue);
+  background: var(--surface-slate-tint);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-graphite);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--copper);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ink-graphite);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-white);
+  background: var(--ink-graphite);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-lab),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: var(--ink-white);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -6px rgba(194, 89, 52, 0.42);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--copper);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-ash);
+  font-size: 0.85rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ink-graphite);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-ash);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--copper);
+  background: var(--bg-limestone);
+  border: 1px solid var(--border-copper);
+  border-radius: var(--radius-xs);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--copper);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-lab),
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-graphite);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 32px -6px rgba(29, 32, 36, 0.42);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-limestone), 0 0 0 5px var(--copper);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 196px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 162px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 140px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

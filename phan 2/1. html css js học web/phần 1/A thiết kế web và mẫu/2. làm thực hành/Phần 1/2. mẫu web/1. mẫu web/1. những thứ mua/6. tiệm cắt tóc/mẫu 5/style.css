@@ -1,0 +1,654 @@
+/* =========================================================
+   QUÝ TÌNH BARBER SHOP — KYOTO SUMI & VERMILION GALLERY (V4)
+   Washi Off-White, Crisp Sumi Ink & Artisan Vermilion Seal
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Nền & Bề mặt phân lớp (Washi Paper & Stone) */
+  --bg-washi: #FAF9F6;
+  --bg-stone: #F0EDE6;
+  --surface-card: #FFFFFF;
+  --surface-tint: #F5F3EE;
+  --surface-nav: rgba(250, 249, 246, 0.9);
+
+  /* Bảng màu mực (Sumi Ink & Neutral Charcoal) */
+  --ink-sumi: #111111;
+  --ink-charcoal: #3F3E3B;
+  --ink-muted: #6E6C67;
+  --ink-paper: #FAF9F6;
+
+  /* Điểm nhấn chủ đạo (Artisan Vermilion Seal) */
+  --vermilion: #D9381E;
+  --vermilion-hover: #B82B14;
+  --vermilion-soft: rgba(217, 56, 30, 0.09);
+
+  /* Viền mực & Đổ bóng khối kiến trúc */
+  --border-ink: #111111;
+  --border-subtle: rgba(17, 17, 17, 0.14);
+  --shadow-block: 4px 4px 0px #111111;
+  --shadow-block-hover: 7px 7px 0px #D9381E;
+  --shadow-fab: 4px 4px 0px #111111, 0 12px 24px -6px rgba(17, 17, 17, 0.25);
+
+  /* Hệ thống bo góc sắc sảo */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+body {
+  background-color: var(--bg-washi);
+  background-image:
+    radial-gradient(rgba(17, 17, 17, 0.07) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(217, 56, 30, 0.03) 0%, transparent 320px);
+  background-size: 24px 24px, 100% 100%;
+  color: var(--ink-sumi);
+  line-height: 1.52;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER (GALLERY MONOLITH HERO) ===== */
+.header {
+  position: relative;
+  padding: 58px 20px 46px;
+  text-align: center;
+  background-color: var(--surface-card);
+  border-bottom: 2px solid var(--border-ink);
+  overflow: hidden;
+}
+
+/* Đường chỉ đỏ Vermilion chạy dọc mép trái-phải tinh tế */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink-sumi) 0px,
+    var(--ink-sumi) 32px,
+    var(--vermilion) 32px,
+    var(--vermilion) 48px
+  );
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'ARTISAN BARBER STUDIO • BẢNG GIÁ CHÍNH THỨC';
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-paper);
+  background: var(--vermilion);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  box-shadow: 2px 2px 0px var(--border-ink);
+}
+
+.shop-name {
+  font-size: clamp(2.1rem, 5.5vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--ink-sumi);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 16px;
+  font-size: clamp(0.86rem, 2.2vw, 0.96rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink-sumi);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--bg-washi);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+}
+
+.shop-slogan::before {
+  content: '■';
+  font-size: 0.62rem;
+  color: var(--vermilion);
+}
+
+.shop-slogan::after {
+  content: '■';
+  font-size: 0.62rem;
+  color: var(--ink-sumi);
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY ARCHITECTURAL BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1.5px solid var(--border-ink);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border-ink);
+  background: var(--surface-card);
+  color: var(--ink-sumi);
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--border-ink);
+  transition:
+    transform 0.2s var(--ease-snap),
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.2s var(--ease-snap);
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  background: var(--bg-stone);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--vermilion);
+}
+
+.filter-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--border-ink);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-washi), 0 0 0 4px var(--vermilion);
+}
+
+.filter-btn.active {
+  color: var(--ink-paper);
+  background: var(--ink-sumi);
+  border-color: var(--border-ink);
+  box-shadow: 3px 3px 0px var(--vermilion);
+}
+
+.filter-btn.active:hover {
+  background: var(--vermilion);
+  border-color: var(--border-ink);
+  color: var(--ink-paper);
+  box-shadow: 3px 3px 0px var(--border-ink);
+}
+
+/* ===== LƯỚI DỊCH VỤ (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 38px 24px 84px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-sumi) !important;
+  font-weight: 700;
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-block);
+}
+
+/* ===== CARD DỊCH VỤ (SUMI FRAMED CARD) ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-block);
+  transition:
+    transform 0.26s var(--ease-snap),
+    box-shadow 0.26s var(--ease-snap);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-block-hover);
+}
+
+.card-image {
+  width: 160px;
+  height: auto;
+  min-height: 184px;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-stone);
+  background-image: linear-gradient(110deg, #EAE6DF 8%, #F7F5F0 18%, #EAE6DF 33%);
+  background-size: 200% 100%;
+  animation: washiShimmer 1.8s linear infinite;
+  transition: transform 0.5s var(--ease-snap), filter 0.3s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.04);
+  filter: contrast(1.05);
+}
+
+@keyframes washiShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  background: var(--surface-card);
+  border-left: 1.5px solid var(--border-ink);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-sumi);
+  background: var(--bg-stone);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.01rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--ink-sumi);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.01rem * 1.35 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--vermilion);
+  margin-bottom: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border-ink);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-paper);
+  background: var(--ink-sumi);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.2s var(--ease-snap),
+    background-color 0.18s ease,
+    box-shadow 0.2s var(--ease-snap);
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--vermilion);
+  color: var(--ink-paper);
+  box-shadow: 2px 2px 0px var(--border-ink);
+  transform: translate(-1px, -1px);
+}
+
+.card-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--vermilion);
+}
+
+.card-btn img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-charcoal);
+  font-size: 0.86rem;
+  background: var(--bg-stone);
+  border-top: 2px solid var(--border-ink);
+}
+
+.footer::before {
+  content: 'QUÝ TÌNH BARBER SHOP';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--vermilion);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-charcoal);
+  font-weight: 500;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-sumi);
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  box-shadow: 3px 3px 0px var(--border-ink);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (HUD FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-paper);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--vermilion);
+  border: 2px solid var(--border-ink);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.24s var(--ease-snap),
+    background-color 0.18s ease,
+    box-shadow 0.24s var(--ease-snap);
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--ink-sumi);
+  transform: translate(-2px, -3px);
+  box-shadow: 6px 6px 0px var(--vermilion), 0 14px 28px -6px rgba(17, 17, 17, 0.3);
+}
+
+.fab-zalo:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--border-ink);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-washi), 0 0 0 5px var(--vermilion);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & ANDROID MOBILE) ===== */
+@media (max-width: 960px) {
+  .product-grid {
+    gap: 18px;
+    padding: 30px 16px 64px;
+  }
+
+  .card-image {
+    width: 134px;
+    min-height: 172px;
+  }
+
+  .card-body {
+    padding: 13px 14px;
+  }
+}
+
+/* Chuyển về thẻ dọc 2 cột cân đối trên Tablet nhỏ & Mobile */
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.6rem;
+    padding: 4px 12px;
+    letter-spacing: 0.11em;
+  }
+
+  .filter-nav {
+    gap: 8px;
+    padding: 12px 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 56px;
+  }
+
+  .product-card {
+    flex-direction: column;
+    border-radius: var(--radius-sm);
+    box-shadow: 3px 3px 0px var(--border-ink);
+  }
+
+  .product-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--vermilion);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 154px;
+    min-height: 0;
+  }
+
+  .card-body {
+    padding: 13px 13px 14px;
+    border-left: none;
+    border-top: 1.5px solid var(--border-ink);
+  }
+
+  .card-category-tag {
+    font-size: 0.59rem;
+    padding: 3px 8px;
+    margin-bottom: 7px;
+  }
+
+  .card-name {
+    font-size: 0.9rem;
+    min-height: calc(0.9rem * 1.35 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1.02rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 9px 10px;
+    font-size: 0.77rem;
+    gap: 6px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 16px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 11px;
+    padding: 20px 10px 50px;
+  }
+
+  .card-image {
+    height: 136px;
+  }
+
+  .card-body {
+    padding: 11px 11px 12px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.35 * 2);
+  }
+
+  .card-price {
+    font-size: 0.94rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

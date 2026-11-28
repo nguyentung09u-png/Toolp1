@@ -1,0 +1,623 @@
+/* =========================================================
+   TIỆM CÀ PHÊ — ARTISAN ROASTERY & MATCHA CREMA
+   Visual Redesign v6: Oat Milk Cream, Dark Roast & Caramel
+   ========================================================= */
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+:root {
+  /* Bảng màu nền & bề mặt (Oat Milk Cream & Warm Parchment) */
+  --bg-cream: #FBF8F3;
+  --bg-latte: #F3ECE1;
+  --surface-card: #FFFFFF;
+  --surface-nav: rgba(251, 248, 243, 0.88);
+  --surface-tag: rgba(58, 90, 64, 0.09);
+
+  /* Bảng màu chữ (Dark Roast Espresso) */
+  --ink-espresso: #231712;
+  --ink-mocha: #5C493E;
+  --ink-muted: #8C7A6E;
+  --ink-cream: #FFFDF9;
+
+  /* Điểm nhấn cà phê & trà (Caramel Crema & Matcha Leaf) */
+  --caramel: #B85D19;
+  --caramel-hover: #9C4B10;
+  --caramel-soft: rgba(184, 93, 25, 0.1);
+  --matcha: #3A5A40;
+  --matcha-hover: #2E4833;
+
+  /* Viền & Đổ bóng ấm áp */
+  --border-latte: rgba(35, 23, 18, 0.09);
+  --border-caramel: rgba(184, 93, 25, 0.28);
+  --shadow-card: 0 8px 24px -8px rgba(35, 23, 18, 0.08), 0 2px 6px rgba(35, 23, 18, 0.03);
+  --shadow-card-hover: 0 18px 36px -10px rgba(35, 23, 18, 0.15), 0 4px 12px rgba(184, 93, 25, 0.08);
+  --shadow-fab: 0 12px 28px -6px rgba(35, 23, 18, 0.32), 0 4px 12px rgba(184, 93, 25, 0.24);
+
+  /* Bo góc mềm mại */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Chuyển động 60FPS */
+  --ease-brew: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: var(--bg-cream);
+  background-image:
+    radial-gradient(780px 440px at 14% 0%, rgba(184, 93, 25, 0.08), transparent 65%),
+    radial-gradient(720px 460px at 88% 8%, rgba(58, 90, 64, 0.07), transparent 65%),
+    radial-gradient(820px 500px at 50% 96%, rgba(184, 93, 25, 0.05), transparent 70%);
+  color: var(--ink-espresso);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  padding: 62px 20px 46px;
+  text-align: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-cream) 100%);
+  border-bottom: 1px solid var(--border-latte);
+  overflow: hidden;
+}
+
+/* Vòng tròn trang trí tinh tế mô phỏng tách cà phê nhìn từ trên cao */
+.header::before {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -130px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(184, 93, 25, 0.16);
+  box-shadow: 0 0 0 18px rgba(184, 93, 25, 0.04);
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header-content::before {
+  content: 'SPECIALTY COFFEE & TEA MENU';
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 5px 15px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--caramel);
+  background: var(--caramel-soft);
+  border: 1px solid var(--border-caramel);
+  border-radius: var(--radius-pill);
+}
+
+.shop-name {
+  font-size: clamp(2.15rem, 5.6vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink-espresso);
+  text-wrap: balance;
+}
+
+.shop-slogan {
+  margin-top: 14px;
+  font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-mocha);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-latte);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 10px rgba(35, 23, 18, 0.03);
+}
+
+.shop-slogan::before,
+.shop-slogan::after {
+  content: '•';
+  color: var(--caramel);
+  font-weight: 800;
+}
+
+/* ===== BỘ LỌC DANH MỤC (STICKY MENU BAR) ===== */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border-latte);
+}
+
+.filter-btn {
+  appearance: none;
+  padding: 9px 17px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-latte);
+  background: var(--surface-card);
+  color: var(--ink-mocha);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-brew),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.filter-btn:hover {
+  color: var(--ink-espresso);
+  border-color: var(--caramel);
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(35, 23, 18, 0.06);
+}
+
+.filter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-cream), 0 0 0 4px var(--caramel);
+}
+
+.filter-btn.active {
+  color: var(--ink-cream);
+  background: var(--ink-espresso);
+  border-color: var(--ink-espresso);
+  box-shadow: 0 6px 16px -4px rgba(35, 23, 18, 0.28);
+}
+
+.filter-btn.active:hover {
+  background: var(--caramel);
+  border-color: var(--caramel);
+  color: var(--ink-cream);
+}
+
+/* ===== LƯỚI SẢN PHẨM (GRID 2 CỘT) ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 38px 24px 76px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.product-grid > p {
+  color: var(--ink-mocha) !important;
+  font-weight: 600;
+  background: var(--surface-card);
+  border: 1px solid var(--border-latte);
+  border-radius: var(--radius-lg);
+}
+
+/* ===== CARD MÓN UỐNG & BÁNH ===== */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border: 1px solid var(--border-latte);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s var(--ease-brew),
+    border-color 0.25s ease,
+    box-shadow 0.35s var(--ease-brew);
+  will-change: transform;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-caramel);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-image {
+  width: 100%;
+  height: 225px;
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-latte);
+  background-image: linear-gradient(110deg, #F3ECE1 8%, #FAF6F0 18%, #F3ECE1 33%);
+  background-size: 200% 100%;
+  animation: cremaShimmer 1.8s linear infinite;
+  transition: transform 0.55s var(--ease-brew), filter 0.35s ease;
+  will-change: transform;
+}
+
+.product-card:hover .card-image {
+  transform: scale(1.035);
+  filter: saturate(1.06);
+}
+
+@keyframes cremaShimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.card-body {
+  position: relative;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-latte);
+}
+
+.card-category-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--matcha);
+  background: var(--surface-tag);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 9px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-name {
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.38;
+  color: var(--ink-espresso);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.04rem * 1.38 * 2);
+  word-break: break-word;
+}
+
+.card-price {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 1.14rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--caramel);
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--caramel);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink-cream);
+  background: var(--caramel);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition:
+    transform 0.25s var(--ease-brew),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.card-btn:hover {
+  background: var(--ink-espresso);
+  border-color: var(--ink-espresso);
+  color: var(--ink-cream);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -6px rgba(35, 23, 18, 0.32);
+}
+
+.card-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--caramel);
+}
+
+.card-btn img {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 1.5px;
+  flex-shrink: 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  text-align: center;
+  padding: 46px 20px 104px;
+  color: var(--ink-mocha);
+  font-size: 0.85rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-latte);
+}
+
+.footer::before {
+  content: 'TIỆM CÀ PHÊ';
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ink-espresso);
+}
+
+.footer p {
+  margin-bottom: 6px;
+  color: var(--ink-mocha);
+  font-weight: 400;
+}
+
+.footer p:last-child {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--caramel);
+  background: var(--bg-cream);
+  border: 1px solid var(--border-caramel);
+  border-radius: var(--radius-pill);
+}
+
+/* ===== NÚT LIÊN HỆ ZALO (FAB) ===== */
+.fab-zalo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink-cream);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  background: var(--ink-espresso);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-brew),
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.fab-zalo:hover {
+  background: var(--caramel);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 32px -6px rgba(184, 93, 25, 0.42);
+}
+
+.fab-zalo:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-zalo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg-cream), 0 0 0 5px var(--caramel);
+}
+
+.fab-zalo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.fab-zalo span {
+  white-space: nowrap;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
+@media (max-width: 900px) {
+  .product-grid {
+    gap: 18px;
+    padding: 32px 18px 60px;
+  }
+
+  .card-image {
+    height: 195px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 46px 16px 36px;
+  }
+
+  .header-content::before {
+    font-size: 0.62rem;
+    padding: 4px 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .filter-nav {
+    gap: 6px;
+    padding: 12px 10px;
+  }
+
+  .filter-btn {
+    padding: 7px 13px;
+    font-size: 0.77rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 24px 14px 52px;
+  }
+
+  .card-image {
+    height: 162px;
+  }
+
+  .card-body {
+    padding: 13px 14px 15px;
+  }
+
+  .card-category-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    min-height: calc(0.92rem * 1.38 * 2);
+    margin-bottom: 6px;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .card-btn {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+    border-radius: 12px;
+  }
+
+  .footer {
+    padding: 38px 16px 96px;
+  }
+
+  .fab-zalo {
+    bottom: 16px;
+    right: 16px;
+    padding: 9px 15px 9px 9px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 40px 12px 30px;
+  }
+
+  .product-grid {
+    gap: 10px;
+    padding: 20px 10px 48px;
+  }
+
+  .card-image {
+    height: 140px;
+  }
+
+  .card-body {
+    padding: 11px 11px 13px;
+  }
+
+  .card-name {
+    font-size: 0.84rem;
+    min-height: calc(0.84rem * 1.38 * 2);
+  }
+
+  .card-price {
+    font-size: 0.92rem;
+  }
+
+  .card-btn {
+    font-size: 0.72rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+
+  .fab-zalo {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .fab-zalo span {
+    display: none;
+  }
+}
+
+@media (max-width: 330px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
