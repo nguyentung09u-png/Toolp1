@@ -1,0 +1,230 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0b0814;
+  color: #fff1f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* OVERLAY TOÀN MÀN HÌNH — ĐÊM HOA ANH ĐÀO & ĐỀN THỜ NHẬT BẢN */
+#monter-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0b0814;
+  background-image:
+    radial-gradient(circle at 50% 32%, rgba(244, 114, 182, 0.16) 0%, transparent 46%),
+    radial-gradient(circle at 22% 76%, rgba(239, 68, 68, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 24%, rgba(251, 191, 36, 0.08) 0%, transparent 40%),
+    radial-gradient(rgba(249, 168, 212, 0.12) 1px, transparent 1px),
+    linear-gradient(180deg, #160f26 0%, #090610 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px, 100% 100%;
+  transition: opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.38s ease;
+  will-change: opacity;
+  user-select: none;
+}
+
+#monter-page-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* KHUNG BÙA HỘ MỆNH VÁT GÓC (TALISMAN CREST FRAME) */
+.ml-orbit-box {
+  position: relative;
+  width: 176px;
+  height: 176px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+}
+
+/* Viền bùa nét đứt ánh hoa anh đào + hạt linh lực vàng */
+.ml-ring-dashed {
+  position: absolute;
+  inset: 2px;
+  border-radius: 34px;
+  border: 1.5px dashed rgba(249, 168, 212, 0.38);
+  animation: ml-talisman-sway 4s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.ml-ring-dashed::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: #fbbf24;
+  box-shadow: 0 0 12px 2px rgba(251, 191, 36, 0.85);
+}
+
+/* Hào quang viền kép đỏ son - hồng sakura */
+.ml-ring-arc {
+  position: absolute;
+  inset: 12px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #ef4444 0%, #f472b6 52%, #fbbf24 100%);
+  box-shadow: 0 16px 34px -6px rgba(244, 114, 182, 0.38);
+  animation: ml-talisman-glow 2.2s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Khung chứa ảnh Kitsune */
+.ml-logo-wrap {
+  position: relative;
+  width: 144px;
+  height: 144px;
+  border-radius: 24px;
+  background: #0d0917;
+  border: 2.5px solid #fff1f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.25);
+}
+
+.ml-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tên miền aovhub.top */
+.ml-domain {
+  margin: 0 0 14px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  background: linear-gradient(90deg, #ffffff 10%, #f9a8d4 52%, #fde047 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Pill • LOADING... */
+.ml-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: rgba(31, 20, 48, 0.85);
+  border: 1px solid rgba(249, 168, 212, 0.28);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  margin-bottom: 18px;
+}
+
+.ml-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f472b6;
+  box-shadow: 0 0 10px #f472b6;
+  animation: ml-pulse 1.2s ease-in-out infinite;
+}
+
+.ml-pill-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #fce7f3;
+  text-transform: uppercase;
+}
+
+/* Thanh tiến trình linh lực */
+.ml-progress-track {
+  width: min(264px, 72vw);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(244, 114, 182, 0.24);
+  padding: 1px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.ml-progress-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ef4444 0%, #f472b6 55%, #fde047 100%);
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.65);
+  transform-origin: left center;
+  transform: scaleX(0.18);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dòng trạng thái bên dưới */
+.ml-status {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #d8b4fe;
+  letter-spacing: 0.01em;
+}
+
+@keyframes ml-talisman-sway {
+  0% { transform: rotate(-3deg) scale(0.98); }
+  100% { transform: rotate(3deg) scale(1.02); }
+}
+
+@keyframes ml-talisman-glow {
+  0% { opacity: 0.78; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes ml-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Giao diện test sau khi load xong */
+.demo-content {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 20px;
+}
+
+.demo-btn {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 114, 182, 0.45);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(244, 114, 182, 0.25));
+  color: #fce7f3;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -6px rgba(244, 114, 182, 0.35);
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.demo-btn:hover {
+  border-color: #f9a8d4;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.36), rgba(244, 114, 182, 0.36));
+}
+
+.demo-btn:active {
+  transform: scale(0.97);
+}

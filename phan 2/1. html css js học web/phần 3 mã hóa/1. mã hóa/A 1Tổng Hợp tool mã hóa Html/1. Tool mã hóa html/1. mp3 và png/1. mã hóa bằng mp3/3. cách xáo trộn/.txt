@@ -1,0 +1,9 @@
+1. up nhiều ảnh .mp3 lên để đánh lừa không biết đâu là giả đâu là thật
+
+1 thư mục chứa 5 file
+1.mp3 2.mp3 3.mp3 4.mp3 5.mp3 6.mp3
+
+file thứ 6.mp3 là file thật đã mã hóa
+
+
+-- nhưng nào cần thì mới sài

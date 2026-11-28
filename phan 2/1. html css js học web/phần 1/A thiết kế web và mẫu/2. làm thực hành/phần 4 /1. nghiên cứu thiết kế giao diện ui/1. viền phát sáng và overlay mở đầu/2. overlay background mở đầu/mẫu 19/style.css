@@ -1,0 +1,226 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f8f3ea;
+  color: #132a26;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* OVERLAY TOÀN MÀN HÌNH — GIẤY LỤA NGÀ & NGỌC LỤC BẢO Á ĐÔNG */
+#monter-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f3ea;
+  background-image:
+    radial-gradient(ellipse 68% 48% at 50% 34%, rgba(16, 185, 129, 0.13) 0%, transparent 56%),
+    radial-gradient(circle at 80% 78%, rgba(217, 119, 6, 0.1) 0%, transparent 46%),
+    radial-gradient(circle at 20% 22%, rgba(234, 88, 12, 0.08) 0%, transparent 44%),
+    linear-gradient(180deg, #fcf9f2 0%, #efe7d8 100%);
+  transition: opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.38s ease;
+  will-change: opacity;
+  user-select: none;
+}
+
+#monter-page-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* KHUNG CON NHỘNG NGANG TOÀN CẢNH (PANORAMIC CAPSULE LENS) */
+.ml-orbit-box {
+  position: relative;
+  width: 224px;
+  height: 158px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+}
+
+/* Viền chỉ vàng nét đứt ngoài nhịp thở nhẹ */
+.ml-ring-dashed {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1.5px dashed rgba(180, 83, 9, 0.36);
+  background: rgba(255, 253, 248, 0.55);
+  animation: ml-capsule-breathe 3.4s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.ml-ring-dashed::before {
+  content: "";
+  position: absolute;
+  left: -5.5px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #ea580c;
+  border: 2px solid #fef3c7;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.45);
+}
+
+/* Hào quang viền vàng hổ phách - ngọc bảo */
+.ml-ring-arc {
+  position: absolute;
+  inset: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b 0%, #10b981 52%, #ea580c 100%);
+  box-shadow: 0 18px 34px -10px rgba(19, 42, 38, 0.28);
+  animation: ml-capsule-glow 2.2s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Khung chứa ảnh Rồng Thần */
+.ml-logo-wrap {
+  position: relative;
+  width: 194px;
+  height: 128px;
+  border-radius: 999px;
+  background: #0c211f;
+  border: 3px solid #fffdf9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1.5px rgba(251, 191, 36, 0.35);
+}
+
+.ml-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tên miền aovhub.top */
+.ml-domain {
+  margin: 0 0 14px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  background: linear-gradient(90deg, #0c211f 12%, #047857 56%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Pill • LOADING... */
+.ml-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: #fffdf9;
+  border: 1px solid rgba(180, 83, 9, 0.22);
+  box-shadow: 0 8px 18px -6px rgba(19, 42, 38, 0.12);
+  margin-bottom: 18px;
+}
+
+.ml-pill-dot {
+  width: 7.5px;
+  height: 7.5px;
+  border-radius: 50%;
+  background: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
+  animation: ml-pulse 1.3s ease-in-out infinite;
+}
+
+.ml-pill-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #132a26;
+  text-transform: uppercase;
+}
+
+/* Thanh tiến trình dải lụa vàng ngọc */
+.ml-progress-track {
+  width: min(264px, 72vw);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(19, 42, 38, 0.1);
+  padding: 1px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.ml-progress-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #047857 0%, #10b981 52%, #f59e0b 100%);
+  transform-origin: left center;
+  transform: scaleX(0.18);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dòng trạng thái bên dưới */
+.ml-status {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4a635d;
+  letter-spacing: 0.01em;
+}
+
+@keyframes ml-capsule-breathe {
+  0% { transform: scale(0.98); }
+  100% { transform: scale(1.02); }
+}
+
+@keyframes ml-capsule-glow {
+  0% { opacity: 0.82; }
+  100% { opacity: 1; }
+}
+
+@keyframes ml-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Giao diện test sau khi load xong */
+.demo-content {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 20px;
+}
+
+.demo-btn {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #0c211f 0%, #047857 58%, #d97706 100%);
+  color: #fffdf9;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -6px rgba(4, 120, 87, 0.36);
+  transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.demo-btn:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 14px 28px -6px rgba(4, 120, 87, 0.46);
+}
+
+.demo-btn:active {
+  transform: scale(0.97);
+}

@@ -1,0 +1,9 @@
+1. up nhiều ảnh .png lên để đánh lừa không biết đâu là giả đâu là thật
+
+1 thư mục chứa 5 file
+1.png 2.png 3.png 4.png 5.png 6.png
+
+file thứ 6.png là file thật đã mã hóa
+
+
+-- nhưng nào cần thì mới sài

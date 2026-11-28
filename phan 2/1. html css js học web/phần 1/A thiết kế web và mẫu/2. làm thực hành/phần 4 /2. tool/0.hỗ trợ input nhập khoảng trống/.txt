@@ -1,0 +1,26 @@
+ví dụ : khoảng trống như bài học 1 2 3 như này
+/storage/emulated/0/cc/My Project/Bài Học 1
+/storage/emulated/0/cc/My Project/Bài Học 2
+/storage/emulated/0/cc/My Project/Bài Học 3
+
+
+
+Tóm gọn: Nhờ đâu tool hỗ trợ đường dẫn có khoảng trống?
+
+Nhờ 3 điều:
+
+1. input() — đọc nguyên cả dòng, space không bị cắt (chỉ cắt đầu/cuối bằng .strip()).
+2. Path() — nhận chuỗi có space bình thường, không cần ngoặc kép.
+3. mkdir() — tạo thư mục theo Path, space là ký tự hợp lệ trong tên.
+
+→ Không dùng shell (cd, ls...) nên không cần bọc ngoặc kép.
+
+---
+
+Chỉ cần nhớ: gõ đường dẫn trơn, đừng bọc "..." là chạy đúng.
+
+
+--- code ---
+
+
+

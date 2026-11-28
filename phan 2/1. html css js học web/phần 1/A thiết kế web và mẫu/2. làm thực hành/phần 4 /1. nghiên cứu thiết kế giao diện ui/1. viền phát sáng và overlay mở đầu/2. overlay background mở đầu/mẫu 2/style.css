@@ -1,0 +1,226 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0c1017;
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* OVERLAY TOÀN MÀN HÌNH */
+#monter-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(251, 191, 36, 0.09) 0%, transparent 45%),
+    radial-gradient(circle at 50% 45%, #161d2b 0%, #090c12 72%);
+  transition: opacity 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.35s ease;
+  will-change: opacity;
+  user-select: none;
+}
+
+#monter-page-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* KHUNG VÒNG TRÒN + LOGO TRUNG TÂM */
+.ml-orbit-box {
+  position: relative;
+  width: 172px;
+  height: 172px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+}
+
+/* Vòng quỹ đạo nét đứt + hạt sáng Champagne Gold */
+.ml-ring-dashed {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(251, 191, 36, 0.38);
+  animation: ml-spin-cw 9s linear infinite;
+  will-change: transform;
+}
+
+.ml-ring-dashed::before {
+  content: "";
+  position: absolute;
+  top: -4.5px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: #fde68a;
+  box-shadow: 0 0 12px 3px rgba(251, 191, 36, 0.85);
+}
+
+/* Vòng cung ánh lam xoay ngược chiều */
+.ml-ring-arc {
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #fbbf24;
+  border-bottom-color: #38bdf8;
+  border-left-color: rgba(56, 189, 248, 0.45);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.45));
+  animation: ml-spin-ccw 2.6s linear infinite;
+  will-change: transform;
+}
+
+/* Vòng nền chứa Logo */
+.ml-logo-wrap {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1c2638 0%, #0d131f 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 20px rgba(251, 191, 36, 0.14);
+}
+
+.ml-logo-wrap img,
+.ml-logo-wrap svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tên miền aovhub.top */
+.ml-domain {
+  margin: 0 0 14px;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #ffffff 15%, #fde68a 85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Pill • LOADING... */
+.ml-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(22, 29, 43, 0.85);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  margin-bottom: 20px;
+}
+
+.ml-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 8px #fbbf24;
+  animation: ml-pulse 1.4s ease-in-out infinite;
+}
+
+.ml-pill-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #e2e8f0;
+  text-transform: uppercase;
+}
+
+/* Thanh tiến trình */
+.ml-progress-track {
+  width: min(264px, 72vw);
+  height: 4px;
+  border-radius: 999px;
+  background: #1a2232;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ml-progress-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #38bdf8 0%, #fbbf24 60%, #fef08a 100%);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+  transform-origin: left center;
+  transform: scaleX(0.18);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dòng trạng thái bên dưới */
+.ml-status {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  letter-spacing: 0.01em;
+}
+
+@keyframes ml-spin-cw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ml-spin-ccw {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes ml-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Giao diện test sau khi load xong */
+.demo-content {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 20px;
+}
+
+.demo-btn {
+  padding: 11px 22px;
+  border-radius: 11px;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(56, 189, 248, 0.12));
+  color: #fde68a;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.demo-btn:hover {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.24), rgba(56, 189, 248, 0.18));
+}
+
+.demo-btn:active {
+  transform: scale(0.97);
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loading Overlay - aovhub.top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- OVERLAY LOADING -->
+  <div id="monter-page-loader" role="status" aria-live="polite">
+    <div class="ml-orbit-box">
+      <div class="ml-ring-dashed"></div>
+      <div class="ml-ring-arc"></div>
+      <div class="ml-logo-wrap">
+        <!-- Logo lăng kính hình học đa lớp mới (có thể thay bằng thẻ <img> nếu dùng ảnh ngoài) -->
+        <svg viewBox="0 0 120 120" width="118" height="118" fill="none" aria-label="Logo aovhub.top">
+          <defs>
+            <linearGradient id="bgCore" x1="16" y1="12" x2="104" y2="108" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#1e3a8a"/>
+              <stop offset="55%" stop-color="#1d4ed8"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+            <linearGradient id="prismLeft" x1="32" y1="30" x2="60" y2="90" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#60a5fa"/>
+              <stop offset="100%" stop-color="#2563eb"/>
+            </linearGradient>
+            <linearGradient id="prismRight" x1="60" y1="30" x2="88" y2="90" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#fb923c"/>
+              <stop offset="100%" stop-color="#ea580c"/>
+            </linearGradient>
+            <linearGradient id="prismTop" x1="40" y1="24" x2="80" y2="54" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#dbeafe"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="56" fill="url(#bgCore)"/>
+          <circle cx="60" cy="60" r="48" stroke="rgba(255,255,255,0.16)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <!-- Khối kim cương / chữ A cách điệu 3D -->
+          <polygon points="60,24 88,68 60,56" fill="url(#prismRight)"/>
+          <polygon points="60,24 32,68 60,56" fill="url(#prismLeft)"/>
+          <polygon points="60,24 72,44 60,50 48,44" fill="url(#prismTop)"/>
+          <polygon points="32,68 60,56 88,68 60,94" fill="#0b132b" stroke="#93c5fd" stroke-width="1.4"/>
+          <polygon points="46,70 60,63 74,70 60,84" fill="#f97316"/>
+          <circle cx="60" cy="56" r="3.5" fill="#ffffff"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="ml-domain">aovhub.top</h1>
+
+    <div class="ml-pill">
+      <span class="ml-pill-dot"></span>
+      <span class="ml-pill-text">LOADING...</span>
+    </div>
+
+    <div class="ml-progress-track">
+      <div class="ml-progress-bar" id="ml-progress-bar"></div>
+    </div>
+
+    <div class="ml-status" id="ml-status-text">Đang chuẩn bị giao diện</div>
+  </div>
+
+  <!-- NỘI DUNG SAU KHI LOAD XONG -->
+  <div class="demo-content">
+    <h2 style="margin: 0; font-size: 18px;">Giao diện chính đã sẵn sàng</h2>
+    <button type="button" class="demo-btn" onclick="runLoaderDemo()">Chạy lại Loading Overlay</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+1. chuẩn bị 2 file
+
+1. source.html file gốc html cần mã hóa
+
+2. file .mp3 thật nhỏ size kb
+
+
+
+tóm gọn :
+1 thư mục gì đó 
+ví dụ : chứa 3 file
+/storage/emulated/0/cc/
+source.html
+anh_that.mp3
+
+
+
+
+xong sài 1.py
+--sau khi mã hóa xong --
+
+up file index.html và .mp3 lên web là load được 
+
+xong

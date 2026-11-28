@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loading Overlay - aovhub.top</title>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- OVERLAY LOADING -->
+  <div id="monter-page-loader" role="status" aria-live="polite">
+    <div class="ml-orbit-box">
+      <div class="ml-ring-dashed"></div>
+      <div class="ml-ring-arc"></div>
+      <div class="ml-logo-wrap">
+        <!-- Thay src bằng link ảnh logo của bạn nếu có, mặc định dùng huy hiệu SVG -->
+        <svg viewBox="0 0 120 120" width="106" height="106" fill="none">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="50%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="46" stroke="url(#shieldGrad)" stroke-width="2.5" fill="#0f1d2e"/>
+          <path d="M60 22L86 38V66C86 82 60 96 60 96C60 96 34 82 34 66V38L60 22Z" fill="#132a42" stroke="#22d3ee" stroke-width="2"/>
+          <path d="M46 52L60 36L74 52L60 47L46 52Z" fill="#2dd4bf"/>
+          <rect x="24" y="56" width="72" height="24" rx="5" fill="#0b1320" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="60" y="67" text-anchor="middle" fill="#ffffff" font-size="10.5" font-weight="900" letter-spacing="0.5">MONSTER</text>
+          <text x="60" y="77" text-anchor="middle" fill="#38bdf8" font-size="9.5" font-weight="800" letter-spacing="1.2">AOV</text>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="ml-domain">aovhub.top</h1>
+
+    <div class="ml-pill">
+      <span class="ml-pill-dot"></span>
+      <span class="ml-pill-text">LOADING...</span>
+    </div>
+
+    <div class="ml-progress-track">
+      <div class="ml-progress-bar" id="ml-progress-bar"></div>
+    </div>
+
+    <div class="ml-status" id="ml-status-text">Đang chuẩn bị giao diện</div>
+  </div>
+
+  <!-- NỘI DUNG SAU KHI LOAD XONG -->
+  <div class="demo-content">
+    <h2 style="margin: 0; font-size: 18px;">Giao diện chính đã sẵn sàng</h2>
+    <button type="button" class="demo-btn" onclick="runLoaderDemo()">Chạy lại Loading Overlay</button>
+  </div>
+
+  
+  <script src="script.js"></script>
+</body>
+</html>

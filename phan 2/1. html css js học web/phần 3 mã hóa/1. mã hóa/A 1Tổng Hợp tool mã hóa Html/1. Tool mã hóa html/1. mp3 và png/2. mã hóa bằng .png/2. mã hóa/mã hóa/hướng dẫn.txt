@@ -1,0 +1,13 @@
+1. chuẩn bị 2 file
+
+1. source.html file gốc html cần mã hóa
+
+2. file .mp3 thật nhỏ size kb
+
+
+
+--sau khi mã hóa xong --
+
+up file index.html và .mp3 lên web là load được 
+
+xong

@@ -1,0 +1,48 @@
+Chuẩn bị nguyên liệu (Để trong một thư mục riêng, ví dụ ~/build_web)
+​Bạn cần 3 file đặt cùng chỗ thư mục bất kì ví dụ :
+/storage/emulated/0/cc/
+chứa những file :
+​1. source.html: File giao diện web gốc của bạn.
+​2. anh_that.png: Một tấm ảnh .png bình thường bất kỳ (nên chọn ảnh nhẹ dưới 50KB để web tải nhanh).
+​3. pack.py: File script dùng để trộn code vào ảnh.
+
+
+
+sau khi xong 
+
+
+sau khi xong tạo 1 file index.html giải mã.
+dán 
+key hex : 
+offset đầu :
+offset sau :
+cập nhập thay thế hết vào file index.html giải mã có sẵn
+
+
+---
+xóa file source.html
+xóa file anh_that.png
+
+
+---
+giữ lại 2 file
+1. index.html
+2. logo.png là code html chính đó
+
+
+
+
+
+
+---
+
+bước 3 :
+copy hết all cả code java script nằm ở giữa lên web
+obfuscator.io
+copy code mã hóa
+
+---sau khi copy xong ---
+thay all java scprit 
+ <script> 
+ chèn code mã hóa vào giữa
+  </script>

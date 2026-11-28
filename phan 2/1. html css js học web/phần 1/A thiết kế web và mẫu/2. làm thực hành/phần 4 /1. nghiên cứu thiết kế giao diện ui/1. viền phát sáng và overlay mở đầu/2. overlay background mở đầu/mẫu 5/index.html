@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loading Overlay - aovhub.top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- OVERLAY LOADING -->
+  <div id="monter-page-loader" role="status" aria-live="polite">
+    <div class="ml-orbit-box">
+      <div class="ml-ring-dashed"></div>
+      <div class="ml-ring-arc"></div>
+      <div class="ml-logo-wrap">
+        <!-- Logo ảnh biểu tượng la bàn ngôi sao thiên văn mới -->
+        <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='lilacBg' cx='50%25' cy='40%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%234c1d95'/%3E%3Cstop offset='100%25' stop-color='%231e1035'/%3E%3C/radialGradient%3E%3ClinearGradient id='starGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23fdf4ff'/%3E%3Cstop offset='50%25' stop-color='%23e879f9'/%3E%3Cstop offset='100%25' stop-color='%23fb7185'/%3E%3C/linearGradient%3E%3ClinearGradient id='ringGold' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23fb923c'/%3E%3Cstop offset='100%25' stop-color='%23fde047'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='98' fill='url(%23lilacBg)'/%3E%3Ccircle cx='100' cy='100' r='82' fill='none' stroke='url(%23ringGold)' stroke-width='2.5' stroke-opacity='0.75'/%3E%3Ccircle cx='100' cy='100' r='64' fill='none' stroke='%23e9d5ff' stroke-width='1.2' stroke-dasharray='3 5' stroke-opacity='0.6'/%3E%3Cpolygon points='100,26 113,87 174,100 113,113 100,174 87,113 26,100 87,87' fill='url(%23starGrad)'/%3E%3Cpolygon points='100,54 109,91 146,100 109,109 100,146 91,109 54,100 91,91' fill='%232e1065'/%3E%3Ccircle cx='100' cy='100' r='12' fill='url(%23ringGold)'/%3E%3Ccircle cx='100' cy='100' r='5' fill='%23ffffff'/%3E%3C/svg%3E" alt="Logo aovhub.top">
+      </div>
+    </div>
+
+    <h1 class="ml-domain">aovhub.top</h1>
+
+    <div class="ml-pill">
+      <span class="ml-pill-dot"></span>
+      <span class="ml-pill-text">LOADING...</span>
+    </div>
+
+    <div class="ml-progress-track">
+      <div class="ml-progress-bar" id="ml-progress-bar"></div>
+    </div>
+
+    <div class="ml-status" id="ml-status-text">Đang chuẩn bị giao diện</div>
+  </div>
+
+  <!-- NỘI DUNG SAU KHI LOAD XONG -->
+  <div class="demo-content">
+    <h2 style="margin: 0; font-size: 18px;">Giao diện chính đã sẵn sàng</h2>
+    <button type="button" class="demo-btn" onclick="runLoaderDemo()">Chạy lại Loading Overlay</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+Tổng quan & code chung
+
+Cách làm (tổng quan)
+
+1. Nhập liệu — dùng input() hỏi đường dẫn, tên, số đầu, số cuối.
+2. Xử lý — dùng range() sinh dãy số, str.zfill() đệm 0 nếu cần.
+3. Tạo thư mục — dùng Path(...)/tên rồi .mkdir(), kiểm tra tồn tại trước.
+4. Báo cáo — print() số đã tạo / bỏ qua và danh sách thư mục thật.
+
+Chia 3 hàm: log() (in), ask() (hỏi input an toàn), main() (luồng chính).
+
+Code chung (khung tối giản)
+
+```python
+from pathlib import Path
+
+def log(msg):
+    print(msg)
+
+def ask(prompt, default=None, cast=str):
+    while True:
+        raw = input(f"{prompt} [{default}]: ").strip()
+        if not raw and default is not None:
+            return default
+        try:
+            return cast(raw) if raw else cast(default)
+        except Exception:
+            log("Nhập lại, giá trị không hợp lệ.")
+
+def main():
+    out    = ask("Đường dẫn", default="/storage/emulated/0/cc")
+    name   = ask("Tên thư mục", default="Folder")
+    start  = ask("Từ số", default=1, cast=int)
+    end    = ask("Đến số", default=10, cast=int)
+    parent = Path(out)
+    parent.mkdir(parents=True, exist_ok=True)
+
+    for n in range(start, end + 1):
+        p = parent / f"{name} {n}"
+        if p.exists():
+            log(f"Bỏ qua: {p.name}")
+        else:
+            p.mkdir()
+            log(f"Tạo: {p.name}")
+
+if __name__ == "__main__":
+    main()
+```
+
+Ghi chú (sự thật, không suy đoán)
+
+· input() đọc nguyên dòng → space trong đường dẫn không bị tách (chỉ .strip() cắt đầu/cuối).
+· Path() nhận chuỗi có space, không cần ngoặc kép.
+· mkdir() không tạo file, chỉ tạo thư mục.
+· Đây là khung tối giản; bản đầy đủ trước đó có thêm pad, sep, dry-run, đếm created/skipped, xử lý Ctrl+C.

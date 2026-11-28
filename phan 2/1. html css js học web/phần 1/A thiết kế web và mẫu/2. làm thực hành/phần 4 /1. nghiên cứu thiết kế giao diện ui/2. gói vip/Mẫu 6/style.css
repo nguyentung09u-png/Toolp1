@@ -1,0 +1,604 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --bg-nordic: #0a1014;
+  --surface-slate: #111920;
+  --surface-elevated: #17222b;
+  --surface-well: #0c1318;
+  --border-frost: rgba(203, 224, 238, 0.09);
+  --border-lime: rgba(190, 242, 100, 0.42);
+  --accent-lime: #bef264;
+  --accent-chartreuse: #a3e635;
+  --accent-mint: #5eead4;
+  --text-snow: #f4f8fa;
+  --text-mist: #9fb3c2;
+  --text-muted: #687d8c;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--bg-nordic);
+  background-image:
+    radial-gradient(ellipse 75% 45% at 20% 0%, rgba(163, 230, 53, 0.09), transparent 58%),
+    radial-gradient(circle at 88% 82%, rgba(45, 212, 191, 0.08), transparent 46%),
+    radial-gradient(rgba(190, 242, 100, 0.06) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+  color: var(--text-snow);
+  padding: clamp(16px, 3vw, 36px) clamp(12px, 2.5vw, 24px) 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pricing-container {
+  width: 100%;
+  max-width: 920px;
+}
+
+/* =========================================================
+   TIÊU ĐỀ PHÂN MỤC (NORDIC CAPSULE HEADER)
+   ========================================================= */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+
+.section-title {
+  font-size: clamp(14px, 2.3vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-snow);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: "";
+  width: 18px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-lime), var(--accent-mint));
+  box-shadow: 0 0 12px rgba(190, 242, 100, 0.55);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   LƯỚI GÓI KEY 2 CỘT (SCULPTED SLATE MODULES)
+   ========================================================= */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 2.2vw, 20px);
+  width: 100%;
+}
+
+.pkg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  border-radius: clamp(16px, 2.2vw, 22px);
+  background: linear-gradient(160deg, var(--surface-elevated) 0%, var(--surface-slate) 100%);
+  border: 1px solid var(--border-frost);
+  padding: clamp(14px, 2.5vw, 24px);
+  box-shadow:
+    0 12px 28px -8px rgba(3, 8, 12, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.22s ease, background 0.22s ease;
+  will-change: transform;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pkg-card::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(circle, rgba(190, 242, 100, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.pkg-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(190, 242, 100, 0.42);
+  box-shadow:
+    0 18px 34px -8px rgba(3, 8, 12, 0.78),
+    0 0 20px rgba(163, 230, 53, 0.12);
+}
+
+.pkg-card.is-selected {
+  border-color: var(--accent-lime);
+  background: linear-gradient(160deg, #1b2824 0%, #111a1e 100%);
+  box-shadow:
+    0 0 0 1.5px var(--accent-lime),
+    0 18px 38px -8px rgba(163, 230, 53, 0.22);
+}
+
+.pkg-card.is-featured {
+  padding-top: clamp(36px, 4.8vw, 48px);
+  border-color: rgba(190, 242, 100, 0.34);
+}
+
+.pkg-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #84cc16 0%, #bef264 52%, #5eead4 100%);
+  color: #0b1407;
+  font-size: clamp(9px, 1.7vw, 11px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: clamp(5px, 0.9vw, 7px) 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pkg-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+.pkg-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px clamp(8px, 1.5vw, 11px);
+  border-radius: 999px;
+  background: rgba(203, 224, 238, 0.06);
+  border: 1px solid rgba(203, 224, 238, 0.14);
+  color: #cbd5e1;
+  font-size: clamp(9px, 1.6vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pkg-card.is-featured .pkg-tag {
+  background: rgba(190, 242, 100, 0.14);
+  border-color: rgba(190, 242, 100, 0.38);
+  color: #d9f99d;
+}
+
+.pkg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-lime);
+  box-shadow: 0 0 0 3px rgba(190, 242, 100, 0.18);
+  flex-shrink: 0;
+}
+
+.pkg-name {
+  font-size: clamp(11px, 1.9vw, 12.5px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-mist);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pkg-duration {
+  font-size: clamp(20px, 4.2vw, 31px);
+  font-weight: 800;
+  color: var(--text-snow);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: clamp(6px, 1.2vw, 10px);
+  word-break: break-word;
+}
+
+.pkg-card.is-selected .pkg-duration {
+  color: #ecfccb;
+}
+
+.pkg-desc {
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+  min-height: 3em;
+}
+
+.pkg-specs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1.2vw, 8px);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+}
+
+.pkg-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(7px, 1.4vw, 10px) clamp(9px, 1.6vw, 13px);
+  border-radius: 10px;
+  background: var(--surface-well);
+  border: 1px solid rgba(203, 224, 238, 0.06);
+  min-width: 0;
+}
+
+.pkg-spec-row.price-box {
+  background: linear-gradient(90deg, rgba(163, 230, 53, 0.1), rgba(94, 234, 212, 0.07));
+  border-color: rgba(190, 242, 100, 0.28);
+}
+
+.spec-label {
+  font-size: clamp(10px, 1.6vw, 11.5px);
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.spec-val {
+  font-size: clamp(11px, 1.9vw, 13px);
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-box .spec-val {
+  font-size: clamp(13px, 2.3vw, 16px);
+  font-weight: 800;
+  color: var(--accent-lime);
+}
+
+/* NÚT CHỌN GÓI */
+.pkg-btn {
+  width: 100%;
+  padding: clamp(10px, 1.8vw, 13px) 10px;
+  border: 1px solid rgba(203, 224, 238, 0.16);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-snow);
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.14s ease, box-shadow 0.16s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pkg-btn:hover {
+  background: rgba(190, 242, 100, 0.14);
+  border-color: rgba(190, 242, 100, 0.48);
+  color: #ecfccb;
+}
+
+.pkg-btn:active {
+  transform: scale(0.98);
+}
+
+.pkg-card.is-selected .pkg-btn {
+  border-color: transparent;
+  background: linear-gradient(135deg, #bef264 0%, #84cc16 100%);
+  color: #0d1706;
+  font-weight: 800;
+  box-shadow: 0 6px 20px rgba(163, 230, 53, 0.3);
+}
+
+/* =========================================================
+   THANH XÁC NHẬN GÓI ĐANG CHỌN (SLATE ACTION HUD)
+   ========================================================= */
+.selected-bar {
+  margin-top: 20px;
+  padding: 13px 18px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(23, 34, 43, 0.95), rgba(17, 25, 32, 0.95));
+  border: 1px solid rgba(190, 242, 100, 0.35);
+  box-shadow: 0 12px 30px rgba(3, 8, 12, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-mist);
+}
+
+.selected-bar strong {
+  color: var(--accent-lime);
+  font-weight: 800;
+}
+
+.pay-now-btn {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: linear-gradient(135deg, #5eead4 0%, #14b8a6 100%);
+  color: #041c1a;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.32);
+  transition: filter 0.16s ease, transform 0.14s ease;
+}
+
+.pay-now-btn:hover {
+  filter: brightness(1.07);
+}
+
+.pay-now-btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 359px) {
+  .pkg-spec-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+/* =========================================================
+   VIP TOP NẠP — VIỀN PHÁT SÁNG XOAY 60FPS
+   ========================================================= */
+@keyframes rotate-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.vip-list {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vip-card-wrap {
+  position: relative;
+  border-radius: 18px;
+  isolation: isolate;
+}
+
+.vip-card-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 18px;
+  background: var(--aura-glow);
+  filter: blur(15px);
+  opacity: 0.34;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.vip-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 1.5px;
+  background: rgba(203, 224, 238, 0.1);
+  overflow: hidden;
+}
+
+.vip-card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 62%,
+    var(--aura-dim) 80%,
+    var(--aura-bright) 94%,
+    #ffffff 98%,
+    transparent 100%
+  );
+  animation: rotate-spin 3.8s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vip-card-inner {
+  position: relative;
+  border-radius: 16.5px;
+  background: linear-gradient(155deg, var(--card-bg-top) 0%, #111920 58%, #0c1318 100%);
+  padding: 18px 20px;
+  z-index: 2;
+}
+
+.vip-card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 12% 0%, var(--inner-glow), transparent 60%);
+  pointer-events: none;
+}
+
+/* BẢNG MÀU RIÊNG BIỆT CHO TOP 1 / TOP 2 / TOP 3 */
+.vip-top1 {
+  --aura-bright: #bef264;
+  --aura-dim: rgba(163, 230, 53, 0.34);
+  --aura-glow: rgba(163, 230, 53, 0.48);
+  --card-bg-top: #1d2918;
+  --inner-glow: rgba(190, 242, 100, 0.16);
+  --title-color: #d9f99d;
+  --badge-bg: linear-gradient(135deg, #bef264, #84cc16);
+  --badge-text: #0e1805;
+  --badge-shadow: rgba(132, 204, 22, 0.36);
+  --ring-color: #bef264;
+  --footer-color: #d9f99d;
+}
+
+.vip-top2 {
+  --aura-bright: #2dd4bf;
+  --aura-dim: rgba(45, 212, 191, 0.32);
+  --aura-glow: rgba(20, 184, 166, 0.45);
+  --card-bg-top: #122629;
+  --inner-glow: rgba(45, 212, 191, 0.16);
+  --title-color: #5eead4;
+  --badge-bg: linear-gradient(135deg, #5eead4, #0d9488);
+  --badge-text: #041917;
+  --badge-shadow: rgba(13, 148, 136, 0.34);
+  --ring-color: #2dd4bf;
+  --footer-color: #5eead4;
+}
+
+.vip-top3 {
+  --aura-bright: #facc15;
+  --aura-dim: rgba(250, 204, 21, 0.3);
+  --aura-glow: rgba(234, 179, 8, 0.42);
+  --card-bg-top: #262214;
+  --inner-glow: rgba(250, 204, 21, 0.15);
+  --title-color: #fde047;
+  --badge-bg: linear-gradient(135deg, #fde047, #ca8a04);
+  --badge-text: #171203;
+  --badge-shadow: rgba(202, 138, 4, 0.34);
+  --ring-color: #facc15;
+  --footer-color: #fde047;
+}
+
+/* NỘI DUNG BÊN TRONG THẺ VIP */
+.vip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vip-rank-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--title-color);
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.vip-discount-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px var(--badge-shadow);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vip-user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.vip-medal-box {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ring-color);
+  box-shadow: 0 0 15px var(--aura-dim), inset 0 0 10px var(--aura-dim);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #0a1014;
+}
+
+.vip-medal-box::before {
+  content: "";
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 50%;
+  border: 1px dashed var(--ring-color);
+  opacity: 0.65;
+}
+
+.vip-medal-icon {
+  font-size: 25px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.7));
+}
+
+.vip-user-info {
+  min-width: 0;
+}
+
+.vip-username {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-snow);
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vip-deposit {
+  font-size: 13px;
+  color: var(--text-mist);
+  font-variant-numeric: tabular-nums;
+}
+
+.vip-deposit strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.vip-footer {
+  padding-top: 11px;
+  border-top: 1px solid rgba(203, 224, 238, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.vip-footer-perk {
+  color: var(--footer-color);
+}
+
+.vip-footer-auto {
+  color: #5eead4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vip-footer-auto::before {
+  content: "•";
+  font-size: 14px;
+}

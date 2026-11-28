@@ -1,0 +1,613 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --bg-glacier: #e9eff6;
+  --surface-frost: #ffffff;
+  --surface-mist: #f3f7fc;
+  --surface-ice: #e3eefb;
+  --border-frost: rgba(15, 41, 77, 0.09);
+  --border-cobalt: rgba(29, 78, 216, 0.34);
+  --cobalt-deep: #1e3a8a;
+  --cobalt-primary: #1d4ed8;
+  --sapphire-bright: #0284c7;
+  --slate-ink: #0f172a;
+  --slate-body: #475569;
+  --slate-muted: #64748b;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--bg-glacier);
+  background-image:
+    radial-gradient(circle at 14% 8%, rgba(2, 132, 199, 0.12), transparent 44%),
+    radial-gradient(circle at 86% 20%, rgba(29, 78, 216, 0.09), transparent 42%),
+    radial-gradient(circle at 50% 96%, rgba(14, 165, 233, 0.1), transparent 48%);
+  color: var(--slate-ink);
+  padding: clamp(16px, 3vw, 36px) clamp(12px, 2.5vw, 24px) 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pricing-container {
+  width: 100%;
+  max-width: 920px;
+}
+
+/* =========================================================
+   TIÊU ĐỀ PHÂN MỤC (NORDIC ARCHITECTURAL HEADER)
+   ========================================================= */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.section-title {
+  font-size: clamp(14px, 2.3vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--sapphire-bright), var(--cobalt-primary));
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.16);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   LƯỚI GÓI KEY 2 CỘT (GLACIER GLASS CARDS)
+   ========================================================= */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 2.2vw, 20px);
+  width: 100%;
+}
+
+.pkg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  border-radius: clamp(16px, 2.2vw, 22px);
+  background: linear-gradient(170deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid var(--border-frost);
+  padding: clamp(14px, 2.5vw, 24px);
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.04),
+    0 16px 32px -12px rgba(30, 58, 138, 0.1);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.22s ease;
+  will-change: transform;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pkg-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(224, 242, 254, 0.32), transparent);
+  pointer-events: none;
+}
+
+.pkg-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(2, 132, 199, 0.42);
+  box-shadow:
+    0 8px 18px rgba(2, 132, 199, 0.08),
+    0 20px 38px -10px rgba(29, 78, 216, 0.16);
+}
+
+.pkg-card.is-selected {
+  border-color: var(--cobalt-primary);
+  background: linear-gradient(170deg, #ffffff 0%, #eff6ff 100%);
+  box-shadow:
+    0 0 0 2px var(--cobalt-primary),
+    0 20px 38px -10px rgba(29, 78, 216, 0.24);
+}
+
+.pkg-card.is-featured {
+  padding-top: clamp(36px, 4.8vw, 48px);
+  border-color: rgba(29, 78, 216, 0.32);
+}
+
+.pkg-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 55%, #0284c7 100%);
+  color: #f0f9ff;
+  font-size: clamp(9px, 1.7vw, 11px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: clamp(5px, 0.9vw, 7px) 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pkg-top-row {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+.pkg-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px clamp(8px, 1.5vw, 11px);
+  border-radius: 7px;
+  background: var(--surface-mist);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--slate-body);
+  font-size: clamp(9px, 1.6vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pkg-card.is-featured .pkg-tag {
+  background: #dbeafe;
+  border-color: rgba(29, 78, 216, 0.25);
+  color: var(--cobalt-deep);
+}
+
+.pkg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  flex-shrink: 0;
+}
+
+.pkg-name {
+  position: relative;
+  font-size: clamp(11px, 1.9vw, 12.5px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--slate-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pkg-duration {
+  position: relative;
+  font-size: clamp(20px, 4.2vw, 31px);
+  font-weight: 800;
+  color: var(--slate-ink);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(6px, 1.2vw, 10px);
+  word-break: break-word;
+}
+
+.pkg-card.is-selected .pkg-duration {
+  color: var(--cobalt-primary);
+}
+
+.pkg-desc {
+  position: relative;
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--slate-body);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+  min-height: 3em;
+}
+
+.pkg-specs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1.2vw, 8px);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+}
+
+.pkg-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(7px, 1.4vw, 10px) clamp(9px, 1.6vw, 13px);
+  border-radius: 10px;
+  background: var(--surface-mist);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  min-width: 0;
+}
+
+.pkg-spec-row.price-box {
+  background: var(--surface-ice);
+  border-color: rgba(29, 78, 216, 0.22);
+}
+
+.spec-label {
+  font-size: clamp(10px, 1.6vw, 11.5px);
+  color: var(--slate-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.spec-val {
+  font-size: clamp(11px, 1.9vw, 13px);
+  font-weight: 700;
+  color: var(--slate-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-box .spec-val {
+  font-size: clamp(13px, 2.3vw, 16px);
+  font-weight: 800;
+  color: var(--cobalt-deep);
+}
+
+/* NÚT CHỌN GÓI */
+.pkg-btn {
+  position: relative;
+  width: 100%;
+  padding: clamp(10px, 1.8vw, 13px) 10px;
+  border: 1.5px solid rgba(29, 78, 216, 0.22);
+  border-radius: 11px;
+  background: #ffffff;
+  color: var(--cobalt-deep);
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.14s ease, box-shadow 0.16s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pkg-btn:hover {
+  background: var(--surface-ice);
+  border-color: var(--cobalt-primary);
+  color: var(--cobalt-primary);
+}
+
+.pkg-btn:active {
+  transform: scale(0.98);
+}
+
+.pkg-card.is-selected .pkg-btn {
+  border-color: transparent;
+  background: linear-gradient(135deg, #1e40af 0%, #0284c7 100%);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.3);
+}
+
+/* =========================================================
+   THANH XÁC NHẬN GÓI ĐANG CHỌN (ARCTIC HUD BAR)
+   ========================================================= */
+.selected-bar {
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.selected-bar strong {
+  color: #7dd3fc;
+  font-weight: 800;
+}
+
+.pay-now-btn {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  color: #041322;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.36);
+  transition: filter 0.16s ease, transform 0.14s ease;
+}
+
+.pay-now-btn:hover {
+  filter: brightness(1.07);
+}
+
+.pay-now-btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 359px) {
+  .pkg-spec-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+/* =========================================================
+   VIP TOP NẠP — VIỀN PHÁT SÁNG XOAY 60FPS TRÊN NỀN BĂNG SÁNG
+   ========================================================= */
+@keyframes rotate-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.vip-list {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vip-card-wrap {
+  position: relative;
+  border-radius: 18px;
+  isolation: isolate;
+}
+
+.vip-card-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 18px;
+  background: var(--aura-glow);
+  filter: blur(14px);
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.vip-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 2px;
+  background: rgba(15, 23, 42, 0.09);
+  box-shadow: 0 10px 26px -8px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+}
+
+.vip-card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 62%,
+    var(--aura-dim) 80%,
+    var(--aura-bright) 94%,
+    #ffffff 98%,
+    transparent 100%
+  );
+  animation: rotate-spin 4s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vip-card-inner {
+  position: relative;
+  border-radius: 16px;
+  background: linear-gradient(155deg, var(--card-bg-top) 0%, #ffffff 62%, #f8fafc 100%);
+  padding: 18px 20px;
+  z-index: 2;
+}
+
+.vip-card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 12% 0%, var(--inner-glow), transparent 60%);
+  pointer-events: none;
+}
+
+/* BẢNG MÀU RIÊNG BIỆT CHO TOP 1 / TOP 2 / TOP 3 */
+.vip-top1 {
+  --aura-bright: #0284c7;
+  --aura-dim: rgba(2, 132, 199, 0.34);
+  --aura-glow: rgba(2, 132, 199, 0.45);
+  --card-bg-top: #e0f2fe;
+  --inner-glow: rgba(14, 165, 233, 0.2);
+  --title-color: #0369a1;
+  --badge-bg: linear-gradient(135deg, #0284c7, #1d4ed8);
+  --badge-text: #ffffff;
+  --badge-shadow: rgba(29, 78, 216, 0.28);
+  --ring-color: #0284c7;
+  --footer-color: #0369a1;
+}
+
+.vip-top2 {
+  --aura-bright: #d97706;
+  --aura-dim: rgba(217, 119, 6, 0.32);
+  --aura-glow: rgba(245, 158, 11, 0.42);
+  --card-bg-top: #fef3c7;
+  --inner-glow: rgba(245, 158, 11, 0.2);
+  --title-color: #b45309;
+  --badge-bg: linear-gradient(135deg, #f59e0b, #b45309);
+  --badge-text: #ffffff;
+  --badge-shadow: rgba(180, 83, 9, 0.26);
+  --ring-color: #d97706;
+  --footer-color: #b45309;
+}
+
+.vip-top3 {
+  --aura-bright: #0d9488;
+  --aura-dim: rgba(13, 148, 136, 0.3);
+  --aura-glow: rgba(20, 184, 166, 0.38);
+  --card-bg-top: #ccfbf1;
+  --inner-glow: rgba(20, 184, 166, 0.18);
+  --title-color: #0f766e;
+  --badge-bg: linear-gradient(135deg, #14b8a6, #0f766e);
+  --badge-text: #ffffff;
+  --badge-shadow: rgba(15, 118, 110, 0.26);
+  --ring-color: #0d9488;
+  --footer-color: #0f766e;
+}
+
+/* NỘI DUNG BÊN TRONG THẺ VIP */
+.vip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vip-rank-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--title-color);
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.vip-discount-pill {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px var(--badge-shadow);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vip-user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.vip-medal-box {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
+  border: 2px solid var(--ring-color);
+  box-shadow: 0 4px 12px var(--aura-dim);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.vip-medal-box::before {
+  content: "";
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 11px;
+  border: 1px dashed var(--ring-color);
+  opacity: 0.55;
+}
+
+.vip-medal-icon {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.vip-user-info {
+  min-width: 0;
+}
+
+.vip-username {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--slate-ink);
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vip-deposit {
+  font-size: 13px;
+  color: var(--slate-body);
+}
+
+.vip-deposit strong {
+  color: var(--slate-ink);
+  font-weight: 700;
+}
+
+.vip-footer {
+  padding-top: 11px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.vip-footer-perk {
+  color: var(--footer-color);
+}
+
+.vip-footer-auto {
+  color: #0284c7;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vip-footer-auto::before {
+  content: "•";
+  font-size: 14px;
+}

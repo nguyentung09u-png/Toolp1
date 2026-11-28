@@ -1,0 +1,19 @@
+1. viền phát sáng gọi là :
+glow border
+
+
+2. viền xoay tự động
+Viền tự xoay: Hiệu ứng xoay viền tự động (@keyframes + animation).
+
+
+-- tốc độ giây xoay --
+
+animation: rotate-spin 3.8s linear infinite;
+
+Vì thế, chúng đều xoay với tốc độ 3.8 giây/vòng, không cái nào nhanh hay chậm hơn, và xuất phát từ cùng một điểm (cùng pha ban đầu).
+
+
+
+3. điểm xuất phát viền cố định bằng nhau ko lệch
+
+Điểm xuất phát bằng nhau, không lệch: Cùng pha ban đầu (đồng bộ animation, không dùng animation-delay).

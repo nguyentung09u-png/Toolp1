@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chọn Gói Key - Dark Tech Grid 2 Cột</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="pricing-container">
+    <div class="section-head">
+      <h2 class="section-title">Chọn Gói Kích Hoạt Key</h2>
+    </div>
+
+    <div class="pkg-grid" id="pkg-grid">
+
+      <!-- GÓI 1: KEY NGÀY -->
+      <article class="pkg-card" data-pkg="KEY NGÀY (1 ngày)" data-price="39.000đ" onclick="selectPackage(this)">
+        <div>
+          <div class="pkg-top-row">
+            <span class="pkg-tag">Linh hoạt</span>
+            <span class="pkg-dot" title="Sẵn hàng"></span>
+          </div>
+          <div class="pkg-name">Key Ngày</div>
+          <div class="pkg-duration">1 ngày</div>
+          <p class="pkg-desc">Kích hoạt sử dụng trong 24 giờ.</p>
+        </div>
+        <div>
+          <div class="pkg-specs">
+            <div class="pkg-spec-row">
+              <span class="spec-label">Đã Bán</span>
+              <span class="spec-val">642 KEY</span>
+            </div>
+            <div class="pkg-spec-row price-box">
+              <span class="spec-label">GIÁ BÁN</span>
+              <span class="spec-val">39.000đ</span>
+            </div>
+          </div>
+          <button type="button" class="pkg-btn">Chọn ngày</button>
+        </div>
+      </article>
+
+      <!-- GÓI 2: KEY TUẦN -->
+      <article class="pkg-card" data-pkg="KEY TUẦN (7 ngày)" data-price="119.000đ" onclick="selectPackage(this)">
+        <div>
+          <div class="pkg-top-row">
+            <span class="pkg-tag">Phổ biến</span>
+            <span class="pkg-dot" title="Sẵn hàng"></span>
+          </div>
+          <div class="pkg-name">Key Tuần</div>
+          <div class="pkg-duration">7 ngày</div>
+          <p class="pkg-desc">Phù hợp chạy liên tục trong một tuần.</p>
+        </div>
+        <div>
+          <div class="pkg-specs">
+            <div class="pkg-spec-row">
+              <span class="spec-label">Đã Bán</span>
+              <span class="spec-val">894 KEY</span>
+            </div>
+            <div class="pkg-spec-row price-box">
+              <span class="spec-label">GIÁ BÁN</span>
+              <span class="spec-val">119.000đ</span>
+            </div>
+          </div>
+          <button type="button" class="pkg-btn">Chọn tuần</button>
+        </div>
+      </article>
+
+      <!-- GÓI 3: KEY THÁNG -->
+      <article class="pkg-card" data-pkg="KEY THÁNG (30 ngày)" data-price="249.000đ" onclick="selectPackage(this)">
+        <div>
+          <div class="pkg-top-row">
+            <span class="pkg-tag">Tiết kiệm</span>
+            <span class="pkg-dot" title="Sẵn hàng"></span>
+          </div>
+          <div class="pkg-name">Key Tháng</div>
+          <div class="pkg-duration">30 ngày</div>
+          <p class="pkg-desc">Phù hợp nhu cầu sử dụng dài hạn.</p>
+        </div>
+        <div>
+          <div class="pkg-specs">
+            <div class="pkg-spec-row">
+              <span class="spec-label">Đã Bán</span>
+              <span class="spec-val">598 KEY</span>
+            </div>
+            <div class="pkg-spec-row price-box">
+              <span class="spec-label">GIÁ BÁN</span>
+              <span class="spec-val">249.000đ</span>
+            </div>
+          </div>
+          <button type="button" class="pkg-btn">Chọn tháng</button>
+        </div>
+      </article>
+
+      <!-- GÓI 4: MUA VĨNH VIỄN (NỔI BẬT) -->
+      <article class="pkg-card is-featured is-selected" data-pkg="MUA VĨNH VIỄN" data-price="499.000đ" onclick="selectPackage(this)">
+        <div class="pkg-ribbon">Được chọn nhiều nhất</div>
+        <div>
+          <div class="pkg-top-row">
+            <span class="pkg-tag">Vĩnh viễn</span>
+            <span class="pkg-dot" title="Sẵn hàng"></span>
+          </div>
+          <div class="pkg-name">Mua vĩnh viễn</div>
+          <div class="pkg-duration">Vĩnh viễn</div>
+          <p class="pkg-desc">Mua một lần, sử dụng không giới hạn thời gian.</p>
+        </div>
+        <div>
+          <div class="pkg-specs">
+            <div class="pkg-spec-row">
+              <span class="spec-label">Đã Bán</span>
+              <span class="spec-val">1.553 KEY</span>
+            </div>
+            <div class="pkg-spec-row price-box">
+              <span class="spec-label">GIÁ BÁN</span>
+              <span class="spec-val">499.000đ</span>
+            </div>
+          </div>
+          <button type="button" class="pkg-btn">✓ Đã chọn vĩnh viễn</button>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- THANH XÁC NHẬN GÓI ĐANG CHỌN -->
+    <div class="selected-bar" id="selected-bar">
+      <span>Đang chọn: <strong id="selected-name">MUA VĨNH VIỄN</strong> — Giá: <strong id="selected-price">499.000đ</strong></span>
+      <button type="button" class="pay-now-btn" onclick="alert('Tiến hành thanh toán: ' + document.getElementById('selected-name').textContent)">Thanh toán ngay ↗</button>
+    </div>
+
+    <!-- ===== KHỐI VIP TOP NẠP (CÓ VIỀN PHÁT SÁNG XOAY) ===== -->
+    <div class="section-head" style="margin-top:32px;">
+      <h2 class="section-title">VIP Top Nạp</h2>
+    </div>
+
+    <div class="vip-list">
+
+      <!-- TOP 1 -->
+      <div class="vip-card-wrap vip-top1">
+        <div class="vip-card">
+          <div class="vip-card-inner">
+            <div class="vip-header">
+              <div class="vip-rank-label">👑 🥇 QUÁN QUÂN<br>TOP 1</div>
+              <span class="vip-discount-pill">-30% Check &amp; Sự kiện</span>
+            </div>
+            <div class="vip-user-row">
+              <div class="vip-medal-box">
+                <span class="vip-medal-icon">🥇</span>
+              </div>
+              <div class="vip-user-info">
+                <div class="vip-username">xuantruongaov</div>
+                <div class="vip-deposit">Đã nạp: <strong>2.850.190đ</strong></div>
+              </div>
+            </div>
+            <div class="vip-footer">
+              <span class="vip-footer-perk">Giảm 30% Tool Check &amp; Sự Kiện</span>
+              <span class="vip-footer-auto">Tự động giảm giá</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP 2 -->
+      <div class="vip-card-wrap vip-top2">
+        <div class="vip-card">
+          <div class="vip-card-inner">
+            <div class="vip-header">
+              <div class="vip-rank-label">🥈 Á QUÂN TOP 2</div>
+              <span class="vip-discount-pill">-20% Check &amp; Sự kiện</span>
+            </div>
+            <div class="vip-user-row">
+              <div class="vip-medal-box">
+                <span class="vip-medal-icon">🥈</span>
+              </div>
+              <div class="vip-user-info">
+                <div class="vip-username">Hieubg977</div>
+                <div class="vip-deposit">Đã nạp: <strong>2.456.000đ</strong></div>
+              </div>
+            </div>
+            <div class="vip-footer">
+              <span class="vip-footer-perk">Giảm 20% Tool Check &amp; Sự Kiện</span>
+              <span class="vip-footer-auto">Tự động giảm giá</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP 3 -->
+      <div class="vip-card-wrap vip-top3">
+        <div class="vip-card">
+          <div class="vip-card-inner">
+            <div class="vip-header">
+              <div class="vip-rank-label">🥉 QUÝ NHÂN TOP 3</div>
+              <span class="vip-discount-pill">-10% Check &amp; Sự kiện</span>
+            </div>
+            <div class="vip-user-row">
+              <div class="vip-medal-box">
+                <span class="vip-medal-icon">🥉</span>
+              </div>
+              <div class="vip-user-info">
+                <div class="vip-username">hnsieucap</div>
+                <div class="vip-deposit">Đã nạp: <strong>1.486.555đ</strong></div>
+              </div>
+            </div>
+            <div class="vip-footer">
+              <span class="vip-footer-perk">Giảm 10% Tool Check &amp; Sự Kiện</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loading Overlay - aovhub.top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- OVERLAY LOADING -->
+  <div id="monter-page-loader" role="status" aria-live="polite">
+    <div class="ml-orbit-box">
+      <div class="ml-ring-dashed"></div>
+      <div class="ml-ring-arc"></div>
+      <div class="ml-logo-wrap">
+        <!-- Thay src bằng link ảnh logo của bạn nếu có, mặc định dùng huy hiệu SVG -->
+        <svg viewBox="0 0 120 120" width="106" height="106" fill="none">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="50%" stop-color="#2dd4bf"/>
+              <stop offset="100%" stop-color="#fbbf24"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="46" stroke="url(#shieldGrad)" stroke-width="2.5" fill="#091a16"/>
+          <path d="M60 22L86 38V66C86 82 60 96 60 96C60 96 34 82 34 66V38L60 22Z" fill="#0e2620" stroke="#34d399" stroke-width="2"/>
+          <path d="M46 52L60 36L74 52L60 47L46 52Z" fill="#6ee7b7"/>
+          <rect x="24" y="56" width="72" height="24" rx="5" fill="#071310" stroke="#fbbf24" stroke-width="1.5"/>
+          <text x="60" y="67" text-anchor="middle" fill="#f0fdf4" font-size="10.5" font-weight="800" letter-spacing="0.5">MONSTER</text>
+          <text x="60" y="77" text-anchor="middle" fill="#34d399" font-size="9.5" font-weight="800" letter-spacing="1.2">AOV</text>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="ml-domain">aovhub.top</h1>
+
+    <div class="ml-pill">
+      <span class="ml-pill-dot"></span>
+      <span class="ml-pill-text">LOADING...</span>
+    </div>
+
+    <div class="ml-progress-track">
+      <div class="ml-progress-bar" id="ml-progress-bar"></div>
+    </div>
+
+    <div class="ml-status" id="ml-status-text">Đang chuẩn bị giao diện</div>
+  </div>
+
+  <!-- NỘI DUNG SAU KHI LOAD XONG -->
+  <div class="demo-content">
+    <h2 style="margin: 0; font-size: 18px;">Giao diện chính đã sẵn sàng</h2>
+    <button type="button" class="demo-btn" onclick="runLoaderDemo()">Chạy lại Loading Overlay</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

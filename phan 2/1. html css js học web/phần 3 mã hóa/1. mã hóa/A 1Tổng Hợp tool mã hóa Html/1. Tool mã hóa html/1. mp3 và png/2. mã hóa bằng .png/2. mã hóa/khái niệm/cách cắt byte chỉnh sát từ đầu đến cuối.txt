@@ -1,0 +1,19 @@
+Nó cắt chuẩn xác từng byte là nhờ 2 con số tọa độ (offsetStart và offsetEnd) mà file pack.py đã đo sẵn rồi ghi chết vào trong index.html, kết hợp với hàm .slice() (hàm cắt mảng byte) của JavaScript.
+Cụ thể, lúc chạy pack.py, Python đã đo đạc và chia file logo.png thành 3 khúc nối tiếp nhau như thế này (giả sử ảnh thật nặng đúng 5.000 byte):
+ * Khúc 1 (Từ byte 0 đến 5000): Là toàn bộ dữ liệu ảnh thật (anh_that.png). Python dùng hàm len(real_img) để đếm chính xác độ dài này và lưu thành offsetStart = 5000.
+ * Khúc 2 (Từ byte 5000 đến 5012): Là 12 byte mã ngẫu nhiên (nonce) dùng để mở khóa AES. Vì dài cố định 12 byte nên Python cộng thêm 12 để lưu thành offsetEnd = 5012.
+ * Khúc 3 (Từ byte 5012 đến hết file): Là toàn bộ cục code HTML đã mã hóa.
+Khi mở web, index.html chỉ việc cầm cây thước kẻ cắt đúng 2 nhát dựa trên 2 con số đó:
+ * buf.slice(5000, 5012) \rightarrow Bốc đúng 12 byte chìa khóa phụ (nonce).
+ * buf.slice(5012) (không điền số kết thúc nghĩa là lấy từ mốc 5012 đến tận cùng đuôi file) \rightarrow Hốt trọn ổ cục code HTML đem đi giải mã, còn khúc 0 đến 5000 (tấm ảnh) thì vứt bỏ hoàn toàn.
+
+
+
+
+
+tóm gọn :
+để load web được bằng .png 
+
+thì bỏ phần .png thật
+
+đọc phần byte đuôi đến cuối

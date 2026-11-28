@@ -1,0 +1,73 @@
+b1 :
+Bước 1 — Tạo 3 file trống
+
+Trong cùng thư mục chứa index.html, tạo thêm 2 file mới:
+index.html
+· style.css
+· script.js
+
+
+
+b2 : tách css ( làm tool cho dễ xóa nhanh và chuyển đổi thành js )
+
+xóa những code có <style> </style> :
+
+<style>
+    * {
+      box-sizing: border-box;
+      ...
+    }
+    ...
+    @media (max-width: 359px) {
+      .pkg-spec-row {
+        flex-direction: column;
+        ...
+      }
+    }
+</style>
+
+
+và chuyển thành file style.css
+    * {
+      box-sizing: border-box;
+      ...
+    }
+    ...
+    @media (max-width: 359px) {
+      .pkg-spec-row {
+        flex-direction: column;
+        ...
+      }
+    }
+
+
+
+lưu ý : không copy 2 cái <style> và </style> vào file .css nhé
+
+
+
+
+
+b3 : tách file script.js 
+khi chưa tách :
+<script>
+    function selectPackage(cardEl) {
+      ...
+    }
+    document.querySelectorAll('.pkg-btn').forEach(btn => {
+      ...
+    });
+</script>
+
+
+
+khi đã tách : tạo file script .js
+    function selectPackage(cardEl) {
+      ...
+    }
+    document.querySelectorAll('.pkg-btn').forEach(btn => {
+      ...
+    });
+
+
+lưu ý : Copy toàn bộ nội dung bên trong cặp <script>...</script> (KHÔNG copy 2 thẻ <script> và </script>) → dán vào file script.js vừa tạo.

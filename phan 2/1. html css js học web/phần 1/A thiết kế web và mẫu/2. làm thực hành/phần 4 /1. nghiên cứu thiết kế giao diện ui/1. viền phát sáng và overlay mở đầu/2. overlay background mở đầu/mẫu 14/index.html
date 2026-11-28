@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loading Overlay - aovhub.top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- OVERLAY LOADING -->
+  <div id="monter-page-loader" role="status" aria-live="polite">
+    <div class="ml-orbit-box">
+      <div class="ml-ring-dashed"></div>
+      <div class="ml-ring-arc"></div>
+      <div class="ml-logo-wrap">
+        <!-- Logo biểu tượng cánh sóng hình học đối xứng mới -->
+        <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='oceanicBg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2316383e'/%3E%3Cstop offset='100%25' stop-color='%2309191d'/%3E%3C/linearGradient%3E%3ClinearGradient id='tangerineBlade' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23fdba74'/%3E%3Cstop offset='50%25' stop-color='%23f97316'/%3E%3Cstop offset='100%25' stop-color='%23c2410c'/%3E%3C/linearGradient%3E%3ClinearGradient id='seafoamBlade' x1='100%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ccfbf1'/%3E%3Cstop offset='100%25' stop-color='%232dd4bf'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='58,10 142,10 190,58 190,142 142,190 58,190 10,142 10,58' fill='url(%23oceanicBg)'/%3E%3Cpolygon points='64,22 136,22 178,64 178,136 136,178 64,178 22,136 22,64' fill='none' stroke='%235eead4' stroke-opacity='0.28' stroke-width='1.5'/%3E%3Cpath d='M44 128 L92 48 L112 82 L76 142 Z' fill='url(%23seafoamBlade)'/%3E%3Cpath d='M156 72 L108 152 L88 118 L124 58 Z' fill='url(%23tangerineBlade)'/%3E%3Cpolygon points='100,82 118,100 100,118 82,100' fill='%23ffffff'/%3E%3C/svg%3E" alt="Logo aovhub.top">
+      </div>
+    </div>
+
+    <h1 class="ml-domain">aovhub.top</h1>
+
+    <div class="ml-pill">
+      <span class="ml-pill-dot"></span>
+      <span class="ml-pill-text">LOADING...</span>
+    </div>
+
+    <div class="ml-progress-track">
+      <div class="ml-progress-bar" id="ml-progress-bar"></div>
+    </div>
+
+    <div class="ml-status" id="ml-status-text">Đang chuẩn bị giao diện</div>
+  </div>
+
+  <!-- NỘI DUNG SAU KHI LOAD XONG -->
+  <div class="demo-content">
+    <h2 style="margin: 0; font-size: 18px;">Giao diện chính đã sẵn sàng</h2>
+    <button type="button" class="demo-btn" onclick="runLoaderDemo()">Chạy lại Loading Overlay</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

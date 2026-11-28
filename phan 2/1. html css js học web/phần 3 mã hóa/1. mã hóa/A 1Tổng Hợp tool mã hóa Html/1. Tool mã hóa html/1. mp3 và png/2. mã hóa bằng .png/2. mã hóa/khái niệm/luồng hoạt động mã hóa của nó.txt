@@ -1,0 +1,40 @@
+Chính xác 100% luôn bạn! Bạn hiểu đúng bản chất rồi đó:
+​1. Phần đầu (anh_that.png): Giữ nguyên vẹn từng byte nên nó vẫn là một tấm ảnh .png thật, mở lên xem hình bình thường.
+​2. Phần đuôi (source.html): Khi chạy script Python, thuật toán AES biến toàn bộ chữ cái HTML thành một chuỗi byte nhị phân ngẫu nhiên (mở lên chỉ thấy ký tự loằng ngoằng).
+​3. Ghép nối: Python dán thẳng cục byte nhị phân đó nối tiếp vào dưới cuối của tấm ảnh .png để tạo thành file logo.png.
+​Cấu trúc ruột file logo.png sau cùng chỉ đơn giản là:
+[ Toàn bộ byte ảnh .png thật ] + [ Cục byte nhị phân HTML đã mã hóa ]
+​Trình xem ảnh thì chỉ đọc phần đầu rồi dừng nên vẫn hiện ảnh; còn trình duyệt của bạn thì nhảy thẳng xuống phần đuôi để giải mã ngược lại thành giao diện web.
+
+
+
+
+và
+
+
+Trong bộ web của bạn, chính file index.html đang đóng vai trò là file giải mã đó:
+​logo.png (Cái két sắt): Chứa tấm ảnh thật ở đầu và cục byte code HTML đã bị khóa chặt ở đuôi.
+​index.html (Chìa khóa + Thợ mở khóa): Chứa đoạn code JavaScript làm 3 việc: mở logo.png, cắt lấy đúng phần byte ở đuôi (từ vị trí offsetStart), dùng keyHex để giải mã trên RAM rồi in giao diện ra màn hình.
+​Cũng chính vì index.html là file cầm chìa khóa giải mã nên ở bước cuối mình mới dặn bạn đem đoạn code bên trong nó đi làm rối trên obfuscator.io—để người khác có mở file giải mã này lên cũng không đọc trộm được chìa khóa.
+
+
+
+tóm gọn :
+1. python 1.py mã hóa aes toàn bộ chữ cái .html
+thành byte nhị phân
+nhị phân là code như này : �@�z�
+
+và
+chèn code nhị phân .html
+vào cuối code ảnh .png
+
+2. chứa file giải mã
+
+Đúng rồi bạn! Bắt buộc phải có một file đứng ra làm nhiệm vụ giải mã, vì bản thân trình duyệt web không thể tự hiểu cách cắt đuôi file logo.png hay tự biết chìa khóa (Key) nằm ở đâu.
+​Trong bộ web của bạn, chính file index.html đang đóng vai trò là file giải mã đó:
+​logo.png (Cái két sắt): Chứa tấm ảnh thật ở đầu và cục byte code HTML đã bị khóa chặt ở đuôi.
+​index.html (Chìa khóa + Thợ mở khóa): Chứa đoạn code JavaScript làm 3 việc: mở logo.png, cắt lấy đúng phần byte ở đuôi (từ vị trí offsetStart), dùng keyHex để giải mã trên RAM rồi in giao diện ra màn hình.
+​Cũng chính vì index.html là file cầm chìa khóa giải mã nên ở bước cuối mình mới dặn bạn đem đoạn code bên trong nó đi làm rối trên obfuscator.io—để người khác có mở file giải mã này lên cũng không đọc trộm được chìa khóa.
+
+
+3. mã hóa java scrpit <script

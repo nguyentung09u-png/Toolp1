@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VIP Top Nạp - Glowing Border 60fps</title>
+  <style>
+    @keyframes rotate-border {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100dvh;
+      background: #080d17;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 24px 14px 48px;
+    }
+
+    .vip-list {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Bọc ngoài cùng để tạo ánh sáng tỏa (Glow) ra nền xung quanh */
+    .vip-card-wrap {
+      position: relative;
+      border-radius: 16px;
+      isolation: isolate;
+    }
+
+    /* Hào quang tỏa nhẹ xung quanh thẻ */
+    .vip-card-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 16px;
+      background: var(--aura-glow);
+      filter: blur(14px);
+      opacity: 0.45;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Khung cắt viền (overflow: hidden giữ vệt sáng nằm gọn trong đường viền 1.5px) */
+    .vip-card {
+      position: relative;
+      border-radius: 16px;
+      padding: 1.5px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    /* Dải sáng xoay tròn bằng GPU transform (tương thích 100% mọi trình duyệt) */
+    .vip-card::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 160%;
+      aspect-ratio: 1 / 1;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        transparent 58%,
+        var(--aura-dim) 76%,
+        var(--aura-bright) 93%,
+        #ffffff 98%,
+        transparent 100%
+      );
+      animation: rotate-border var(--speed, 3.8s) linear infinite;
+      will-change: transform;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Ruột thẻ che phần giữa, chỉ chừa lại 1.5px viền sáng chạy xung quanh */
+    .vip-card-inner {
+      position: relative;
+      border-radius: 14.5px;
+      background: linear-gradient(165deg, var(--card-bg-top) 0%, #0d1422 55%, #0a101b 100%);
+      padding: 16px 18px;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .vip-card-inner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 0%, var(--inner-glow), transparent 65%);
+      pointer-events: none;
+    }
+
+    /* BẢNG MÀU TỪNG HẠNG */
+    .vip-top1 {
+      --aura-bright: #fbbf24;
+      --aura-dim: rgba(245, 158, 11, 0.35);
+      --aura-glow: rgba(245, 158, 11, 0.55);
+      --card-bg-top: #262015;
+      --inner-glow: rgba(251, 191, 36, 0.14);
+      --title-color: #fbbf24;
+      --badge-bg: linear-gradient(135deg, #fbbf24, #f59e0b);
+      --badge-text: #1a1203;
+      --badge-shadow: rgba(245, 158, 11, 0.35);
+      --ring-color: #fbbf24;
+      --footer-color: #fbbf24;
+      --speed: 3.4s;
+    }
+
+    .vip-top2 {
+      --aura-bright: #38bdf8;
+      --aura-dim: rgba(14, 165, 233, 0.35);
+      --aura-glow: rgba(56, 189, 248, 0.5);
+      --card-bg-top: #112233;
+      --inner-glow: rgba(56, 189, 248, 0.14);
+      --title-color: #7dd3fc;
+      --badge-bg: linear-gradient(135deg, #38bdf8, #0284c7);
+      --badge-text: #041524;
+      --badge-shadow: rgba(56, 189, 248, 0.35);
+      --ring-color: #38bdf8;
+      --footer-color: #38bdf8;
+      --speed: 4s;
+    }
+
+    .vip-top2 .vip-card::before {
+      animation-delay: -1.3s;
+    }
+
+    .vip-top3 {
+      --aura-bright: #c084fc;
+      --aura-dim: rgba(168, 85, 247, 0.35);
+      --aura-glow: rgba(168, 85, 247, 0.55);
+      --card-bg-top: #1e1633;
+      --inner-glow: rgba(192, 132, 252, 0.15);
+      --title-color: #c084fc;
+      --badge-bg: linear-gradient(135deg, #9333ea, #7e22ce);
+      --badge-text: #ffffff;
+      --badge-shadow: rgba(168, 85, 247, 0.4);
+      --ring-color: #a855f7;
+      --footer-color: #c084fc;
+      --speed: 4.5s;
+    }
+
+    .vip-top3 .vip-card::before {
+      animation-delay: -2.6s;
+    }
+
+    /* NỘI DUNG BÊN TRONG THẺ */
+    .vip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .vip-rank-label {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--title-color);
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .vip-discount-pill {
+      padding: 5px 11px;
+      border-radius: 7px;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 11.5px;
+      font-weight: 800;
+      box-shadow: 0 4px 14px var(--badge-shadow);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .vip-user-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .vip-medal-box {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 2px solid var(--ring-color);
+      box-shadow: 0 0 14px var(--aura-dim), inset 0 0 10px var(--aura-dim);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: rgba(9, 14, 24, 0.75);
+    }
+
+    .vip-medal-box::before {
+      content: "";
+      position: absolute;
+      inset: 3.5px;
+      border-radius: 50%;
+      border: 1px dashed var(--ring-color);
+      opacity: 0.75;
+    }
+
+    .vip-medal-icon {
+      font-size: 25px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    }
+
+    .vip-user-info {
+      min-width: 0;
+    }
+
+    .vip-username {
+      font-size: 17px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .vip-deposit {
+      font-size: 13.5px;
+      color: #94a3b8;
+    }
+
+    .vip-deposit strong {
+      color: #e2e8f0;
+      font-weight: 700;
+    }
+
+    .vip-footer {
+      padding-top: 11px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .vip-footer-perk {
+      color: var(--footer-color);
+    }
+
+    .vip-footer-auto {
+      color: #4ade80;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .vip-footer-auto::before {
+      content: "•";
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="vip-list">
+
+    <!-- TOP 1 -->
+    <div class="vip-card-wrap vip-top1">
+      <div class="vip-card">
+        <div class="vip-card-inner">
+          <div class="vip-header">
+            <div class="vip-rank-label">👑 🥇 QUÁN QUÂN<br>TOP 1</div>
+            <span class="vip-discount-pill">-30% Check &amp; Sự kiện</span>
+          </div>
+          <div class="vip-user-row">
+            <div class="vip-medal-box">
+              <span class="vip-medal-icon">🥇</span>
+            </div>
+            <div class="vip-user-info">
+              <div class="vip-username">xuantruongaov</div>
+              <div class="vip-deposit">Đã nạp: <strong>2.850.190đ</strong></div>
+            </div>
+          </div>
+          <div class="vip-footer">
+            <span class="vip-footer-perk">Giảm 30% Tool Check &amp; Sự Kiện</span>
+            <span class="vip-footer-auto">Tự động giảm giá</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 2 -->
+    <div class="vip-card-wrap vip-top2">
+      <div class="vip-card">
+        <div class="vip-card-inner">
+          <div class="vip-header">
+            <div class="vip-rank-label">🥈 Á QUÂN TOP 2</div>
+            <span class="vip-discount-pill">-20% Check &amp; Sự kiện</span>
+          </div>
+          <div class="vip-user-row">
+            <div class="vip-medal-box">
+              <span class="vip-medal-icon">🥈</span>
+            </div>
+            <div class="vip-user-info">
+              <div class="vip-username">Hieubg977</div>
+              <div class="vip-deposit">Đã nạp: <strong>2.456.000đ</strong></div>
+            </div>
+          </div>
+          <div class="vip-footer">
+            <span class="vip-footer-perk">Giảm 20% Tool Check &amp; Sự Kiện</span>
+            <span class="vip-footer-auto">Tự động giảm giá</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 3 -->
+    <div class="vip-card-wrap vip-top3">
+      <div class="vip-card">
+        <div class="vip-card-inner">
+          <div class="vip-header">
+            <div class="vip-rank-label">🥉 QUÝ NHÂN TOP 3</div>
+            <span class="vip-discount-pill">-10% Check &amp; Sự kiện</span>
+          </div>
+          <div class="vip-user-row">
+            <div class="vip-medal-box">
+              <span class="vip-medal-icon">🥉</span>
+            </div>
+            <div class="vip-user-info">
+              <div class="vip-username">hnsieucap</div>
+              <div class="vip-deposit">Đã nạp: <strong>1.486.555đ</strong></div>
+            </div>
+          </div>
+          <div class="vip-footer">
+            <span class="vip-footer-perk">Giảm 10% Tool Check &amp; Sự Kiện</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

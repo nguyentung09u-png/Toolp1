@@ -1,0 +1,603 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --bg-obsidian: #0b0a0e;
+  --surface-base: #141219;
+  --surface-elevated: #1b1822;
+  --surface-inset: #0e0d12;
+  --border-subtle: rgba(255, 244, 230, 0.08);
+  --border-warm: rgba(251, 146, 60, 0.28);
+  --accent-amber: #f59e0b;
+  --accent-coral: #fb7185;
+  --accent-peach: #fdba74;
+  --text-primary: #faf8f5;
+  --text-secondary: #a8a29e;
+  --text-muted: #78716c;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--bg-obsidian);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 158, 11, 0.12), transparent 60%),
+    radial-gradient(circle at 92% 75%, rgba(244, 63, 94, 0.08), transparent 45%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  color: var(--text-primary);
+  padding: clamp(16px, 3vw, 34px) clamp(12px, 2.5vw, 24px) 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pricing-container {
+  width: 100%;
+  max-width: 920px;
+}
+
+/* =========================================================
+   TIÊU ĐỀ PHÂN MỤC (ARCHITECTURAL HEADER)
+   ========================================================= */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.section-title {
+  font-size: clamp(14px, 2.3vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--accent-amber), var(--accent-coral));
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.55);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   LƯỚI GÓI KEY 2 CỘT (MATTE VELVET CARDS)
+   ========================================================= */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 2.2vw, 20px);
+  width: 100%;
+}
+
+.pkg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  border-radius: clamp(16px, 2.2vw, 22px);
+  background: linear-gradient(160deg, var(--surface-elevated) 0%, var(--surface-base) 100%);
+  border: 1px solid var(--border-subtle);
+  padding: clamp(14px, 2.5vw, 24px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+  will-change: transform;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pkg-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle at top right, rgba(251, 146, 60, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.pkg-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251, 146, 60, 0.38);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(251, 146, 60, 0.15);
+}
+
+.pkg-card.is-selected {
+  border-color: var(--accent-amber);
+  background: linear-gradient(160deg, #241d1a 0%, #141116 100%);
+  box-shadow: 0 0 0 1.5px var(--accent-amber), 0 16px 36px rgba(245, 158, 11, 0.16);
+}
+
+.pkg-card.is-featured {
+  padding-top: clamp(36px, 4.8vw, 48px);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.pkg-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 45%, #fb7185 100%);
+  color: #140c05;
+  font-size: clamp(9px, 1.7vw, 11px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: clamp(5px, 0.9vw, 7px) 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25);
+}
+
+.pkg-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+.pkg-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px clamp(8px, 1.5vw, 11px);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d6d3d1;
+  font-size: clamp(9px, 1.6vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pkg-card.is-featured .pkg-tag {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.36);
+  color: var(--accent-peach);
+}
+
+.pkg-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.16);
+  flex-shrink: 0;
+}
+
+.pkg-name {
+  font-size: clamp(11px, 1.9vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pkg-duration {
+  font-size: clamp(20px, 4.2vw, 31px);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: clamp(6px, 1.2vw, 10px);
+  word-break: break-word;
+}
+
+.pkg-card.is-selected .pkg-duration {
+  background: linear-gradient(90deg, #ffffff 10%, #fde68a 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pkg-desc {
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+  min-height: 3em;
+}
+
+.pkg-specs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1.2vw, 8px);
+  margin-bottom: clamp(12px, 2.2vw, 18px);
+}
+
+.pkg-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(7px, 1.4vw, 10px) clamp(9px, 1.6vw, 13px);
+  border-radius: 10px;
+  background: var(--surface-inset);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
+}
+
+.pkg-spec-row.price-box {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), rgba(251, 113, 133, 0.06));
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.spec-label {
+  font-size: clamp(10px, 1.6vw, 11.5px);
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.spec-val {
+  font-size: clamp(11px, 1.9vw, 13px);
+  font-weight: 700;
+  color: #e7e5e4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-box .spec-val {
+  font-size: clamp(13px, 2.3vw, 16px);
+  font-weight: 800;
+  color: var(--accent-peach);
+}
+
+/* NÚT CHỌN GÓI */
+.pkg-btn {
+  width: 100%;
+  padding: clamp(10px, 1.8vw, 13px) 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: clamp(11px, 1.8vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.14s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pkg-btn:hover {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fde68a;
+}
+
+.pkg-btn:active {
+  transform: scale(0.98);
+}
+
+.pkg-card.is-selected .pkg-btn {
+  border-color: transparent;
+  background: linear-gradient(135deg, #f59e0b 0%, #fb7185 100%);
+  color: #140b06;
+  font-weight: 800;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+}
+
+/* =========================================================
+   THANH XÁC NHẬN GÓI ĐANG CHỌN (FLOATING HUD BAR)
+   ========================================================= */
+.selected-bar {
+  margin-top: 20px;
+  padding: 13px 18px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(27, 24, 34, 0.95), rgba(20, 18, 25, 0.95));
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #d6d3d1;
+}
+
+.selected-bar strong {
+  color: var(--accent-peach);
+  font-weight: 800;
+}
+
+.pay-now-btn {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: #140b05;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.32);
+  transition: filter 0.16s ease, transform 0.14s ease;
+}
+
+.pay-now-btn:hover {
+  filter: brightness(1.08);
+}
+
+.pay-now-btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 359px) {
+  .pkg-spec-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+/* =========================================================
+   VIP TOP NẠP — VIỀN PHÁT SÁNG XOAY 60FPS
+   ========================================================= */
+@keyframes rotate-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.vip-list {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vip-card-wrap {
+  position: relative;
+  border-radius: 18px;
+  isolation: isolate;
+}
+
+.vip-card-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 18px;
+  background: var(--aura-glow);
+  filter: blur(16px);
+  opacity: 0.36;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.vip-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 1.5px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.vip-card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 62%,
+    var(--aura-dim) 80%,
+    var(--aura-bright) 94%,
+    #fffbeb 98%,
+    transparent 100%
+  );
+  animation: rotate-spin 4s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vip-card-inner {
+  position: relative;
+  border-radius: 16.5px;
+  background: linear-gradient(155deg, var(--card-bg-top) 0%, #141219 58%, #0f0d13 100%);
+  padding: 18px 20px;
+  z-index: 2;
+}
+
+.vip-card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 12% 0%, var(--inner-glow), transparent 62%);
+  pointer-events: none;
+}
+
+/* BẢNG MÀU RIÊNG BIỆT CHO TOP 1 / TOP 2 / TOP 3 */
+.vip-top1 {
+  --aura-bright: #f59e0b;
+  --aura-dim: rgba(245, 158, 11, 0.32);
+  --aura-glow: rgba(245, 158, 11, 0.5);
+  --card-bg-top: #261d14;
+  --inner-glow: rgba(251, 191, 36, 0.16);
+  --title-color: #fbbf24;
+  --badge-bg: linear-gradient(135deg, #fbbf24, #d97706);
+  --badge-text: #170f03;
+  --badge-shadow: rgba(245, 158, 11, 0.35);
+  --ring-color: #f59e0b;
+  --footer-color: #fcd34d;
+}
+
+.vip-top2 {
+  --aura-bright: #2dd4bf;
+  --aura-dim: rgba(45, 212, 191, 0.3);
+  --aura-glow: rgba(45, 212, 191, 0.45);
+  --card-bg-top: #122224;
+  --inner-glow: rgba(45, 212, 191, 0.14);
+  --title-color: #5eead4;
+  --badge-bg: linear-gradient(135deg, #2dd4bf, #0d9488);
+  --badge-text: #041715;
+  --badge-shadow: rgba(45, 212, 191, 0.32);
+  --ring-color: #2dd4bf;
+  --footer-color: #5eead4;
+}
+
+.vip-top3 {
+  --aura-bright: #fb7185;
+  --aura-dim: rgba(251, 113, 133, 0.32);
+  --aura-glow: rgba(251, 113, 133, 0.48);
+  --card-bg-top: #26141b;
+  --inner-glow: rgba(251, 113, 133, 0.15);
+  --title-color: #fda4af;
+  --badge-bg: linear-gradient(135deg, #fb7185, #e11d48);
+  --badge-text: #fff1f2;
+  --badge-shadow: rgba(225, 29, 72, 0.38);
+  --ring-color: #fb7185;
+  --footer-color: #fda4af;
+}
+
+/* NỘI DUNG BÊN TRONG THẺ VIP */
+.vip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vip-rank-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--title-color);
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.vip-discount-pill {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px var(--badge-shadow);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vip-user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.vip-medal-box {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: 1.5px solid var(--ring-color);
+  box-shadow: 0 0 16px var(--aura-dim), inset 0 0 12px var(--aura-dim);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: rgba(11, 10, 14, 0.8);
+}
+
+.vip-medal-box::before {
+  content: "";
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 12px;
+  border: 1px dashed var(--ring-color);
+  opacity: 0.65;
+}
+
+.vip-medal-icon {
+  font-size: 25px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.65));
+}
+
+.vip-user-info {
+  min-width: 0;
+}
+
+.vip-username {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vip-deposit {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.vip-deposit strong {
+  color: #f5f5f4;
+  font-weight: 700;
+}
+
+.vip-footer {
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.vip-footer-perk {
+  color: var(--footer-color);
+}
+
+.vip-footer-auto {
+  color: #6ee7b7;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vip-footer-auto::before {
+  content: "•";
+  font-size: 14px;
+}
